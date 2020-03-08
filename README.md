@@ -3,5 +3,3 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 1. visit every city just once
 2. return to the starting point
 3. be of minimum distance.
-
-Broadly, the TSP is classified as symmetric travelling salesman problem, asymmetric travelling salesman problem (aTSP), and multi-travelling salesman problem (mTSP). The mTSP is generally treated as a relaxed vehicle routing problem.
