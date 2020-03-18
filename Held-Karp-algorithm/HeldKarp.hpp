@@ -32,13 +32,13 @@ using namespace std;
 class HeldKarp
 {
 private:
-	string PrintTour(map<unsigned long, map<unsigned short, unsigned short>> P, const unsigned short N)
+	string PrintTour(map<unsigned long, map<unsigned char, unsigned char>> P, const unsigned char N)
 	{
 		string path;
-		unsigned short s = 0;
-		set<unsigned short>  S;
+		unsigned char s = 0;
+		set<unsigned char>  S;
 
-		for (unsigned short i = 0; i < N; i++)
+		for (unsigned char i = 0; i < N; i++)
 			S.insert(i);
 
 		while (true)
@@ -55,20 +55,20 @@ private:
 		return path;
 	}
 
-	set<unsigned short> * GetAllCombos(vector<unsigned short> FullSet, const unsigned long N)
+	set<unsigned char> * GetAllCombos(vector<unsigned char> FullSet, const unsigned long N)
 	{
 		unsigned long i, b;
 		size_t j;
 
 		auto stop = N + 1;
 		auto list_size = FullSet.size();
-		auto sets = new set<unsigned short>[N];
+		auto sets = new set<unsigned char>[N];
 
-		set<unsigned short> * last;
+		set<unsigned char> * last;
 
 		for (i = 1; i < stop; i++)
 		{
-			last = new set<unsigned short>();
+			last = new set<unsigned char>();
 
 			for (j = 0; j < list_size; j++)
 			{
@@ -83,7 +83,7 @@ private:
 			sets[i - 1] = *last;
 		}
 
-		sort(sets, sets + N, [](set<unsigned short> x, set<unsigned short> y)
+		sort(sets, sets + N, [](set<unsigned char> x, set<unsigned char> y)
 		{
 			return x.size() < y.size();
 		});
@@ -94,11 +94,11 @@ private:
 	template <class IEnumerable>
 	unsigned long Powered2Code(IEnumerable S)
 	{
-		return Powered2Code(S, USHRT_MAX);
+		return Powered2Code(S, UCHAR_MAX);
 	}
 
 	template <class IEnumerable>
-	unsigned long Powered2Code(IEnumerable S, const unsigned short exclude)
+	unsigned long Powered2Code(IEnumerable S, const unsigned char exclude)
 	{
 		unsigned long code = 0;
 
@@ -117,31 +117,32 @@ public:
 	S(n) = O(n2ⁿ)
 	*/
 	template <class Matrix2D>
-	void TSP(Matrix2D distance, const unsigned short N)
+	void TSP(Matrix2D distance, const unsigned char N)
 	{
 		auto begin = chrono::steady_clock::now();
 
-		unsigned short π, opt;
-		map<unsigned long, map<unsigned short, unsigned short>> C, P;
+		unsigned char π;
+		unsigned short opt;
+		map<unsigned long, map<unsigned char, unsigned char>> C, P;
 
-		vector<unsigned short> FullSet(N - 1);
+		vector<unsigned char> FullSet(N - 1);
 
-		for (unsigned short z = 1; z < N; z++)
+		for (unsigned char z = 1; z < N; z++)
 			FullSet[z - 1] = z;
 
 		const unsigned long setsCount = (1 << (N - 1)) - 1;
 		auto sets = GetAllCombos(FullSet, setsCount);
 
-		for (unsigned short k = 1; k < N; k++)
+		for (unsigned char k = 1; k < N; k++)
 			C[0][k] = distance[k][0];
 
-		set<unsigned short> * S;
+		set<unsigned char> * S;
 
 		for (unsigned long s = 0; s < setsCount; s++)
 		{
 			S = &sets[s];
 
-			for (unsigned short k = 1; k < N; k++)
+			for (unsigned char k = 1; k < N; k++)
 				if (S->count(k) == 0)
 				{
 					π = 0;
@@ -189,7 +190,7 @@ public:
 
 		auto path = PrintTour(P, N);
 
-		cout << "Grafo di " << N << " nodi, costo: " << opt << " tempo: " << chrono::duration_cast<chrono::milliseconds> (chrono::steady_clock::now() - begin).count() << "ms, percorso: " << path << endl;
+		cout << "Grafo di " << to_string(N) << " nodi, costo: " << to_string(opt) << " tempo: " << chrono::duration_cast<chrono::milliseconds> (chrono::steady_clock::now() - begin).count() << "ms, percorso: " << path << endl;
 	}
 
 };
