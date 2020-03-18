@@ -29,8 +29,5 @@
     <ClCompile Include="Held-Karp-algorithm.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="HeldKarp.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
