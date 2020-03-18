@@ -83,11 +83,6 @@ private:
 			sets[i - 1] = *last;
 		}
 
-		sort(sets, sets + N, [](set<unsigned char> x, set<unsigned char> y)
-		{
-			return x.size() < y.size();
-		});
-
 		return sets;
 	}
 
@@ -138,39 +133,43 @@ public:
 
 		set<unsigned char> * S;
 
-		for (unsigned long s = 0; s < setsCount; s++)
-		{
-			S = &sets[s];
+		for (size_t c = 1; c < N; c++) // cardinalità			
+			for (unsigned long s = 0; s < setsCount; s++) // sets				
+			{
+				S = &sets[s];
 
-			for (unsigned char k = 1; k < N; k++)
-				if (S->count(k) == 0)
+				if (c == S->size())
 				{
-					π = 0;
-
-					if (S->empty())
-					{
-						opt = distance[k][0];
-					}
-					else
-					{
-						opt = USHRT_MAX;
-
-						for each(auto m in *S)
+					for (unsigned char k = 1; k < N; k++) // nodi
+						if (S->count(k) == 0)
 						{
-							auto tmp = C[Powered2Code(*S, m)][m] + distance[k][m];
+							π = 0;
 
-							if (tmp < opt)
+							if (S->empty())
 							{
-								opt = tmp;
-								π = m;
+								opt = distance[k][0];
 							}
-						}
-					}
+							else
+							{
+								opt = USHRT_MAX;
 
-					C[Powered2Code(*S)][k] = opt;
-					P[Powered2Code(*S)][k] = π;
+								for each(auto m in *S)
+								{
+									auto tmp = C[Powered2Code(*S, m)][m] + distance[k][m];
+
+									if (tmp < opt)
+									{
+										opt = tmp;
+										π = m;
+									}
+								}
+							}
+
+							C[Powered2Code(*S)][k] = opt;
+							P[Powered2Code(*S)][k] = π;
+						}
 				}
-		}
+			}
 
 		opt = USHRT_MAX;
 		π = 0;
