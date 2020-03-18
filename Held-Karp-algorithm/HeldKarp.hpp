@@ -55,26 +55,23 @@ private:
 		return path;
 	}
 
-	set<unsigned char> * GetAllCombos(vector<unsigned char> FullSet, const int N)
+	set<unsigned char> * GetAllCombos(vector<unsigned char> FullSet, const int powerN)
 	{
 		int i;
 		size_t j;
 
-		auto stop = N + 1;
 		auto list_size = FullSet.size();
-		auto sets = new set<unsigned char>[N];
+		auto sets = new set<unsigned char>[powerN];
 
 		set<unsigned char> * last;
 
-		for (i = 1; i < stop; i++)
+		for (i = 1; i <= powerN; i++) // O(2ⁿ)
 		{
 			last = new set<unsigned char>();
 
 			for (j = 0; j < list_size; j++)
-			{
 				if (i & (1 << j) != 0)
 					last->insert(FullSet[j]);
-			}
 
 			sets[i - 1] = *last;
 		}
@@ -121,22 +118,22 @@ public:
 		for (unsigned char z = 1; z < N; z++)
 			FullSet[z - 1] = z;
 
-		const int setsCount = (1 << (N - 1)) - 1;
-		auto sets = GetAllCombos(FullSet, setsCount);
+		const int powerN = (1 << (N - 1)) - 1;
+		auto sets = GetAllCombos(FullSet, powerN);
 
 		for (unsigned char k = 1; k < N; k++)
 			C[0][k] = distance[k][0];
 
 		set<unsigned char> * S;
 
-		for (size_t c = 1; c < N; c++) // cardinalità			
-			for (unsigned long s = 0; s < setsCount; s++) // sets				
+		for (size_t c = 1; c < N; c++) // cardinalità O(N)
+			for (unsigned long s = 0; s < powerN; s++) // sets O(2ⁿ)
 			{
 				S = &sets[s];
 
 				if (c == S->size())
 				{
-					for (unsigned char k = 1; k < N; k++) // nodi
+					for (unsigned char k = 1; k < N; k++) // nodi O(N)
 						if (S->count(k) == 0)
 						{
 							π = 0;
@@ -170,7 +167,7 @@ public:
 		opt = USHRT_MAX;
 		π = 0;
 
-		for each(auto k in FullSet)
+		for each(auto k in FullSet) // O(N)
 		{
 			auto tmp = C[Powered2Code(FullSet, k)][k] + distance[0][k];
 
