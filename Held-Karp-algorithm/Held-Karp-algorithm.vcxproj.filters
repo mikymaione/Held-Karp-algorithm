@@ -18,7 +18,7 @@
     <ClInclude Include="pch.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Graph.h">
+    <ClInclude Include="HeldKarp.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
@@ -26,10 +26,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Graph.cpp">
+    <ClCompile Include="Held-Karp-algorithm.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Held-Karp-algorithm.cpp">
+    <ClCompile Include="HeldKarp.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

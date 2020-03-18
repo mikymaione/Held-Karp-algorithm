@@ -20,53 +20,26 @@ unsigned int
 #pragma once
 
 #include <map>
-#include <queue>
+#include <set>
 #include <vector>
 
 using namespace std;
 
-class Graph
+class HeldKarp
 {
 private:
-	enum eColor
-	{
-		white,
-		gray,
-		black,
-	};
-
-	unsigned short  N;
-	vector<unsigned short> *Adj;
-
-	// BFS & DFS
-	eColor *color;
-	unsigned short *predecessor, *distance;
-	// BFS & DFS
-
-	// DFS
-	unsigned int *start_visit, *end_visit;
-	unsigned int time;
-	// DFS
-
-private:
-	void DFS_Visit(unsigned short u);
-
-	void BFS_ShortestPath_Print(unsigned short from, unsigned short to);
+	void PrintTour(map<unsigned short, map<unsigned short, unsigned short>> P, unsigned short N, unsigned short opt);
 
 	template <class T>
-	T generateRandomNumber(T startRange, T endRange, T limit);
+	vector<set<T>> GetAllCombos(vector<T> list);
+
+	template<typename ForwardIterator>
+	unsigned short Powered2Code(ForwardIterator begin, ForwardIterator end, unsigned short exclude);
+
+	template<typename ForwardIterator>
+	unsigned short Powered2Code(ForwardIterator begin, ForwardIterator end);
 
 public:
-	Graph(unsigned short NumeroNodi);
-	~Graph();
+	void TSP(vector<vector<unsigned short>> distance);
 
-	void RandomGraph(unsigned char NumeroArchiPerNodoMin, unsigned char NumeroArchiPerNodoMax);
-
-	void AddEdge(unsigned short from, unsigned short to);
-	void PrintEdges();
-
-	void BFS(unsigned short s);
-	void DFS();
-
-	void BFS_ShortestPath(unsigned short from, unsigned short to);
 };
