@@ -58,19 +58,17 @@ private:
 
 	set<unsigned short> * GetAllCombos(vector<unsigned short> list, const unsigned long N)
 	{
-		unsigned long s = 0;
 		auto sets = new set<unsigned short>[N];
 
 		for (unsigned long i = 1; i <= N; i++)
 		{
 			set<unsigned short> last;
 
-			for (auto j = 0; j < list.size(); j++)
+			for (size_t j = 0; j < list.size(); j++)
 				if ((i >> j) % 2 != 0)
 					last.insert(list[j]);
 
-			sets[s] = last;
-			s++;
+			sets[i - 1] = last;
 		}
 
 		sort(sets, sets + N, [](set<unsigned short> x, set<unsigned short> y)
