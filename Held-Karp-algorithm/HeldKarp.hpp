@@ -55,9 +55,9 @@ private:
 		return path;
 	}
 
-	set<unsigned char> * GetAllCombos(vector<unsigned char> FullSet, const unsigned long N)
+	set<unsigned char> * GetAllCombos(vector<unsigned char> FullSet, const int N)
 	{
-		unsigned long i, b;
+		int i;
 		size_t j;
 
 		auto stop = N + 1;
@@ -72,12 +72,8 @@ private:
 
 			for (j = 0; j < list_size; j++)
 			{
-				b = i & (1 << j);
-
-				if (b == 0)
-					continue;
-
-				last->insert(FullSet[j]);
+				if (i & (1 << j) != 0)
+					last->insert(FullSet[j]);
 			}
 
 			sets[i - 1] = *last;
@@ -125,7 +121,7 @@ public:
 		for (unsigned char z = 1; z < N; z++)
 			FullSet[z - 1] = z;
 
-		const unsigned long setsCount = (1 << (N - 1)) - 1;
+		const int setsCount = (1 << (N - 1)) - 1;
 		auto sets = GetAllCombos(FullSet, setsCount);
 
 		for (unsigned char k = 1; k < N; k++)
