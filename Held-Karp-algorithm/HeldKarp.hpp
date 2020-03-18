@@ -33,7 +33,7 @@ using namespace std;
 class HeldKarp
 {
 private:
-	string PrintTour(unordered_map<unsigned short, unordered_map<unsigned short, unsigned short>> P, const unsigned short N)
+	string PrintTour(unordered_map<unsigned long, unordered_map<unsigned short, unsigned short>> P, const unsigned short N)
 	{
 		string path;
 		unsigned short s = 0;
@@ -82,15 +82,15 @@ private:
 	}
 
 	template <class IEnumerable>
-	unsigned short Powered2Code(IEnumerable S)
+	unsigned long Powered2Code(IEnumerable S)
 	{
 		return Powered2Code(S, USHRT_MAX);
 	}
 
 	template <class IEnumerable>
-	unsigned short Powered2Code(IEnumerable S, const unsigned short exclude)
+	unsigned long Powered2Code(IEnumerable S, const unsigned short exclude)
 	{
-		unsigned short code = 0;
+		unsigned long code = 0;
 
 		for each(auto e in S)
 			if (e != exclude)
@@ -112,7 +112,7 @@ public:
 		auto begin = chrono::steady_clock::now();
 
 		unsigned short π, opt;
-		unordered_map<unsigned short, unordered_map<unsigned short, unsigned short>> C, P;
+		unordered_map<unsigned long, unordered_map<unsigned short, unsigned short>> C, P;
 
 		vector<unsigned short> FullSet;
 
