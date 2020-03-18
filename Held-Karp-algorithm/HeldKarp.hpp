@@ -22,10 +22,9 @@ unsigned int
 #include <array>
 #include <chrono>
 #include <iostream>
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
+#include <map>
 #include <set>
+#include <string>
 #include <vector>
 
 using namespace std;
@@ -33,11 +32,11 @@ using namespace std;
 class HeldKarp
 {
 private:
-	string PrintTour(unordered_map<unsigned long, unordered_map<unsigned short, unsigned short>> P, const unsigned short N)
+	string PrintTour(map<unsigned long, map<unsigned short, unsigned short>> P, const unsigned short N)
 	{
 		string path;
 		unsigned short s = 0;
-		unordered_set<unsigned short>  S;
+		set<unsigned short>  S;
 
 		for (unsigned short i = 0; i < N; i++)
 			S.insert(i);
@@ -56,13 +55,13 @@ private:
 		return path;
 	}
 
-	set<unsigned short> * GetAllCombos(vector<unsigned short> list, const unsigned long N)
+	set<unsigned short> * GetAllCombos(vector<unsigned short> FullSet, const unsigned long N)
 	{
 		unsigned long i, b;
 		size_t j;
 
 		auto stop = N + 1;
-		auto list_size = list.size();
+		auto list_size = FullSet.size();
 		auto sets = new set<unsigned short>[N];
 
 		set<unsigned short> * last;
@@ -78,7 +77,7 @@ private:
 				if (b == 0)
 					continue;
 
-				last->insert(list[j]);
+				last->insert(FullSet[j]);
 			}
 
 			sets[i - 1] = *last;
@@ -123,7 +122,7 @@ public:
 		auto begin = chrono::steady_clock::now();
 
 		unsigned short π, opt;
-		unordered_map<unsigned long, unordered_map<unsigned short, unsigned short>> C, P;
+		map<unsigned long, map<unsigned short, unsigned short>> C, P;
 
 		vector<unsigned short> FullSet(N - 1);
 
