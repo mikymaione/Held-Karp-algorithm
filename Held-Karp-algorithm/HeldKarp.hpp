@@ -58,17 +58,30 @@ private:
 
 	set<unsigned short> * GetAllCombos(vector<unsigned short> list, const unsigned long N)
 	{
+		unsigned long i, b;
+		size_t j;
+
+		auto stop = N + 1;
+		auto list_size = list.size();
 		auto sets = new set<unsigned short>[N];
 
-		for (unsigned long i = 1; i <= N; i++)
+		set<unsigned short> * last;
+
+		for (i = 1; i < stop; i++)
 		{
-			set<unsigned short> last;
+			last = new set<unsigned short>();
 
-			for (size_t j = 0; j < list.size(); j++)
-				if ((i >> j) % 2 != 0)
-					last.insert(list[j]);
+			for (j = 0; j < list_size; j++)
+			{
+				b = i & (1 << j);
 
-			sets[i - 1] = last;
+				if (b == 0)
+					continue;
+
+				last->insert(list[j]);
+			}
+
+			sets[i - 1] = *last;
 		}
 
 		sort(sets, sets + N, [](set<unsigned short> x, set<unsigned short> y)
@@ -112,10 +125,10 @@ public:
 		unsigned short π, opt;
 		unordered_map<unsigned long, unordered_map<unsigned short, unsigned short>> C, P;
 
-		vector<unsigned short> FullSet;
+		vector<unsigned short> FullSet(N - 1);
 
 		for (unsigned short z = 1; z < N; z++)
-			FullSet.push_back(z);
+			FullSet[z - 1] = z;
 
 		const unsigned long setsCount = (1 << (N - 1)) - 1;
 		auto sets = GetAllCombos(FullSet, setsCount);
@@ -123,16 +136,18 @@ public:
 		for (unsigned short k = 1; k < N; k++)
 			C[0][k] = distance[k][0];
 
+		set<unsigned short> * S;
+
 		for (unsigned long s = 0; s < setsCount; s++)
 		{
-			auto S = sets[s];
+			S = &sets[s];
 
 			for (unsigned short k = 1; k < N; k++)
-				if (S.count(k) == 0)
+				if (S->count(k) == 0)
 				{
 					π = 0;
 
-					if (S.empty())
+					if (S->empty())
 					{
 						opt = distance[k][0];
 					}
@@ -140,9 +155,9 @@ public:
 					{
 						opt = USHRT_MAX;
 
-						for each(auto m in S)
+						for each(auto m in *S)
 						{
-							auto tmp = C[Powered2Code(S, m)][m] + distance[k][m];
+							auto tmp = C[Powered2Code(*S, m)][m] + distance[k][m];
 
 							if (tmp < opt)
 							{
@@ -152,8 +167,8 @@ public:
 						}
 					}
 
-					C[Powered2Code(S)][k] = opt;
-					P[Powered2Code(S)][k] = π;
+					C[Powered2Code(*S)][k] = opt;
+					P[Powered2Code(*S)][k] = π;
 				}
 		}
 
