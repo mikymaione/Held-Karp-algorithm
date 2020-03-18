@@ -8,6 +8,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "HeldKarp.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <iostream>
 
 /*
@@ -19,6 +20,8 @@ S(n) = O(n2ⁿ)
 
 void HeldKarp::TSP(vector<vector<unsigned short>> distance)
 {
+	auto begin = chrono::steady_clock::now();
+
 	unsigned short π, opt;
 	map<unsigned short, map<unsigned short, unsigned short>> C, P;
 
@@ -35,7 +38,7 @@ void HeldKarp::TSP(vector<vector<unsigned short>> distance)
 
 	for each(auto S in sets)
 		for (unsigned short k = 1; k < N; k++)
-			if (S.count(k) == 1)
+			if (S.count(k) == 0)
 			{
 				opt = USHRT_MAX;
 				π = 0;
@@ -45,7 +48,7 @@ void HeldKarp::TSP(vector<vector<unsigned short>> distance)
 				else
 					for each(auto m in S)
 					{
-						auto tmp = C[Powered2Code(S.begin(), S.end(), m)][m] + distance[k][m];
+						auto tmp = C[Powered2Code(S, m)][m] + distance[k][m];
 
 						if (tmp < opt)
 						{
@@ -54,8 +57,8 @@ void HeldKarp::TSP(vector<vector<unsigned short>> distance)
 						}
 					}
 
-				C[Powered2Code(S.begin(), S.end())][k] = opt;
-				P[Powered2Code(S.begin(), S.end())][k] = π;
+				C[Powered2Code(S)][k] = opt;
+				P[Powered2Code(S)][k] = π;
 			}
 
 	opt = USHRT_MAX;
@@ -63,7 +66,7 @@ void HeldKarp::TSP(vector<vector<unsigned short>> distance)
 
 	for each(auto k in FullSet)
 	{
-		auto tmp = C[Powered2Code(FullSet.begin(), FullSet.end(), k)][k] + distance[0][k];
+		auto tmp = C[Powered2Code(FullSet, k)][k] + distance[0][k];
 
 		if (tmp < opt)
 		{
@@ -72,53 +75,50 @@ void HeldKarp::TSP(vector<vector<unsigned short>> distance)
 		}
 	}
 
-	P[Powered2Code(FullSet.begin(), FullSet.end())][0] = π;
+	P[Powered2Code(FullSet)][0] = π;
 
-	PrintTour(P, N, opt);
+	auto path = PrintTour(P, N);
+
+	cout << "Grafo di " << N << " nodi, costo: " << opt << " tempo: " << chrono::duration_cast<chrono::milliseconds> (chrono::steady_clock::now() - begin).count() << "ms, percorso: " << path << endl;
 }
 
-void HeldKarp::PrintTour(map<unsigned short, map<unsigned short, unsigned short>> P, unsigned short N, unsigned short opt)
+string HeldKarp::PrintTour(map<unsigned short, map<unsigned short, unsigned short>> P, unsigned short N)
 {
+	string path;
 	unsigned short s = 0;
 	set<unsigned short>  S;
 
 	for (unsigned short i = 0; i < N; i++)
 		S.insert(i);
 
-	cout << "Grafo di " << N << " nodi, costo: " << opt << ", path: ";
-
 	while (true)
 	{
 		S.erase(s);
-		s = P[Powered2Code(S.begin(), S.end())][s];
+		s = P[Powered2Code(S)][s];
 
-		cout << s << " ";
+		path += to_string(s) + " ";
 
 		if (s == 0)
 			break;
 	}
 
-	cout << endl;
+	return path;
 }
 
-template<typename ForwardIterator>
-unsigned short HeldKarp::Powered2Code(ForwardIterator begin, ForwardIterator end)
+template <class IEnumerable>
+unsigned short HeldKarp::Powered2Code(IEnumerable S)
 {
-	return Powered2Code(begin, end, USHRT_MAX);
+	return Powered2Code(S, USHRT_MAX);
 }
 
-template<typename ForwardIterator>
-unsigned short HeldKarp::Powered2Code(ForwardIterator begin, ForwardIterator end, unsigned short exclude)
+template <class IEnumerable>
+unsigned short HeldKarp::Powered2Code(IEnumerable S, const unsigned short exclude)
 {
 	unsigned short code = 0;
 
-	for (; begin != end; ++begin)
-	{
-		auto e = *begin;
-
+	for each(auto e in S)
 		if (e != exclude)
 			code += 1 << e;
-	}
 
 	return code;
 }

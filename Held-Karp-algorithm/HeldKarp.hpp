@@ -21,6 +21,7 @@ unsigned int
 
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
 
 using namespace std;
@@ -28,16 +29,16 @@ using namespace std;
 class HeldKarp
 {
 private:
-	void PrintTour(map<unsigned short, map<unsigned short, unsigned short>> P, unsigned short N, unsigned short opt);
+	string PrintTour(map<unsigned short, map<unsigned short, unsigned short>> P, unsigned short N);
 
 	template <class T>
 	vector<set<T>> GetAllCombos(vector<T> list);
 
-	template<typename ForwardIterator>
-	unsigned short Powered2Code(ForwardIterator begin, ForwardIterator end, unsigned short exclude);
+	template <class IEnumerable>
+	unsigned short Powered2Code(IEnumerable S, const unsigned short exclude);
 
-	template<typename ForwardIterator>
-	unsigned short Powered2Code(ForwardIterator begin, ForwardIterator end);
+	template <class IEnumerable>
+	unsigned short Powered2Code(IEnumerable S);
 
 public:
 	void TSP(vector<vector<unsigned short>> distance);
