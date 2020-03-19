@@ -55,28 +55,77 @@ private:
 		return path;
 	}
 
-	set<unsigned char> * GetAllCombos(vector<unsigned char> FullSet, const int powerN)
+	map<size_t, set<set<unsigned char>>> GetAllCombos2(unsigned char N)
 	{
-		int i;
-		size_t j;
+		map<size_t, set<set<unsigned char>>> sets;
 
-		auto list_size = FullSet.size();
-		auto sets = new set<unsigned char>[powerN];
-
-		set<unsigned char> * last;
-
-		for (i = 1; i <= powerN; i++) // O(2ⁿ)
-		{
-			last = new set<unsigned char>();
-
-			for (j = 0; j < list_size; j++)
-				if (i & (1 << j) != 0)
-					last->insert(FullSet[j]);
-
-			sets[i - 1] = *last;
-		}
+		for (unsigned char K = 0; K < N; K++)
+			GetAllCombos_Permutation(sets, N, K + 1);
 
 		return sets;
+	}
+
+	void GetAllCombos_Permutation(map<size_t, set<set<unsigned char>>> & sets_map, unsigned char N, unsigned char K)
+	{
+		string bitmask(K, 1);
+		bitmask.resize(N, 0);
+
+		do
+		{
+			set<unsigned char> S;
+
+			for (unsigned char i = 0; i < N; ++i)
+				if (bitmask[i])
+					S.insert(i + 1);
+
+			if (sets_map.count(K) == 0)
+			{
+				set<set<unsigned char>> sets;
+				sets.insert(S);
+
+				sets_map[K] = sets;
+			}
+			else
+			{
+				sets_map[K].insert(S);
+			}
+		} while (prev_permutation(bitmask.begin(), bitmask.end()));
+	}
+
+	map<size_t, set<set<unsigned char>>> GetAllCombos(vector<unsigned char> FullSet)
+	{
+		int i;
+		size_t j, K;
+
+		auto N = FullSet.size();
+		auto powerN = 1 << N;
+
+		map<size_t, set<set<unsigned char>>> sets_map;
+
+		for (i = 1; i < powerN; i++) // O(2ⁿ)
+		{
+			set<unsigned char> S;
+
+			for (j = 0; j < N; j++)
+				if ((i & (1 << j)) != 0)
+					S.insert(FullSet[j]);
+
+			K = S.size();
+
+			if (sets_map.count(K) == 0)
+			{
+				set<set<unsigned char>> sets;
+				sets.insert(S);
+
+				sets_map[K] = sets;
+			}
+			else
+			{
+				sets_map[K].insert(S);
+			}
+		}
+
+		return sets_map;
 	}
 
 	template <class IEnumerable>
@@ -111,58 +160,50 @@ public:
 
 		unsigned char π;
 		unsigned short opt;
-		map<unsigned long, map<unsigned char, unsigned char>> C, P;
+		map<unsigned long, map<unsigned char, unsigned short>> C;
+		map<unsigned long, map<unsigned char, unsigned char>> P;
 
 		vector<unsigned char> FullSet(N - 1);
 
 		for (unsigned char z = 1; z < N; z++)
 			FullSet[z - 1] = z;
 
-		const int powerN = (1 << (N - 1)) - 1;
-		auto sets = GetAllCombos(FullSet, powerN);
+		//auto sets = GetAllCombos2(N - 1);
+		auto sets = GetAllCombos(FullSet);
 
 		for (unsigned char k = 1; k < N; k++)
 			C[0][k] = distance[k][0];
 
-		set<unsigned char> * S;
-
 		for (size_t c = 1; c < N; c++) // cardinalità O(N)
-			for (unsigned long s = 0; s < powerN; s++) // sets O(2ⁿ)
-			{
-				S = &sets[s];
+			for each(auto S in sets[c]) // sets O(2ⁿ)										
+				for (unsigned char k = 1; k < N; k++) // nodi O(N)
+					if (S.count(k) == 0)
+					{
+						π = 0;
 
-				if (c == S->size())
-				{
-					for (unsigned char k = 1; k < N; k++) // nodi O(N)
-						if (S->count(k) == 0)
+						if (S.empty())
 						{
-							π = 0;
+							opt = distance[k][0];
+						}
+						else
+						{
+							opt = USHRT_MAX;
 
-							if (S->empty())
+							for each(auto m in S)
 							{
-								opt = distance[k][0];
-							}
-							else
-							{
-								opt = USHRT_MAX;
+								auto tmp = C[Powered2Code(S, m)][m] + distance[k][m];
 
-								for each(auto m in *S)
+								if (tmp < opt)
 								{
-									auto tmp = C[Powered2Code(*S, m)][m] + distance[k][m];
-
-									if (tmp < opt)
-									{
-										opt = tmp;
-										π = m;
-									}
+									opt = tmp;
+									π = m;
 								}
 							}
-
-							C[Powered2Code(*S)][k] = opt;
-							P[Powered2Code(*S)][k] = π;
 						}
-				}
-			}
+
+						C[Powered2Code(S)][k] = opt;
+						P[Powered2Code(S)][k] = π;
+					}
 
 		opt = USHRT_MAX;
 		π = 0;
