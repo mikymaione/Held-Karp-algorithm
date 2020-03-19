@@ -22,7 +22,7 @@ unsigned int
 #include <chrono>
 #include <functional>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <set>
 #include <stack>
 #include <string>
@@ -33,7 +33,7 @@ using namespace std;
 class HeldKarp
 {
 private:
-	string PrintTour(map<unsigned long, map<unsigned char, unsigned char>> P, const unsigned char N)
+	string PrintTour(unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P, const unsigned char N)
 	{
 		string path;
 		unsigned char s = 0;
@@ -56,17 +56,20 @@ private:
 		return path;
 	}
 
-	void Combinations(const int K, const int N, function<void(vector<unsigned char> &)> CALLBACK)
+	void Combinations(const int K, const int N, function<void(const unsigned char S[], const unsigned long long elements)> CALLBACK)
 	{
-		vector<unsigned char> result(K);
+		unsigned long long index;
+		unsigned char value;
+
+		auto result = new unsigned char[K];
 
 		stack<unsigned char> stack;
 		stack.push(0);
 
 		while (stack.size() > 0)
 		{
-			auto index = stack.size() - 1;
-			auto value = stack.top();
+			index = stack.size() - 1;
+			value = stack.top();
 			stack.pop();
 
 			while (value < N)
@@ -76,11 +79,13 @@ private:
 
 				if (index == K)
 				{
-					CALLBACK(result);
+					CALLBACK(result, index);
 					break;
 				}
 			}
 		}
+
+		delete[] result;
 	}
 
 	template <class IEnumerable>
@@ -90,7 +95,7 @@ private:
 	}
 
 	template <class IEnumerable>
-	unsigned long Powered2Code(IEnumerable S, const unsigned char exclude)
+	unsigned int Powered2Code(IEnumerable S, const unsigned char exclude)
 	{
 		unsigned long code = 0;
 
@@ -99,6 +104,50 @@ private:
 				code += 1 << e;
 
 		return code;
+	}
+
+	template <class T>
+	unsigned long Powered2Code(const T S[], unsigned long long len)
+	{
+		return Powered2Code(S, len, UCHAR_MAX);
+	}
+
+	template <class T>
+	unsigned long Powered2Code(const T S[], unsigned long long len, const unsigned char exclude)
+	{
+		unsigned long code = 0;
+
+		for (unsigned long long i = 0; i < len; i++)
+		{
+			auto e = S[i];
+
+			if (e != exclude)
+				code += 1 << e;
+		}
+
+		return code;
+	}
+
+	template <class T>
+	bool binSearch(const T arr[], unsigned long long len, T what)
+	{
+		long long low = 0;
+		long long high = len - 1;
+		long long mid;
+
+		while (low <= high)
+		{
+			mid = (low + high) / 2;
+
+			if (arr[mid] > what)
+				high = mid - 1;
+			else if (arr[mid] < what)
+				low = mid + 1;
+			else
+				return true;
+		}
+
+		return false;
 	}
 
 public:
@@ -113,35 +162,38 @@ public:
 	{
 		auto begin = chrono::steady_clock::now();
 
-		unsigned char π;;
-		unsigned short opt;
+		unsigned char π, m, k;
+		unsigned short opt, tmp;
+		unsigned int code;
+		unsigned long long i;
 
 		const unsigned char N0 = N - 1;
 
-		map<unsigned long, map<unsigned char, unsigned short>> C;
-		map<unsigned long, map<unsigned char, unsigned char>> P;
+		unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
+		unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P;
 
 		vector<unsigned char> FullSet(N0);
 
 		for (unsigned char z = 1; z < N; z++)
 			FullSet[z - 1] = z;
 
-		for (unsigned char k = 1; k < N; k++)
+		for (k = 1; k < N; k++)
 			C[0][k] = distance[k][0];
 
 		for (unsigned char K = 1; K < N; K++) // cardinalità O(N)
 		{
-			Combinations(K, N0, [&](vector<unsigned char> &S)
+			Combinations(K, N0, [&](const unsigned char S[], const unsigned long long elements)
 			{
-				for (unsigned char k = 1; k < N; k++) // nodi O(N)
-					if (!binary_search(S.begin(), S.end(), k))
+				for (k = 1; k < N; k++) // nodi O(N)
+					if (!binSearch(S, elements, k))
 					{
 						π = 0;
 						opt = USHRT_MAX;
 
-						for each (auto m in S)
+						for (i = 0; i < elements; i++)
 						{
-							auto tmp = C[Powered2Code(S, m)][m] + distance[k][m];
+							m = S[i];
+							tmp = C[Powered2Code(S, elements, m)][m] + distance[k][m];
 
 							if (tmp < opt)
 							{
@@ -150,8 +202,10 @@ public:
 							}
 						}
 
-						C[Powered2Code(S)][k] = opt;
-						P[Powered2Code(S)][k] = π;
+						code = Powered2Code(S, elements);
+
+						C[code][k] = opt;
+						P[code][k] = π;
 					}
 			});
 		}
@@ -159,14 +213,14 @@ public:
 		π = 0;
 		opt = USHRT_MAX;
 
-		for each(auto k in FullSet) // O(N)
+		for each(auto e in FullSet) // O(N)
 		{
-			auto tmp = C[Powered2Code(FullSet, k)][k] + distance[0][k];
+			tmp = C[Powered2Code(FullSet, e)][e] + distance[0][e];
 
 			if (tmp < opt)
 			{
 				opt = tmp;
-				π = k;
+				π = e;
 			}
 		}
 
