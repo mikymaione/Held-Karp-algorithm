@@ -56,7 +56,7 @@ private:
 		return path;
 	}
 
-	void Combinations(const int K, const int N, function<void(vector<unsigned char>)> CALLBACK)
+	void Combinations(const int K, const int N, function<void(vector<unsigned char> &)> CALLBACK)
 	{
 		vector<unsigned char> result(K);
 
