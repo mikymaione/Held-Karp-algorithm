@@ -92,15 +92,21 @@ private:
 		} while (prev_permutation(bitmask.begin(), bitmask.end()));
 	}
 
-	map<size_t, set<set<unsigned char>>> GetAllCombos(vector<unsigned char> FullSet)
+	map<size_t, set<set<unsigned char>>> GetAllCombos(vector<unsigned char> FullSet) // O(n2ⁿ)
 	{
 		int i;
-		size_t j, K;
+		size_t j;
 
 		auto N = FullSet.size();
 		auto powerN = 1 << N;
 
 		map<size_t, set<set<unsigned char>>> sets_map;
+
+		for (auto K = 0; K < N; K++)
+		{
+			set<set<unsigned char>> sets;
+			sets_map[K + 1] = sets;
+		}
 
 		for (i = 1; i < powerN; i++) // O(2ⁿ)
 		{
@@ -110,19 +116,7 @@ private:
 				if ((i & (1 << j)) != 0)
 					S.insert(FullSet[j]);
 
-			K = S.size();
-
-			if (sets_map.count(K) == 0)
-			{
-				set<set<unsigned char>> sets;
-				sets.insert(S);
-
-				sets_map[K] = sets;
-			}
-			else
-			{
-				sets_map[K].insert(S);
-			}
+			sets_map[S.size()].insert(S);
 		}
 
 		return sets_map;
