@@ -32,6 +32,8 @@ using namespace std;
 class HeldKarp
 {
 private:
+	map<unsigned char, unsigned long long> FACT;
+
 	string PrintTour(map<unsigned long, map<unsigned char, unsigned char>> P, const unsigned char N)
 	{
 		string path;
@@ -55,71 +57,67 @@ private:
 		return path;
 	}
 
-	map<size_t, set<set<unsigned char>>> GetAllCombos2(unsigned char N)
+	unsigned long long factorial(unsigned char n)
 	{
-		map<size_t, set<set<unsigned char>>> sets;
+		if (FACT.count(n) == 0)
+		{
+			unsigned long long r = 1;
 
-		for (unsigned char K = 0; K < N; K++)
-			GetAllCombos_Permutation(sets, N, K + 1);
+			for (unsigned char i = 1; i <= n; i++)
+				r *= i;
 
-		return sets;
+			FACT[n] = r;
+		}
+
+		return FACT[n];
 	}
 
-	void GetAllCombos_Permutation(map<size_t, set<set<unsigned char>>> & sets_map, unsigned char N, unsigned char K)
+	unsigned long long combinations(unsigned char N, unsigned char K)
+	{
+		return factorial(N) / (factorial(K) * factorial(N - K));
+	}
+
+	unsigned char ** GetAllCombos_Permutation(const unsigned long long tot_combinations, const unsigned char N, const unsigned char K)
 	{
 		string bitmask(K, 1);
 		bitmask.resize(N, 0);
 
+		unsigned long z = 0;
+		short e = -1;
+
+		auto sets = new unsigned char*[tot_combinations];
+
 		do
 		{
-			set<unsigned char> S;
+			e = -1;
+			sets[z] = new unsigned char[K];
 
 			for (unsigned char i = 0; i < N; ++i)
 				if (bitmask[i])
-					S.insert(i + 1);
+					sets[z][e += 1] = (i + 1);
 
-			if (sets_map.count(K) == 0)
-			{
-				set<set<unsigned char>> sets;
-				sets.insert(S);
-
-				sets_map[K] = sets;
-			}
-			else
-			{
-				sets_map[K].insert(S);
-			}
+			z++;
 		} while (prev_permutation(bitmask.begin(), bitmask.end()));
+
+		return sets;
 	}
 
-	map<size_t, set<set<unsigned char>>> GetAllCombos(vector<unsigned char> FullSet) // O(n2ⁿ)
+	template <class T>
+	unsigned long Powered2Code(const unsigned char N, T * S)
 	{
-		int i;
-		size_t j;
+		return Powered2Code(N, S, UCHAR_MAX);
+	}
 
-		auto N = FullSet.size();
-		auto powerN = 1 << N;
+	template <class T>
+	unsigned long Powered2Code(const unsigned char N, T * S, const unsigned char exclude)
+	{
+		unsigned long code = 0;
 
-		map<size_t, set<set<unsigned char>>> sets_map;
+		for (unsigned long i = 0; i < N; i++)
+			if (S[i] != exclude)
+				code += 1 << S[i];
 
-		for (auto K = 0; K < N; K++)
-		{
-			set<set<unsigned char>> sets;
-			sets_map[K + 1] = sets;
-		}
-
-		for (i = 1; i < powerN; i++) // O(2ⁿ)
-		{
-			set<unsigned char> S;
-
-			for (j = 0; j < N; j++)
-				if ((i & (1 << j)) != 0)
-					S.insert(FullSet[j]);
-
-			sets_map[S.size()].insert(S);
-		}
-
-		return sets_map;
+		return code;
 	}
 
 	template <class IEnumerable>
@@ -140,6 +138,16 @@ private:
 		return code;
 	}
 
+	template <class T>
+	bool arrayContains(const unsigned long N, T * arr, T e)
+	{
+		for (unsigned long i = 0; i < N; i++)
+			if (arr[i] == e)
+				return true;
+
+		return false;
+	}
+
 public:
 	/*
 	Implementation of [Held-Karp](https://en.wikipedia.org/wiki/Held-Karp_algorithm), an algorithm that solves the Traveling Salesman Problem using dynamic programming with memoization.
@@ -152,52 +160,59 @@ public:
 	{
 		auto begin = chrono::steady_clock::now();
 
+		const unsigned char N0 = N - 1;
+
 		unsigned char π;
 		unsigned short opt;
+
 		map<unsigned long, map<unsigned char, unsigned short>> C;
 		map<unsigned long, map<unsigned char, unsigned char>> P;
 
-		vector<unsigned char> FullSet(N - 1);
+		vector<unsigned char> FullSet(N0);
 
 		for (unsigned char z = 1; z < N; z++)
 			FullSet[z - 1] = z;
 
-		//auto sets = GetAllCombos2(N - 1);
-		auto sets = GetAllCombos(FullSet);
-
 		for (unsigned char k = 1; k < N; k++)
 			C[0][k] = distance[k][0];
 
-		for (size_t c = 1; c < N; c++) // cardinalità O(N)
-			for each(auto S in sets[c]) // sets O(2ⁿ)										
+		for (unsigned char K = 1; K < N; K++) // cardinalità O(N)
+		{
+			auto tot_combinations = combinations(N0, K);
+			auto permutation_of_k = GetAllCombos_Permutation(tot_combinations, N0, K);
+
+			for (unsigned long long pk = 0; pk < tot_combinations; pk++) // sets O(2ⁿ)
+			{
+				auto S = permutation_of_k[pk];
+
 				for (unsigned char k = 1; k < N; k++) // nodi O(N)
-					if (S.count(k) == 0)
+					if (!arrayContains(K, S, k))
 					{
 						π = 0;
+						opt = USHRT_MAX;
 
-						if (S.empty())
+						for (unsigned char b = 0; b < K; b++)
 						{
-							opt = distance[k][0];
-						}
-						else
-						{
-							opt = USHRT_MAX;
+							auto m = S[b];
+							auto tmp = C[Powered2Code(K, S, m)][m] + distance[k][m];
 
-							for each(auto m in S)
+							if (tmp < opt)
 							{
-								auto tmp = C[Powered2Code(S, m)][m] + distance[k][m];
-
-								if (tmp < opt)
-								{
-									opt = tmp;
-									π = m;
-								}
+								opt = tmp;
+								π = m;
 							}
 						}
 
-						C[Powered2Code(S)][k] = opt;
-						P[Powered2Code(S)][k] = π;
+						C[Powered2Code(K, S)][k] = opt;
+						P[Powered2Code(K, S)][k] = π;
 					}
+			}
+
+			for (unsigned long long i = 0; i < tot_combinations; i++)
+				delete[] permutation_of_k[i];
+
+			delete[] permutation_of_k;
+		}
 
 		opt = USHRT_MAX;
 		π = 0;
