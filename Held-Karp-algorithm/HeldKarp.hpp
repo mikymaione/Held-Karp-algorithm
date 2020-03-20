@@ -157,8 +157,8 @@ public:
 	T(n) = O(n²2ⁿ)
 	S(n) = O(n2ⁿ)
 	*/
-	template <class Matrix2D>
-	void TSP(Matrix2D distance, const unsigned char N)
+	template <class T, size_t N, size_t W>
+	void TSP(T(&distance)[N][W])
 	{
 		auto begin = chrono::steady_clock::now();
 
