@@ -22,16 +22,21 @@ unsigned int
 #include <chrono>
 #include <functional>
 #include <iostream>
-#include <unordered_map>
+#include <mutex>
 #include <set>
 #include <stack>
 #include <string>
+#include <thread>
+#include <unordered_map>
 #include <vector>
 
 using namespace std;
 
 class HeldKarp
 {
+private:
+	mutex MUTEX;
+
 private:
 	string PrintTour(unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P, const unsigned char N)
 	{
@@ -56,12 +61,26 @@ private:
 		return path;
 	}
 
-	void Combinations(const int K, const int N, function<void(const unsigned char O[], const unsigned long long elements)> CALLBACK)
+	template <class T>
+	T * clonaArray(const T S[], unsigned char len)
+	{
+		auto R = new T[len];
+
+		for (unsigned char i = 0; i < len; i++)
+			R[i] = S[i];
+
+		return R;
+	}
+
+	void Combinations(const unsigned char K, const unsigned char N, function<void(const unsigned char[])> CALLBACK)
 	{
 		unsigned long long i;
 		unsigned char s;
 
 		auto R = new unsigned char[K];
+
+		vector<unsigned char *> mem;
+		vector<thread> threads;
 
 		stack<unsigned char> S;
 		S.push(0);
@@ -74,16 +93,28 @@ private:
 
 			while (s < N)
 			{
-				R[i++] = ++s;
+				s++;
+				R[i] = s;
 				S.push(s);
+				i++;
 
 				if (i == K)
 				{
-					CALLBACK(R, i);
+					auto Z = clonaArray(R, K);
+					mem.push_back(Z);
+
+					threads.push_back(thread(CALLBACK, Z));
 					break;
 				}
 			}
 		}
+
+		for (auto x = 0; x < threads.size(); x++)
+			if (threads.at(x).joinable())
+				threads.at(x).join();
+
+		for each (auto Z in mem)
+			delete[] Z;
 
 		delete[] R;
 	}
@@ -107,13 +138,13 @@ private:
 	}
 
 	template <class T>
-	unsigned long Powered2Code(const T S[], unsigned long long len)
+	unsigned long Powered2Code(const T S[], unsigned char len)
 	{
 		return Powered2Code(S, len, UCHAR_MAX);
 	}
 
 	template <class T>
-	unsigned long Powered2Code(const T S[], unsigned long long len, const unsigned char exclude)
+	unsigned long Powered2Code(const T S[], unsigned char len, const unsigned char exclude)
 	{
 		unsigned long code = 0;
 
@@ -129,7 +160,7 @@ private:
 	}
 
 	template <class T>
-	bool binSearch(const T arr[], unsigned long long len, T what)
+	bool binSearch(const T arr[], unsigned char len, T what)
 	{
 		long long low = 0;
 		long long high = len - 1;
@@ -168,35 +199,32 @@ public:
 	void TSP(T(&distance)[N][W])
 	{
 		auto begin = chrono::steady_clock::now();
-
-		unsigned char π, m, k;
-		unsigned short opt, tmp;
-		unsigned int code;
-		unsigned long long i;
-
 		const unsigned char N0 = N - 1;
 
 		unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
 		unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P;
 
 		// insieme vuoto
-		for (k = 1; k < N; k++)
+		for (auto k = 1; k < N; k++)
 			C[0][k] = distance[k][0];
 
 		for (unsigned char s = 1; s < N; s++) // O(N) cardinalità degli insiemi
 		{
-			Combinations(s, N0, [&](const unsigned char S[], const unsigned long long elements) // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s
+			Combinations(s, N0, [&](const unsigned char S[]) // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s
 			{
-				for (k = 1; k < N; k++)
-					if (!binSearch(S, elements, k)) // S\{k}
+				for (unsigned char k = 1; k < N; k++)
+					if (!binSearch(S, s, k)) // S\{k}
 					{
-						π = 0;
-						opt = USHRT_MAX;
+						unsigned char π = 0;
+						unsigned short opt = USHRT_MAX;
 
-						for (i = 0; i < elements; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
+						for (unsigned char i = 0; i < s; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 						{
-							m = S[i];
-							tmp = C[Powered2Code(S, elements, m)][m] + distance[k][m];
+							auto m = S[i];
+
+							MUTEX.lock();
+							auto tmp = C[Powered2Code(S, s, m)][m] + distance[k][m];
+							MUTEX.unlock();
 
 							if (tmp < opt)
 							{
@@ -205,15 +233,18 @@ public:
 							}
 						}
 
-						code = Powered2Code(S, elements);
+						auto code = Powered2Code(S, s);
+
+						MUTEX.lock();
 						C[code][k] = opt;
 						P[code][k] = π;
+						MUTEX.unlock();
 					}
 			});
 		}
 
-		π = 0;
-		opt = USHRT_MAX;
+		unsigned char π = 0;
+		unsigned short opt = USHRT_MAX;
 
 		vector<unsigned char> FullSet(N0);
 		for (unsigned char z = 1; z < N; z++)
@@ -221,7 +252,7 @@ public:
 
 		for each(auto e in FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
 		{
-			tmp = C[Powered2Code(FullSet, e)][e] + distance[0][e];
+			auto tmp = C[Powered2Code(FullSet, e)][e] + distance[0][e];
 
 			if (tmp < opt)
 			{
