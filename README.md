@@ -3,3 +3,14 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 1. visit every city just once
 2. return to the starting point
 3. be of minimum distance.
+
+
+## IDE
+1. C++11
+2. Visual Studio 2015 (http://visualstudio.microsoft.com)
+
+
+## License
+Copyright 2020 (c) [MAIONE MIKY]. All rights reserved.
+
+Licensed under the [MIT](LICENSE) License.

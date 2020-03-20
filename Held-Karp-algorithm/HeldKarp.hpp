@@ -183,7 +183,7 @@ public:
 		for (k = 1; k < N; k++)
 			C[0][k] = distance[k][0];
 
-		for (unsigned char s = 1; s < N; s++) // O(N) cardinatlità degli insiemi
+		for (unsigned char s = 1; s < N; s++) // O(N) cardinalità degli insiemi
 		{
 			Combinations(s, N0, [&](const unsigned char S[], const unsigned long long elements) // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s
 			{
