@@ -56,36 +56,36 @@ private:
 		return path;
 	}
 
-	void Combinations(const int K, const int N, function<void(const unsigned char S[], const unsigned long long elements)> CALLBACK)
+	void Combinations(const int K, const int N, function<void(const unsigned char O[], const unsigned long long elements)> CALLBACK)
 	{
-		unsigned long long index;
-		unsigned char value;
+		unsigned long long i;
+		unsigned char s;
 
-		auto result = new unsigned char[K];
+		auto R = new unsigned char[K];
 
-		stack<unsigned char> stack;
-		stack.push(0);
+		stack<unsigned char> S;
+		S.push(0);
 
-		while (stack.size() > 0)
+		while (S.size() > 0)
 		{
-			index = stack.size() - 1;
-			value = stack.top();
-			stack.pop();
+			i = S.size() - 1;
+			s = S.top();
+			S.pop();
 
-			while (value < N)
+			while (s < N)
 			{
-				result[index++] = ++value;
-				stack.push(value);
+				R[i++] = ++s;
+				S.push(s);
 
-				if (index == K)
+				if (i == K)
 				{
-					CALLBACK(result, index);
+					CALLBACK(R, i);
 					break;
 				}
 			}
 		}
 
-		delete[] result;
+		delete[] R;
 	}
 
 	template <class IEnumerable>
@@ -152,8 +152,15 @@ private:
 
 public:
 	/*
-	Implementation of [Held-Karp](https://en.wikipedia.org/wiki/Held-Karp_algorithm), an algorithm that solves the Traveling Salesman Problem using dynamic programming with memoization.
-	Held-Karp solves the problem by calculating lowest cost on subsets of the larger problem, and re-uses the intermediate results.
+	Held–Karp algorithm
+
+	The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dynamic programming algorithm proposed in 1962 independently by Bellman and by Held and Karp to solve the Traveling Salesman Problem (TSP).
+	TSP is an extension of the Hamiltonian circuit problem.
+	The problem can be described as: find a tour of N cities in a country (assuming all cities to be visited are reachable), the tour should:
+		1. visit every city just once
+		2. return to the starting point
+		3. be of minimum distance.
+
 	T(n) = O(n²2ⁿ)
 	S(n) = O(n2ⁿ)
 	*/
@@ -172,25 +179,21 @@ public:
 		unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
 		unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P;
 
-		vector<unsigned char> FullSet(N0);
-
-		for (unsigned char z = 1; z < N; z++)
-			FullSet[z - 1] = z;
-
+		// insieme vuoto
 		for (k = 1; k < N; k++)
 			C[0][k] = distance[k][0];
 
-		for (unsigned char K = 1; K < N; K++) // cardinalità O(N)
+		for (unsigned char s = 1; s < N; s++) // O(N) cardinatlità degli insiemi
 		{
-			Combinations(K, N0, [&](const unsigned char S[], const unsigned long long elements)
+			Combinations(s, N0, [&](const unsigned char S[], const unsigned long long elements) // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s
 			{
-				for (k = 1; k < N; k++) // nodi O(N)
-					if (!binSearch(S, elements, k))
+				for (k = 1; k < N; k++)
+					if (!binSearch(S, elements, k)) // S\{k}
 					{
 						π = 0;
 						opt = USHRT_MAX;
 
-						for (i = 0; i < elements; i++)
+						for (i = 0; i < elements; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 						{
 							m = S[i];
 							tmp = C[Powered2Code(S, elements, m)][m] + distance[k][m];
@@ -203,7 +206,6 @@ public:
 						}
 
 						code = Powered2Code(S, elements);
-
 						C[code][k] = opt;
 						P[code][k] = π;
 					}
@@ -213,7 +215,11 @@ public:
 		π = 0;
 		opt = USHRT_MAX;
 
-		for each(auto e in FullSet) // O(N)
+		vector<unsigned char> FullSet(N0);
+		for (unsigned char z = 1; z < N; z++)
+			FullSet[z - 1] = z;
+
+		for each(auto e in FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
 		{
 			tmp = C[Powered2Code(FullSet, e)][e] + distance[0][e];
 
@@ -228,7 +234,37 @@ public:
 
 		auto path = PrintTour(P, N);
 
-		cout << "Grafo di " << to_string(N) << " nodi, costo: " << to_string(opt) << " tempo: " << chrono::duration_cast<chrono::milliseconds> (chrono::steady_clock::now() - begin).count() << "ms, percorso: " << path << endl;
+		cout
+			<< "Grafo di "
+			<< to_string(N)
+			<< " nodi, costo: "
+			<< to_string(opt)
+			<< " tempo: "
+			<< chrono::duration_cast<chrono::milliseconds> (chrono::steady_clock::now() - begin).count()
+			<< "ms, percorso: "
+			<< path
+			<< endl;
+	}
+
+	template <class T>
+	T generateRandomNumber(T startRange, T endRange, T limit)
+	{
+		T r = rand();
+
+		T range = endRange - startRange;
+		range++;
+
+		T num = r % range + startRange;
+
+		return num;
+	}
+
+	template <class T, size_t rows, size_t cols>
+	void grafoRND(T(&A)[rows][cols])
+	{
+		for (auto x = 0; x < rows; x++)
+			for (auto y = 0; y < cols; y++)
+				A[x][y] = (x == y ? 0 : generateRandomNumber(1, 25, UCHAR_MAX));
 	}
 
 };
