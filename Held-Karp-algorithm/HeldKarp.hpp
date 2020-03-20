@@ -35,6 +35,9 @@ using namespace std;
 class HeldKarp
 {
 private:
+	const unsigned char minCpus = 3;
+	unsigned char concurentThreadsSupported;
+	bool useMultiThreading;
 	mutex MUTEX;
 
 private:
@@ -85,6 +88,20 @@ private:
 		stack<unsigned char> S;
 		S.push(0);
 
+		auto cleaning = [&]()
+		{
+			for (auto x = 0; x < threads.size(); x++)
+				if (threads.at(x).joinable())
+					threads.at(x).join();
+
+			threads.clear();
+
+			for each (auto Z in mem)
+				delete[] Z;
+
+			mem.clear();
+		};
+
 		while (S.size() > 0)
 		{
 			i = S.size() - 1;
@@ -100,21 +117,28 @@ private:
 
 				if (i == K)
 				{
-					auto Z = clonaArray(R, K);
-					mem.push_back(Z);
+					if (useMultiThreading)
+					{
+						auto Z = clonaArray(R, K);
+						mem.push_back(Z);
 
-					threads.push_back(thread(CALLBACK, Z));
+						threads.push_back(thread(CALLBACK, Z));
+
+						if (threads.size() == concurentThreadsSupported)
+							cleaning();
+					}
+					else
+					{
+						CALLBACK(R);
+					}
+
 					break;
 				}
 			}
 		}
 
-		for (auto x = 0; x < threads.size(); x++)
-			if (threads.at(x).joinable())
-				threads.at(x).join();
-
-		for each (auto Z in mem)
-			delete[] Z;
+		if (useMultiThreading)
+			cleaning();
 
 		delete[] R;
 	}
@@ -182,6 +206,13 @@ private:
 	}
 
 public:
+	HeldKarp()
+	{
+		auto hc = thread::hardware_concurrency();
+		concurentThreadsSupported = (hc >= minCpus ? hc - 2 : 0);
+		useMultiThreading = (concurentThreadsSupported > 0);
+	}
+
 	/*
 	Held–Karp algorithm
 
@@ -199,6 +230,13 @@ public:
 	void TSP(T(&distance)[N][W])
 	{
 		auto begin = chrono::steady_clock::now();
+
+		cout
+			<< "Solving a "
+			<< "Graph of "
+			<< to_string(N)
+			<< " nodes... ";
+
 		const unsigned char N0 = N - 1;
 
 		unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
@@ -222,9 +260,15 @@ public:
 						{
 							auto m = S[i];
 
-							MUTEX.lock();
+							// CRITICAL REGION ========================================
+							if (useMultiThreading)
+								MUTEX.lock();
+
 							auto tmp = C[Powered2Code(S, s, m)][m] + distance[k][m];
-							MUTEX.unlock();
+
+							if (useMultiThreading)
+								MUTEX.unlock();
+							// CRITICAL REGION ========================================
 
 							if (tmp < opt)
 							{
@@ -235,10 +279,16 @@ public:
 
 						auto code = Powered2Code(S, s);
 
-						MUTEX.lock();
+						// CRITICAL REGION ========================================
+						if (useMultiThreading)
+							MUTEX.lock();
+
 						C[code][k] = opt;
 						P[code][k] = π;
-						MUTEX.unlock();
+
+						if (useMultiThreading)
+							MUTEX.unlock();
+						// CRITICAL REGION ========================================
 					}
 			});
 		}
@@ -266,13 +316,11 @@ public:
 		auto path = PrintTour(P, N);
 
 		cout
-			<< "Grafo di "
-			<< to_string(N)
-			<< " nodi, costo: "
+			<< "Solved! Cost: "
 			<< to_string(opt)
-			<< " tempo: "
+			<< " time: "
 			<< chrono::duration_cast<chrono::milliseconds> (chrono::steady_clock::now() - begin).count()
-			<< "ms, percorso: "
+			<< "ms, path: "
 			<< path
 			<< endl;
 	}
