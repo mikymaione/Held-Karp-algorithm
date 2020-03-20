@@ -4,6 +4,8 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 2. return to the starting point
 3. be of minimum distance.
 
+## Features
+This is a multi-thread version: for every set S ⊆ {2, ..., n} of cardinality |S| = s, s threads are executed.
 
 ## IDE
 1. C++11
