@@ -144,21 +144,25 @@ private:
 
 	void CombinationPart(unsigned char S[], const unsigned char s)
 	{
-		for (unsigned char k = 1; k < numberOfNodes; k++)
+		unsigned char i, k, m, π, tmp;
+		unsigned short opt;
+		unsigned long code;
+
+		for (k = 1; k < numberOfNodes; k++)
 			if (!binSearch(S, s, k)) // S\{k}
 			{
-				unsigned char π = 0;
-				unsigned short opt = USHRT_MAX;
+				π = 0;
+				opt = USHRT_MAX;
 
-				for (unsigned char i = 0; i < s; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
+				for (i = 0; i < s; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 				{
-					auto m = S[i];
+					m = S[i];
 
 					// CRITICAL REGION ========================================
 					if (useMultiThreading)
 						MUTEX.lock();
 
-					auto tmp = C[Powered2CodeA(S, s, m)][m] + distance[k][m];
+					tmp = C[Powered2CodeA(S, s, m)][m] + distance[k][m];
 
 					if (useMultiThreading)
 						MUTEX.unlock();
@@ -171,7 +175,7 @@ private:
 					}
 				}
 
-				auto code = Powered2CodeA(S, s);
+				code = Powered2CodeA(S, s);
 
 				// CRITICAL REGION ========================================
 				if (useMultiThreading)
@@ -301,10 +305,6 @@ public:
 			<< to_string(numberOfNodes)
 			<< " nodes... ";
 
-		vector<unsigned char> FullSet(numberOfNodes - 1);
-		for (unsigned char z = 1; z < numberOfNodes; z++)
-			FullSet[z - 1] = z;
-
 		// insieme vuoto
 		for (auto k = 1; k < numberOfNodes; k++)
 			C[0][k] = distance[k][0];
@@ -314,6 +314,10 @@ public:
 
 		unsigned char π = 0;
 		unsigned short opt = USHRT_MAX;
+
+		vector<unsigned char> FullSet(numberOfNodes - 1);
+		for (unsigned char z = 1; z < numberOfNodes; z++)
+			FullSet[z - 1] = z;
 
 		for each(auto e in FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
 		{
