@@ -20,7 +20,6 @@ unsigned int
 
 #include <algorithm>
 #include <chrono>
-#include <functional>
 #include <iostream>
 #include <mutex>
 #include <set>
@@ -40,8 +39,14 @@ private:
 	bool useMultiThreading;
 	mutex MUTEX;
 
+	unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
+	unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P;
+
+	vector<vector<unsigned char>> distance;
+	unsigned char numberOfNodes;
+
 private:
-	string PrintTour(unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P, const unsigned char N)
+	string PrintTour(const unsigned char N)
 	{
 		string path;
 		unsigned char s = 0;
@@ -53,7 +58,7 @@ private:
 		while (true)
 		{
 			S.erase(s);
-			s = P[Powered2Code(S)][s];
+			s = P[Powered2CodeE(S)][s];
 
 			path += to_string(s) + " ";
 
@@ -75,7 +80,113 @@ private:
 		return R;
 	}
 
-	void Combinations(const unsigned char K, const unsigned char N, function<void(const unsigned char[], unsigned char)> CALLBACK)
+	template <class IEnumerable>
+	unsigned long Powered2CodeE(IEnumerable S)
+	{
+		return Powered2CodeE(S, UCHAR_MAX);
+	}
+
+	template <class IEnumerable>
+	unsigned int Powered2CodeE(IEnumerable S, const unsigned char exclude)
+	{
+		unsigned long code = 0;
+
+		for each(auto e in S)
+			if (e != exclude)
+				code += 1 << e;
+
+		return code;
+	}
+
+	template <class T>
+	unsigned long Powered2CodeA(const T S[], unsigned char len)
+	{
+		return Powered2CodeA(S, len, UCHAR_MAX);
+	}
+
+	template <class T>
+	unsigned long Powered2CodeA(const T S[], unsigned char len, const unsigned char exclude)
+	{
+		unsigned long code = 0;
+
+		for (unsigned long long i = 0; i < len; i++)
+		{
+			auto e = S[i];
+
+			if (e != exclude)
+				code += 1 << e;
+		}
+
+		return code;
+	}
+
+	template <class T>
+	bool binSearch(const T arr[], unsigned char len, T what)
+	{
+		long long low = 0;
+		long long high = len - 1;
+		long long mid;
+
+		while (low <= high)
+		{
+			mid = (low + high) / 2;
+
+			if (arr[mid] > what)
+				high = mid - 1;
+			else if (arr[mid] < what)
+				low = mid + 1;
+			else
+				return true;
+		}
+
+		return false;
+	}
+
+	void CombinationPart(unsigned char S[], const unsigned char s)
+	{
+		for (unsigned char k = 1; k < numberOfNodes; k++)
+			if (!binSearch(S, s, k)) // S\{k}
+			{
+				unsigned char π = 0;
+				unsigned short opt = USHRT_MAX;
+
+				for (unsigned char i = 0; i < s; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
+				{
+					auto m = S[i];
+
+					// CRITICAL REGION ========================================
+					if (useMultiThreading)
+						MUTEX.lock();
+
+					auto tmp = C[Powered2CodeA(S, s, m)][m] + distance[k][m];
+
+					if (useMultiThreading)
+						MUTEX.unlock();
+					// CRITICAL REGION ========================================
+
+					if (tmp < opt)
+					{
+						opt = tmp;
+						π = m;
+					}
+				}
+
+				auto code = Powered2CodeA(S, s);
+
+				// CRITICAL REGION ========================================
+				if (useMultiThreading)
+					MUTEX.lock();
+
+				C[code][k] = opt;
+				P[code][k] = π;
+
+				if (useMultiThreading)
+					MUTEX.unlock();
+				// CRITICAL REGION ========================================
+			}
+	}
+
+	void Combinations(const unsigned char K, const unsigned char N)
 	{
 		unsigned long long i;
 		unsigned char s;
@@ -122,14 +233,14 @@ private:
 						auto Z = clonaArray(R, K);
 						mem.push_back(Z);
 
-						threads.push_back(thread(CALLBACK, Z, K));
+						threads.push_back(thread(&HeldKarp::CombinationPart, this, Z, K));
 
 						if (threads.size() == concurentThreadsSupported)
 							cleaning();
 					}
 					else
 					{
-						CALLBACK(R, K);
+						CombinationPart(R, K);
 					}
 
 					break;
@@ -143,71 +254,25 @@ private:
 		delete[] R;
 	}
 
-	template <class IEnumerable>
-	unsigned long Powered2Code(IEnumerable S)
+	vector<vector<unsigned char>> New_RND_Distances(const unsigned char Size_of_RandomDistanceCosts)
 	{
-		return Powered2Code(S, UCHAR_MAX);
-	}
+		vector<vector<unsigned char>> A(Size_of_RandomDistanceCosts, vector<unsigned char>(Size_of_RandomDistanceCosts, 0));
 
-	template <class IEnumerable>
-	unsigned int Powered2Code(IEnumerable S, const unsigned char exclude)
-	{
-		unsigned long code = 0;
+		for (auto x = 0; x < Size_of_RandomDistanceCosts; x++)
+			for (auto y = 0; y < Size_of_RandomDistanceCosts; y++)
+				A[x][y] = (x == y ? 0 : generateRandomNumber(1, 25, UCHAR_MAX));
 
-		for each(auto e in S)
-			if (e != exclude)
-				code += 1 << e;
-
-		return code;
-	}
-
-	template <class T>
-	unsigned long Powered2Code(const T S[], unsigned char len)
-	{
-		return Powered2Code(S, len, UCHAR_MAX);
-	}
-
-	template <class T>
-	unsigned long Powered2Code(const T S[], unsigned char len, const unsigned char exclude)
-	{
-		unsigned long code = 0;
-
-		for (unsigned long long i = 0; i < len; i++)
-		{
-			auto e = S[i];
-
-			if (e != exclude)
-				code += 1 << e;
-		}
-
-		return code;
-	}
-
-	template <class T>
-	bool binSearch(const T arr[], unsigned char len, T what)
-	{
-		long long low = 0;
-		long long high = len - 1;
-		long long mid;
-
-		while (low <= high)
-		{
-			mid = (low + high) / 2;
-
-			if (arr[mid] > what)
-				high = mid - 1;
-			else if (arr[mid] < what)
-				low = mid + 1;
-			else
-				return true;
-		}
-
-		return false;
+		return A;
 	}
 
 public:
-	HeldKarp()
+	HeldKarp(const unsigned char Size_of_RandomDistanceCosts) :HeldKarp(New_RND_Distances(Size_of_RandomDistanceCosts)) {}
+
+	HeldKarp(vector<vector<unsigned char>> DistanceMatrix2D)
 	{
+		distance = DistanceMatrix2D;
+		numberOfNodes = (unsigned char)distance.size();
+
 		auto hc = thread::hardware_concurrency();
 		concurentThreadsSupported = (hc >= minCpus ? hc - 2 : 0);
 		useMultiThreading = (concurentThreadsSupported > 0);
@@ -226,85 +291,33 @@ public:
 	T(n) = O(n²2ⁿ)
 	S(n) = O(n2ⁿ)
 	*/
-	template <class T, size_t N, size_t W>
-	void TSP(T(&distance)[N][W])
+	void TSP()
 	{
 		auto begin = chrono::steady_clock::now();
 
 		cout
 			<< "Solving a "
 			<< "Graph of "
-			<< to_string(N)
+			<< to_string(numberOfNodes)
 			<< " nodes... ";
 
-		const unsigned char N0 = N - 1;
-
-		unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
-		unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P;
+		vector<unsigned char> FullSet(numberOfNodes - 1);
+		for (unsigned char z = 1; z < numberOfNodes; z++)
+			FullSet[z - 1] = z;
 
 		// insieme vuoto
-		for (auto k = 1; k < N; k++)
+		for (auto k = 1; k < numberOfNodes; k++)
 			C[0][k] = distance[k][0];
 
-		//Combinations(s, N0, [&](const unsigned char S[]) // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s
-		auto CombinationPart = [&](const unsigned char S[], unsigned char s)
-		{
-			for (unsigned char k = 1; k < N; k++)
-				if (!binSearch(S, s, k)) // S\{k}
-				{
-					unsigned char π = 0;
-					unsigned short opt = USHRT_MAX;
-
-					for (unsigned char i = 0; i < s; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
-					{
-						auto m = S[i];
-
-						// CRITICAL REGION ========================================
-						if (useMultiThreading)
-							MUTEX.lock();
-
-						auto tmp = C[Powered2Code(S, s, m)][m] + distance[k][m];
-
-						if (useMultiThreading)
-							MUTEX.unlock();
-						// CRITICAL REGION ========================================
-
-						if (tmp < opt)
-						{
-							opt = tmp;
-							π = m;
-						}
-					}
-
-					auto code = Powered2Code(S, s);
-
-					// CRITICAL REGION ========================================
-					if (useMultiThreading)
-						MUTEX.lock();
-
-					C[code][k] = opt;
-					P[code][k] = π;
-
-					if (useMultiThreading)
-						MUTEX.unlock();
-					// CRITICAL REGION ========================================
-				}
-		};
-
-
-		for (unsigned char s = 1; s < N; s++) // O(N) cardinalità degli insiemi		
-			Combinations(s, N0, CombinationPart); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
+		for (unsigned char s = 1; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi		
+			Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
 
 		unsigned char π = 0;
 		unsigned short opt = USHRT_MAX;
 
-		vector<unsigned char> FullSet(N0);
-		for (unsigned char z = 1; z < N; z++)
-			FullSet[z - 1] = z;
-
 		for each(auto e in FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
 		{
-			auto tmp = C[Powered2Code(FullSet, e)][e] + distance[0][e];
+			auto tmp = C[Powered2CodeE(FullSet, e)][e] + distance[0][e];
 
 			if (tmp < opt)
 			{
@@ -313,9 +326,9 @@ public:
 			}
 		}
 
-		P[Powered2Code(FullSet)][0] = π;
+		P[Powered2CodeE(FullSet)][0] = π;
 
-		auto path = PrintTour(P, N);
+		auto path = PrintTour(numberOfNodes);
 
 		cout
 			<< "Solved! Cost: "
@@ -338,14 +351,6 @@ public:
 		T num = r % range + startRange;
 
 		return num;
-	}
-
-	template <class T, size_t rows, size_t cols>
-	void grafoRND(T(&A)[rows][cols])
-	{
-		for (auto x = 0; x < rows; x++)
-			for (auto y = 0; y < cols; y++)
-				A[x][y] = (x == y ? 0 : generateRandomNumber(1, 25, UCHAR_MAX));
 	}
 
 };
