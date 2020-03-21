@@ -21,7 +21,6 @@ unsigned int
 #include <algorithm>
 #include <chrono>
 #include <iostream>
-#include <mutex>
 #include <set>
 #include <stack>
 #include <string>
@@ -37,13 +36,18 @@ private:
 	const unsigned char minCpus = 3;
 	unsigned char concurentThreadsSupported;
 	bool useMultiThreading;
-	mutex MUTEX;
 
 	unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
 	unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P;
 
 	vector<vector<unsigned char>> distance;
 	unsigned char numberOfNodes;
+
+	struct MultiThreadMapContainer
+	{
+		unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
+		unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P;
+	};
 
 private:
 	string PrintTour(const unsigned char N)
@@ -58,7 +62,7 @@ private:
 		while (true)
 		{
 			S.erase(s);
-			s = P[Powered2CodeE(S)][s];
+			s = P[Powered2Code(S)][s];
 
 			path += to_string(s) + " ";
 
@@ -70,41 +74,19 @@ private:
 	}
 
 	template <class IEnumerable>
-	unsigned long Powered2CodeE(IEnumerable &S)
+	unsigned long Powered2Code(IEnumerable &S)
 	{
-		return Powered2CodeE(S, UCHAR_MAX);
+		return Powered2Code(S, UCHAR_MAX);
 	}
 
 	template <class IEnumerable>
-	unsigned int Powered2CodeE(IEnumerable &S, const unsigned char exclude)
+	unsigned int Powered2Code(IEnumerable &S, const unsigned char exclude)
 	{
 		unsigned long code = 0;
 
 		for each(auto e in S)
 			if (e != exclude)
 				code += 1 << e;
-
-		return code;
-	}
-
-	template <class T>
-	unsigned long Powered2CodeA(vector<T> &S)
-	{
-		return Powered2CodeA(S, UCHAR_MAX);
-	}
-
-	template <class T>
-	unsigned long Powered2CodeA(vector<T> &S, const unsigned char exclude)
-	{
-		unsigned long code = 0;
-
-		for (unsigned long long i = 0; i < S.size(); i++)
-		{
-			auto e = S[i];
-
-			if (e != exclude)
-				code += 1 << e;
-		}
 
 		return code;
 	}
@@ -131,11 +113,14 @@ private:
 		return false;
 	}
 
-	void CombinationPart(vector<unsigned char> &S, const unsigned char s)
+	void CombinationPart(vector<unsigned char> &S, const unsigned char s, MultiThreadMapContainer &maps_multiThread)
 	{
 		unsigned char i, k, m, π, tmp;
 		unsigned short opt;
 		unsigned long code;
+
+		unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C_multiThread;
+		unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P_multiThread;
 
 		for (k = 1; k < numberOfNodes; k++)
 			if (!binSearch(S, s, k)) // S\{k}
@@ -146,16 +131,7 @@ private:
 				for (i = 0; i < s; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 				{
 					m = S[i];
-
-					// CRITICAL REGION ========================================
-					if (useMultiThreading)
-						MUTEX.lock();
-
-					tmp = C[Powered2CodeA(S, m)][m] + distance[k][m];
-
-					if (useMultiThreading)
-						MUTEX.unlock();
-					// CRITICAL REGION ========================================
+					tmp = C[Powered2Code(S, m)][m] + distance[k][m];
 
 					if (tmp < opt)
 					{
@@ -164,36 +140,37 @@ private:
 					}
 				}
 
-				code = Powered2CodeA(S);
-
-				// CRITICAL REGION ========================================
-				if (useMultiThreading)
-					MUTEX.lock();
-
-				C[code][k] = opt;
-				P[code][k] = π;
+				code = Powered2Code(S);
 
 				if (useMultiThreading)
-					MUTEX.unlock();
-				// CRITICAL REGION ========================================
+				{
+					C_multiThread[code][k] = opt;
+					P_multiThread[code][k] = π;
+				}
+				else
+				{
+					C[code][k] = opt;
+					P[code][k] = π;
+				}
 			}
-	}
 
-	void waitForThreads(vector<thread> &threads)
-	{
-		for (auto & th : threads)
-			if (th.joinable())
-				th.join();
+		if (useMultiThreading)
+		{
+			maps_multiThread.C = C_multiThread;
+			maps_multiThread.P = P_multiThread;
+		}
 	}
 
 	void Combinations(const unsigned char K, const unsigned char N)
 	{
 		unsigned long long i;
-		unsigned char s;
+		unsigned char s, m = 0;
 
-		vector<unsigned char> R(K);
+		MultiThreadMapContainer dummyMap;
+		vector<MultiThreadMapContainer> maps_multiThread(concurentThreadsSupported);
 		vector<thread> threads;
 
+		vector<unsigned char> R(K);
 		stack<unsigned char> S;
 		S.push(0);
 
@@ -214,14 +191,19 @@ private:
 				{
 					if (useMultiThreading)
 					{
-						threads.push_back(thread(&HeldKarp::CombinationPart, this, R, K)); //R è una copia
+						threads.push_back(thread(&HeldKarp::CombinationPart, this, R, K, ref(maps_multiThread[m]))); //R è una copia						
+						m++;
 
 						if (threads.size() == concurentThreadsSupported)
-							waitForThreads(threads);
+						{
+							waitForThreads(threads, maps_multiThread);
+							maps_multiThread.resize(concurentThreadsSupported);
+							m = 0;
+						}
 					}
 					else
 					{
-						CombinationPart(R, K); //R è un riferimento
+						CombinationPart(R, K, dummyMap); //R è un riferimento						
 					}
 
 					break;
@@ -230,7 +212,29 @@ private:
 		}
 
 		if (useMultiThreading)
-			waitForThreads(threads);
+			waitForThreads(threads, maps_multiThread);
+	}
+
+	void waitForThreads(vector<thread> &threads, vector<MultiThreadMapContainer> &maps_multiThread)
+	{
+		for (auto & th : threads)
+			if (th.joinable())
+				th.join();
+
+		threads.clear();
+
+		for each (auto M in maps_multiThread)
+		{
+			for each (auto ul in M.C)
+				for each (auto m in M.C[ul.first])
+					C[ul.first][m.first] = m.second;
+
+			for each (auto ul in M.P)
+				for each (auto m in M.P[ul.first])
+					P[ul.first][m.first] = m.second;
+		}
+
+		maps_multiThread.clear();
 	}
 
 	template <class T>
@@ -301,7 +305,7 @@ public:
 
 		for each(auto e in FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
 		{
-			auto tmp = C[Powered2CodeE(FullSet, e)][e] + distance[0][e];
+			auto tmp = C[Powered2Code(FullSet, e)][e] + distance[0][e];
 
 			if (tmp < opt)
 			{
@@ -310,7 +314,7 @@ public:
 			}
 		}
 
-		P[Powered2CodeE(FullSet)][0] = π;
+		P[Powered2Code(FullSet)][0] = π;
 
 		auto path = PrintTour(numberOfNodes);
 
