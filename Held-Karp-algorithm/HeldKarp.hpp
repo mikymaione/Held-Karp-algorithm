@@ -22,11 +22,11 @@ unsigned int
 #include <chrono>
 #include <iostream>
 #include <list>
+#include <map>
 #include <set>
 #include <stack>
 #include <string>
 #include <thread>
-#include <unordered_map>
 #include <vector>
 
 using namespace std;
@@ -38,18 +38,18 @@ private:
 	unsigned char concurentThreadsSupported;
 	bool useMultiThreading;
 
-	unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
-	unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P;
+	map<unsigned long, map<unsigned char, unsigned short>> C;
+	map<unsigned long, map<unsigned char, unsigned char>> P;
 
-	unordered_map<unsigned char, list<unsigned long>> usedSets;
+	map<unsigned char, list<unsigned long>> usedSets;
 
 	vector<vector<unsigned char>> distance;
 	unsigned char numberOfNodes;
 
 	struct MultiThreadMapContainer
 	{
-		unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
-		unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P;
+		map<unsigned long, map<unsigned char, unsigned short>> C;
+		map<unsigned long, map<unsigned char, unsigned char>> P;
 	};
 
 private:
@@ -140,8 +140,8 @@ private:
 		unsigned short opt;
 		unsigned long code;
 
-		unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C_multiThread;
-		unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P_multiThread;
+		map<unsigned long, map<unsigned char, unsigned short>> C_multiThread;
+		map<unsigned long, map<unsigned char, unsigned char>> P_multiThread;
 
 		for (k = 1; k < numberOfNodes; k++)
 			if (!binSearch(S, s, k)) // S\{k}
@@ -300,9 +300,9 @@ public:
 	The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dynamic programming algorithm proposed in 1962 independently by Bellman and by Held and Karp to solve the Traveling Salesman Problem (TSP).
 	TSP is an extension of the Hamiltonian circuit problem.
 	The problem can be described as: find a tour of N cities in a country (assuming all cities to be visited are reachable), the tour should:
-		1. visit every city just once
-		2. return to the starting point
-		3. be of minimum distance.
+	1. visit every city just once
+	2. return to the starting point
+	3. be of minimum distance.
 
 	T(n) = O(n²2ⁿ)
 	S(n) = O(n2ⁿ)
