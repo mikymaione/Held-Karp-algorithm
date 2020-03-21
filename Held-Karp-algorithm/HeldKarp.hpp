@@ -75,7 +75,7 @@ private:
 		return R;
 	}
 
-	void Combinations(const unsigned char K, const unsigned char N, function<void(const unsigned char[])> CALLBACK)
+	void Combinations(const unsigned char K, const unsigned char N, function<void(const unsigned char[], unsigned char)> CALLBACK)
 	{
 		unsigned long long i;
 		unsigned char s;
@@ -122,14 +122,14 @@ private:
 						auto Z = clonaArray(R, K);
 						mem.push_back(Z);
 
-						threads.push_back(thread(CALLBACK, Z));
+						threads.push_back(thread(CALLBACK, Z, K));
 
 						if (threads.size() == concurentThreadsSupported)
 							cleaning();
 					}
 					else
 					{
-						CALLBACK(R);
+						CALLBACK(R, K);
 					}
 
 					break;
@@ -246,52 +246,54 @@ public:
 		for (auto k = 1; k < N; k++)
 			C[0][k] = distance[k][0];
 
-		for (unsigned char s = 1; s < N; s++) // O(N) cardinalità degli insiemi
+		//Combinations(s, N0, [&](const unsigned char S[]) // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s
+		auto CombinationPart = [&](const unsigned char S[], unsigned char s)
 		{
-			Combinations(s, N0, [&](const unsigned char S[]) // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s
-			{
-				for (unsigned char k = 1; k < N; k++)
-					if (!binSearch(S, s, k)) // S\{k}
+			for (unsigned char k = 1; k < N; k++)
+				if (!binSearch(S, s, k)) // S\{k}
+				{
+					unsigned char π = 0;
+					unsigned short opt = USHRT_MAX;
+
+					for (unsigned char i = 0; i < s; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 					{
-						unsigned char π = 0;
-						unsigned short opt = USHRT_MAX;
-
-						for (unsigned char i = 0; i < s; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
-						{
-							auto m = S[i];
-
-							// CRITICAL REGION ========================================
-							if (useMultiThreading)
-								MUTEX.lock();
-
-							auto tmp = C[Powered2Code(S, s, m)][m] + distance[k][m];
-
-							if (useMultiThreading)
-								MUTEX.unlock();
-							// CRITICAL REGION ========================================
-
-							if (tmp < opt)
-							{
-								opt = tmp;
-								π = m;
-							}
-						}
-
-						auto code = Powered2Code(S, s);
+						auto m = S[i];
 
 						// CRITICAL REGION ========================================
 						if (useMultiThreading)
 							MUTEX.lock();
 
-						C[code][k] = opt;
-						P[code][k] = π;
+						auto tmp = C[Powered2Code(S, s, m)][m] + distance[k][m];
 
 						if (useMultiThreading)
 							MUTEX.unlock();
 						// CRITICAL REGION ========================================
+
+						if (tmp < opt)
+						{
+							opt = tmp;
+							π = m;
+						}
 					}
-			});
-		}
+
+					auto code = Powered2Code(S, s);
+
+					// CRITICAL REGION ========================================
+					if (useMultiThreading)
+						MUTEX.lock();
+
+					C[code][k] = opt;
+					P[code][k] = π;
+
+					if (useMultiThreading)
+						MUTEX.unlock();
+					// CRITICAL REGION ========================================
+				}
+		};
+
+
+		for (unsigned char s = 1; s < N; s++) // O(N) cardinalità degli insiemi		
+			Combinations(s, N0, CombinationPart); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
 
 		unsigned char π = 0;
 		unsigned short opt = USHRT_MAX;
