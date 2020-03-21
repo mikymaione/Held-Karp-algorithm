@@ -69,25 +69,14 @@ private:
 		return path;
 	}
 
-	template <class T>
-	T * clonaArray(const T S[], unsigned char len)
-	{
-		auto R = new T[len];
-
-		for (unsigned char i = 0; i < len; i++)
-			R[i] = S[i];
-
-		return R;
-	}
-
 	template <class IEnumerable>
-	unsigned long Powered2CodeE(IEnumerable S)
+	unsigned long Powered2CodeE(IEnumerable &S)
 	{
 		return Powered2CodeE(S, UCHAR_MAX);
 	}
 
 	template <class IEnumerable>
-	unsigned int Powered2CodeE(IEnumerable S, const unsigned char exclude)
+	unsigned int Powered2CodeE(IEnumerable &S, const unsigned char exclude)
 	{
 		unsigned long code = 0;
 
@@ -99,17 +88,17 @@ private:
 	}
 
 	template <class T>
-	unsigned long Powered2CodeA(const T S[], unsigned char len)
+	unsigned long Powered2CodeA(vector<T> &S)
 	{
-		return Powered2CodeA(S, len, UCHAR_MAX);
+		return Powered2CodeA(S, UCHAR_MAX);
 	}
 
 	template <class T>
-	unsigned long Powered2CodeA(const T S[], unsigned char len, const unsigned char exclude)
+	unsigned long Powered2CodeA(vector<T> &S, const unsigned char exclude)
 	{
 		unsigned long code = 0;
 
-		for (unsigned long long i = 0; i < len; i++)
+		for (unsigned long long i = 0; i < S.size(); i++)
 		{
 			auto e = S[i];
 
@@ -121,7 +110,7 @@ private:
 	}
 
 	template <class T>
-	bool binSearch(const T arr[], unsigned char len, T what)
+	bool binSearch(vector<unsigned char> &arr, unsigned char len, T what)
 	{
 		long long low = 0;
 		long long high = len - 1;
@@ -142,7 +131,7 @@ private:
 		return false;
 	}
 
-	void CombinationPart(unsigned char S[], const unsigned char s)
+	void CombinationPart(vector<unsigned char> &S, const unsigned char s)
 	{
 		unsigned char i, k, m, π, tmp;
 		unsigned short opt;
@@ -162,7 +151,7 @@ private:
 					if (useMultiThreading)
 						MUTEX.lock();
 
-					tmp = C[Powered2CodeA(S, s, m)][m] + distance[k][m];
+					tmp = C[Powered2CodeA(S, m)][m] + distance[k][m];
 
 					if (useMultiThreading)
 						MUTEX.unlock();
@@ -175,7 +164,7 @@ private:
 					}
 				}
 
-				code = Powered2CodeA(S, s);
+				code = Powered2CodeA(S);
 
 				// CRITICAL REGION ========================================
 				if (useMultiThreading)
@@ -195,9 +184,7 @@ private:
 		unsigned long long i;
 		unsigned char s;
 
-		auto R = new unsigned char[K];
-
-		vector<unsigned char *> mem;
+		vector<unsigned char> R(K);
 		vector<thread> threads;
 
 		stack<unsigned char> S;
@@ -210,11 +197,6 @@ private:
 					threads.at(x).join();
 
 			threads.clear();
-
-			for each (auto Z in mem)
-				delete[] Z;
-
-			mem.clear();
 		};
 
 		while (S.size() > 0)
@@ -234,17 +216,14 @@ private:
 				{
 					if (useMultiThreading)
 					{
-						auto Z = clonaArray(R, K);
-						mem.push_back(Z);
-
-						threads.push_back(thread(&HeldKarp::CombinationPart, this, Z, K));
+						threads.push_back(thread(&HeldKarp::CombinationPart, this, R, K)); //R è una copia
 
 						if (threads.size() == concurentThreadsSupported)
 							cleaning();
 					}
 					else
 					{
-						CombinationPart(R, K);
+						CombinationPart(R, K); //R è un riferimento
 					}
 
 					break;
@@ -254,25 +233,23 @@ private:
 
 		if (useMultiThreading)
 			cleaning();
-
-		delete[] R;
 	}
 
-	vector<vector<unsigned char>> New_RND_Distances(const unsigned char Size_of_RandomDistanceCosts)
+	template <class T>
+	static T generateRandomNumber(T startRange, T endRange, T limit)
 	{
-		vector<vector<unsigned char>> A(Size_of_RandomDistanceCosts, vector<unsigned char>(Size_of_RandomDistanceCosts, 0));
+		T r = rand();
 
-		for (auto x = 0; x < Size_of_RandomDistanceCosts; x++)
-			for (auto y = 0; y < Size_of_RandomDistanceCosts; y++)
-				A[x][y] = (x == y ? 0 : generateRandomNumber(1, 25, UCHAR_MAX));
+		T range = endRange - startRange;
+		range++;
 
-		return A;
+		T num = r % range + startRange;
+
+		return num;
 	}
 
 public:
-	HeldKarp(const unsigned char Size_of_RandomDistanceCosts) :HeldKarp(New_RND_Distances(Size_of_RandomDistanceCosts)) {}
-
-	HeldKarp(vector<vector<unsigned char>> DistanceMatrix2D)
+	HeldKarp(vector<vector<unsigned char>> & DistanceMatrix2D)
 	{
 		distance = DistanceMatrix2D;
 		numberOfNodes = (unsigned char)distance.size();
@@ -344,17 +321,15 @@ public:
 			<< endl;
 	}
 
-	template <class T>
-	T generateRandomNumber(T startRange, T endRange, T limit)
+	static vector<vector<unsigned char>> New_RND_Distances(const unsigned char Size_of_RandomDistanceCosts)
 	{
-		T r = rand();
+		vector<vector<unsigned char>> A(Size_of_RandomDistanceCosts, vector<unsigned char>(Size_of_RandomDistanceCosts, 0));
 
-		T range = endRange - startRange;
-		range++;
+		for (auto x = 0; x < Size_of_RandomDistanceCosts; x++)
+			for (auto y = 0; y < Size_of_RandomDistanceCosts; y++)
+				A[x][y] = (x == y ? 0 : generateRandomNumber(1, 25, UCHAR_MAX));
 
-		T num = r % range + startRange;
-
-		return num;
+		return A;
 	}
 
 };
