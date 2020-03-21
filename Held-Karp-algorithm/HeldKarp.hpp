@@ -21,6 +21,7 @@ unsigned int
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <list>
 #include <set>
 #include <stack>
 #include <string>
@@ -39,6 +40,8 @@ private:
 
 	unordered_map<unsigned long, unordered_map<unsigned char, unsigned short>> C;
 	unordered_map<unsigned long, unordered_map<unsigned char, unsigned char>> P;
+
+	unordered_map<unsigned char, list<unsigned long>> usedSets;
 
 	vector<vector<unsigned char>> distance;
 	unsigned char numberOfNodes;
@@ -113,9 +116,27 @@ private:
 		return false;
 	}
 
+	void ClearNotUsefulElementsFromMaps(const unsigned char K)
+	{
+		if (usedSets.count(K) > 0)
+		{
+			for each (auto u in usedSets[K])
+			{
+				C[u].clear();
+				P[u].clear();
+
+				C.erase(u);
+				P.erase(u);
+			}
+
+			usedSets[K].clear();
+			usedSets.erase(K);
+		}
+	}
+
 	void CombinationPart(vector<unsigned char> &S, const unsigned char s, MultiThreadMapContainer &maps_multiThread)
 	{
-		unsigned char i, k, m, π, tmp;
+		unsigned char k, m, π, tmp;
 		unsigned short opt;
 		unsigned long code;
 
@@ -128,9 +149,8 @@ private:
 				π = 0;
 				opt = USHRT_MAX;
 
-				for (i = 0; i < s; i++) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
+				for each (m in S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 				{
-					m = S[i];
 					tmp = C[Powered2Code(S, m)][m] + distance[k][m];
 
 					if (tmp < opt)
@@ -141,6 +161,8 @@ private:
 				}
 
 				code = Powered2Code(S);
+
+				usedSets[s].push_back(code);
 
 				if (useMultiThreading)
 				{
@@ -165,6 +187,8 @@ private:
 	{
 		unsigned long long i;
 		unsigned char s, m = 0;
+
+		ClearNotUsefulElementsFromMaps(K - 2);
 
 		MultiThreadMapContainer dummyMap;
 		vector<MultiThreadMapContainer> maps_multiThread(concurentThreadsSupported);
@@ -213,6 +237,11 @@ private:
 
 		if (useMultiThreading)
 			waitForThreads(threads, maps_multiThread);
+
+		R.clear();
+
+		while (!S.empty())
+			S.pop();
 	}
 
 	void waitForThreads(vector<thread> &threads, vector<MultiThreadMapContainer> &maps_multiThread)
