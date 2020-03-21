@@ -179,6 +179,13 @@ private:
 			}
 	}
 
+	void waitForThreads(vector<thread> &threads)
+	{
+		for (auto & th : threads)
+			if (th.joinable())
+				th.join();
+	}
+
 	void Combinations(const unsigned char K, const unsigned char N)
 	{
 		unsigned long long i;
@@ -189,15 +196,6 @@ private:
 
 		stack<unsigned char> S;
 		S.push(0);
-
-		auto cleaning = [&]()
-		{
-			for (auto x = 0; x < threads.size(); x++)
-				if (threads.at(x).joinable())
-					threads.at(x).join();
-
-			threads.clear();
-		};
 
 		while (S.size() > 0)
 		{
@@ -219,7 +217,7 @@ private:
 						threads.push_back(thread(&HeldKarp::CombinationPart, this, R, K)); //R è una copia
 
 						if (threads.size() == concurentThreadsSupported)
-							cleaning();
+							waitForThreads(threads);
 					}
 					else
 					{
@@ -232,7 +230,7 @@ private:
 		}
 
 		if (useMultiThreading)
-			cleaning();
+			waitForThreads(threads);
 	}
 
 	template <class T>
@@ -249,13 +247,17 @@ private:
 	}
 
 public:
-	HeldKarp(vector<vector<unsigned char>> & DistanceMatrix2D)
+	HeldKarp(vector<vector<unsigned char>> & DistanceMatrix2D, const int numThreads)
 	{
 		distance = DistanceMatrix2D;
 		numberOfNodes = (unsigned char)distance.size();
 
 		auto hc = thread::hardware_concurrency();
 		concurentThreadsSupported = (hc >= minCpus ? hc - 2 : 0);
+
+		if (numThreads > -1)
+			concurentThreadsSupported = numThreads;
+
 		useMultiThreading = (concurentThreadsSupported > 0);
 	}
 
@@ -277,8 +279,9 @@ public:
 		auto begin = chrono::steady_clock::now();
 
 		cout
-			<< "Solving a "
-			<< "Graph of "
+			<< "Using "
+			<< to_string(concurentThreadsSupported)
+			<< " threads to solve a graph of "
 			<< to_string(numberOfNodes)
 			<< " nodes... ";
 
