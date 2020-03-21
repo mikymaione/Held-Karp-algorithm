@@ -322,6 +322,8 @@ public:
 		for (auto k = 1; k < numberOfNodes; k++)
 			C[0][k] = distance[k][0];
 
+		usedSets[0].push_back(0);
+
 		for (unsigned char s = 1; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi		
 			Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
 
