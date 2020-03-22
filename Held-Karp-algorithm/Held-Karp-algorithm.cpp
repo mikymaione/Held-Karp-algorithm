@@ -4,12 +4,21 @@ Copyright (c) 2020: Michele Maione
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#include "HeldKarp.hpp"
+#include "HeldKarpMT.hpp"
+#include "HeldKarpST.hpp"
 
 void TSP(vector<vector<unsigned char>> DistanceMatrix2D, const int numThreads)
 {
-	HeldKarp hk(DistanceMatrix2D, numThreads);
-	hk.TSP();
+	if (numThreads > 0)
+	{
+		HeldKarpMT hk(DistanceMatrix2D, numThreads);
+		hk.TSP();
+	}
+	else
+	{
+		HeldKarpST hk(DistanceMatrix2D, numThreads);
+		hk.TSP();
+	}
 }
 
 void TSP_RND(const unsigned char NumberOfNodes, const int numThreads)
@@ -101,7 +110,7 @@ void StartElaboration(const int numThreads)
 	TSP(distance4, numThreads);
 	TSP(distance6, numThreads);
 	TSP(distance20, numThreads);
-	//TSP(distance25, numThreads);
+	TSP(distance25, numThreads);
 }
 
 int main(int argc, char ** argv)
@@ -110,7 +119,7 @@ int main(int argc, char ** argv)
 	cout << "Copyright 2020 (c) [MAIONE MIKY]. All rights reserved." << endl;
 	cout << "Licensed under the MIT License." << endl << endl;
 
-	auto numThreads = (argc == 2 ? atoi(argv[1]) : -1);
+	auto numThreads = (argc == 2 ? atoi(argv[1]) : 0);
 
 	try
 	{

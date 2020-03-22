@@ -23,5 +23,11 @@
     <ClInclude Include="HeldKarp.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="HeldKarpMT.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="HeldKarpST.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

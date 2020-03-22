@@ -9,7 +9,8 @@ This is a multi-threaded version: for every set S ⊆ {2, ..., n} of cardinality
 
 ## IDE
 1. C++17
-2. Visual Studio 2017 (http://visualstudio.microsoft.com)
+2. Microsoft Concurrency Runtime
+3. Visual Studio 2017 (http://visualstudio.microsoft.com)
 
 
 ## License

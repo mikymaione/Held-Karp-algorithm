@@ -18,31 +18,21 @@ unsigned int
 */
 #pragma once
 
-//#include <ppl.h>
-
 #include <algorithm>
-//#include <concurrent_unordered_map.h>
 #include <chrono>
 #include <iostream>
-#include <map>
 #include <set>
-#include <shared_mutex>
 #include <stack>
 #include <string>
 #include <thread>
 #include <vector>
 
-//#include "amp.h"
-
 using namespace std;
 
 class HeldKarp
 {
-private:
-	// TSP ========================================================
-	map<unsigned long, map<unsigned char, unsigned short>> C;
-	map<unsigned long, map<unsigned char, unsigned char>> P;
-
+protected:
+	// TSP ========================================================	
 	vector<vector<unsigned char>> distance;
 	unsigned char numberOfNodes;
 	// TSP ========================================================
@@ -51,17 +41,15 @@ private:
 	// Multi Thread ===============================================
 	const unsigned char minCpus = 3;
 	unsigned char concurentThreadsSupported;
-	bool _useMultiThreading;
-
-	mutable shared_mutex mutex_;
+	bool useMultiThreading;
 	// Multi Thread ===============================================
 
+protected:
+	virtual void CSet(const unsigned long code, const unsigned char key, const unsigned short val) = 0;
+	virtual void PSet(const unsigned long code, const unsigned char key, const unsigned char val) = 0;
 
-private:
-	bool useMultiThreading(const unsigned char K)
-	{
-		return _useMultiThreading && K > 3;
-	}
+	virtual unsigned short CGet(const unsigned long code, const unsigned char key) = 0;
+	virtual unsigned char PGet(const unsigned long code, const unsigned char key) = 0;
 
 	string PrintTour(const unsigned char N)
 	{
@@ -75,7 +63,7 @@ private:
 		while (true)
 		{
 			S.erase(s);
-			s = P[Powered2Code(S)][s];
+			s = PGet(Powered2Code(S), s);
 
 			path += to_string(s) + " ";
 
@@ -118,7 +106,7 @@ private:
 
 				for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 				{
-					tmp = C[Powered2Code(S, m)][m] + distance[k][m];
+					tmp = CGet(Powered2Code(S, m), m) + distance[k][m];
 
 					if (tmp < opt)
 					{
@@ -129,17 +117,8 @@ private:
 
 				code = Powered2Code(S);
 
-				if (useMultiThreading(s))
-				{
-					unique_lock lock(mutex_);
-					C[code][k] = opt;
-					P[code][k] = π;
-				}
-				else
-				{
-					C[code][k] = opt;
-					P[code][k] = π;
-				}
+				CSet(code, k, opt);
+				PSet(code, k, π);
 			}
 	}
 
@@ -147,6 +126,8 @@ private:
 	{
 		unsigned long long i;
 		unsigned char s;
+
+		auto useMultiThreadingForK = (useMultiThreading && N > 10 && K > 3);
 
 		vector<thread> threads;
 
@@ -169,7 +150,7 @@ private:
 
 				if (i == K)
 				{
-					if (useMultiThreading(K))
+					if (useMultiThreadingForK)
 					{
 						threads.push_back(thread(&HeldKarp::CombinationPart, this, R, K));
 
@@ -186,7 +167,7 @@ private:
 			}
 		}
 
-		if (useMultiThreading(K))
+		if (useMultiThreadingForK)
 			waitForThreads(threads);
 	}
 
@@ -213,18 +194,19 @@ private:
 	}
 
 public:
-	HeldKarp(vector<vector<unsigned char>> & DistanceMatrix2D, const int numThreads)
+	HeldKarp(vector<vector<unsigned char>> & DistanceMatrix2D, int numThreads)
 	{
 		distance = DistanceMatrix2D;
 		numberOfNodes = (unsigned char)distance.size();
 
 		auto hc = thread::hardware_concurrency();
-		concurentThreadsSupported = (hc >= minCpus ? hc - 2 : 0);
 
-		if (numThreads > -1)
-			concurentThreadsSupported = numThreads;
+		if (numThreads > hc)
+			numThreads = hc;
 
-		_useMultiThreading = (concurentThreadsSupported > 0);
+		concurentThreadsSupported = (numThreads >= minCpus ? numThreads - 2 : 0);
+
+		useMultiThreading = (concurentThreadsSupported > 0);
 	}
 
 	/*
@@ -254,7 +236,7 @@ public:
 		// TSP ================================================================================================================================				
 		// insieme vuoto
 		for (auto k = 1; k < numberOfNodes; k++)
-			C[0][k] = distance[k][0];
+			CSet(0, k, distance[k][0]);
 
 		for (unsigned char s = 1; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi				
 			Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s				
@@ -274,9 +256,9 @@ public:
 		{
 			code = Powered2Code(FullSet, e);
 
-			if (C.count(code) > 0 && C[code].count(e) > 0)
+			if (CGet(code, e) > 0)
 			{
-				tmp = C[code][e] + distance[0][e];
+				tmp = CGet(code, e) + distance[0][e];
 
 				if (tmp < opt)
 				{
@@ -286,7 +268,7 @@ public:
 			}
 		}
 
-		P[Powered2Code(FullSet)][0] = π;
+		PSet(Powered2Code(FullSet), 0, π);
 
 		auto path = PrintTour(numberOfNodes);
 		// PATH ===============================================================================================================================
