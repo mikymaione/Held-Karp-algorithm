@@ -41,8 +41,6 @@ private:
 	map<unsigned long, map<unsigned char, unsigned short>> C;
 	map<unsigned long, map<unsigned char, unsigned char>> P;
 
-	map<unsigned char, list<unsigned long>> usedSets;
-
 	vector<vector<unsigned char>> distance;
 	unsigned char numberOfNodes;
 
@@ -83,7 +81,7 @@ private:
 	}
 
 	template <class IEnumerable>
-	unsigned int Powered2Code(IEnumerable &S, const unsigned char exclude)
+	unsigned long Powered2Code(IEnumerable &S, const unsigned char exclude)
 	{
 		unsigned long code = 0;
 
@@ -116,28 +114,10 @@ private:
 		return false;
 	}
 
-	void ClearNotUsefulElementsFromMaps(const unsigned char K)
-	{
-		if (usedSets.count(K) > 0)
-		{
-			for each (auto u in usedSets[K])
-			{
-				C[u].clear();
-				P[u].clear();
-
-				C.erase(u);
-				P.erase(u);
-			}
-
-			usedSets[K].clear();
-			usedSets.erase(K);
-		}
-	}
-
 	void CombinationPart(vector<unsigned char> &S, const unsigned char s, MultiThreadMapContainer &maps_multiThread)
 	{
-		unsigned char k, m, π, tmp;
-		unsigned short opt;
+		unsigned char k, m, π;
+		unsigned short opt, tmp;
 		unsigned long code;
 
 		map<unsigned long, map<unsigned char, unsigned short>> C_multiThread;
@@ -162,8 +142,6 @@ private:
 
 				code = Powered2Code(S);
 
-				usedSets[s].push_back(code);
-
 				if (useMultiThreading)
 				{
 					C_multiThread[code][k] = opt;
@@ -187,8 +165,6 @@ private:
 	{
 		unsigned long long i;
 		unsigned char s, m = 0;
-
-		ClearNotUsefulElementsFromMaps(K - 2);
 
 		MultiThreadMapContainer dummyMap;
 		vector<MultiThreadMapContainer> maps_multiThread(concurentThreadsSupported);
@@ -237,11 +213,6 @@ private:
 
 		if (useMultiThreading)
 			waitForThreads(threads, maps_multiThread);
-
-		R.clear();
-
-		while (!S.empty())
-			S.pop();
 	}
 
 	void waitForThreads(vector<thread> &threads, vector<MultiThreadMapContainer> &maps_multiThread)
@@ -318,36 +289,45 @@ public:
 			<< to_string(numberOfNodes)
 			<< " nodes... ";
 
+		// TSP ================================================================================================================================				
 		// insieme vuoto
 		for (auto k = 1; k < numberOfNodes; k++)
 			C[0][k] = distance[k][0];
 
-		usedSets[0].push_back(0);
+		for (unsigned char s = 1; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi				
+			Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s				
+		// TSP ================================================================================================================================
 
-		for (unsigned char s = 1; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi		
-			Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
 
-		unsigned char π = 0;
-		unsigned short opt = USHRT_MAX;
+		// PATH ===============================================================================================================================
+		unsigned char e, π = 0;
+		unsigned short tmp, opt = USHRT_MAX;
+		unsigned long code;
 
 		vector<unsigned char> FullSet(numberOfNodes - 1);
 		for (unsigned char z = 1; z < numberOfNodes; z++)
 			FullSet[z - 1] = z;
 
-		for each(auto e in FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
+		for each(e in FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
 		{
-			auto tmp = C[Powered2Code(FullSet, e)][e] + distance[0][e];
+			code = Powered2Code(FullSet, e);
 
-			if (tmp < opt)
+			if (C.count(code) > 0 && C[code].count(e) > 0)
 			{
-				opt = tmp;
-				π = e;
+				tmp = C[code][e] + distance[0][e];
+
+				if (tmp < opt)
+				{
+					opt = tmp;
+					π = e;
+				}
 			}
 		}
 
 		P[Powered2Code(FullSet)][0] = π;
 
 		auto path = PrintTour(numberOfNodes);
+		// PATH ===============================================================================================================================
 
 		cout
 			<< "Solved! Cost: "
