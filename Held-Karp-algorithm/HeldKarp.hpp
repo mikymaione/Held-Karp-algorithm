@@ -34,21 +34,29 @@ using namespace std;
 class HeldKarp
 {
 private:
-	const unsigned char minCpus = 3;
-	unsigned char concurentThreadsSupported;
-	bool useMultiThreading;
-
+	// TSP ========================================================
 	map<unsigned long, map<unsigned char, unsigned short>> C;
 	map<unsigned long, map<unsigned char, unsigned char>> P;
 
 	vector<vector<unsigned char>> distance;
 	unsigned char numberOfNodes;
+	// TSP ========================================================
 
+
+	// Multi Thread ===============================================
 	struct MultiThreadMapContainer
 	{
 		map<unsigned long, map<unsigned char, unsigned short>> C;
 		map<unsigned long, map<unsigned char, unsigned char>> P;
 	};
+
+	list<MultiThreadMapContainer> maps_multiThread;
+
+	const unsigned char minCpus = 3;
+	unsigned char concurentThreadsSupported;
+	bool useMultiThreading;
+	// Multi Thread ===============================================
+
 
 private:
 	string PrintTour(const unsigned char N)
@@ -114,7 +122,7 @@ private:
 		return false;
 	}
 
-	void CombinationPart(vector<unsigned char> &S, const unsigned char s, MultiThreadMapContainer &maps_multiThread)
+	void CombinationPart(vector<unsigned char> &S, const unsigned char s)
 	{
 		unsigned char k, m, π;
 		unsigned short opt, tmp;
@@ -156,18 +164,19 @@ private:
 
 		if (useMultiThreading)
 		{
-			maps_multiThread.C = C_multiThread;
-			maps_multiThread.P = P_multiThread;
+			MultiThreadMapContainer M;
+			M.C = C_multiThread;
+			M.P = P_multiThread;
+
+			maps_multiThread.push_back(M);
 		}
 	}
 
 	void Combinations(const unsigned char K, const unsigned char N)
 	{
 		unsigned long long i;
-		unsigned char s, m = 0;
+		unsigned char s;
 
-		MultiThreadMapContainer dummyMap;
-		vector<MultiThreadMapContainer> maps_multiThread(concurentThreadsSupported);
 		vector<thread> threads;
 
 		vector<unsigned char> R(K);
@@ -191,19 +200,14 @@ private:
 				{
 					if (useMultiThreading)
 					{
-						threads.push_back(thread(&HeldKarp::CombinationPart, this, R, K, ref(maps_multiThread[m]))); //R è una copia						
-						m++;
+						threads.push_back(thread(&HeldKarp::CombinationPart, this, R, K)); //R è una copia
 
 						if (threads.size() == concurentThreadsSupported)
-						{
-							waitForThreads(threads, maps_multiThread);
-							maps_multiThread.resize(concurentThreadsSupported);
-							m = 0;
-						}
+							waitForThreads(threads);
 					}
 					else
 					{
-						CombinationPart(R, K, dummyMap); //R è un riferimento						
+						CombinationPart(R, K); //R è un riferimento
 					}
 
 					break;
@@ -212,10 +216,10 @@ private:
 		}
 
 		if (useMultiThreading)
-			waitForThreads(threads, maps_multiThread);
+			waitForThreads(threads);
 	}
 
-	void waitForThreads(vector<thread> &threads, vector<MultiThreadMapContainer> &maps_multiThread)
+	void waitForThreads(vector<thread> &threads)
 	{
 		for (auto & th : threads)
 			if (th.joinable())
