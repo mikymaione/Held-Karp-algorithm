@@ -18,7 +18,10 @@ unsigned int
 */
 #pragma once
 
+//#include <ppl.h>
+
 #include <algorithm>
+//#include <concurrent_unordered_map.h>
 #include <chrono>
 #include <iostream>
 #include <map>
@@ -28,6 +31,8 @@ unsigned int
 #include <string>
 #include <thread>
 #include <vector>
+
+//#include "amp.h"
 
 using namespace std;
 
@@ -46,13 +51,18 @@ private:
 	// Multi Thread ===============================================
 	const unsigned char minCpus = 3;
 	unsigned char concurentThreadsSupported;
-	bool useMultiThreading;
+	bool _useMultiThreading;
 
 	mutable shared_mutex mutex_;
 	// Multi Thread ===============================================
 
 
 private:
+	bool useMultiThreading(const unsigned char K)
+	{
+		return _useMultiThreading && K > 3;
+	}
+
 	string PrintTour(const unsigned char N)
 	{
 		string path;
@@ -94,10 +104,10 @@ private:
 		return code;
 	}
 
-	void CombinationPart(vector<unsigned char> &S, const unsigned char s)
+	void CombinationPart(vector<unsigned char> S, const unsigned char s)
 	{
 		unsigned char k, π;
-		unsigned short opt, tmp, v;
+		unsigned short opt, tmp;
 		unsigned long code;
 
 		for (k = 1; k < numberOfNodes; k++)
@@ -108,17 +118,7 @@ private:
 
 				for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 				{
-					if (useMultiThreading)
-					{
-						shared_lock lock(mutex_);
-						v = C[Powered2Code(S, m)][m];
-					}
-					else
-					{
-						v = C[Powered2Code(S, m)][m];
-					}
-
-					tmp = v + distance[k][m];
+					tmp = C[Powered2Code(S, m)][m] + distance[k][m];
 
 					if (tmp < opt)
 					{
@@ -129,7 +129,7 @@ private:
 
 				code = Powered2Code(S);
 
-				if (useMultiThreading)
+				if (useMultiThreading(s))
 				{
 					unique_lock lock(mutex_);
 					C[code][k] = opt;
@@ -169,16 +169,16 @@ private:
 
 				if (i == K)
 				{
-					if (useMultiThreading)
+					if (useMultiThreading(K))
 					{
-						threads.push_back(thread(&HeldKarp::CombinationPart, this, R, K)); //R è una copia
+						threads.push_back(thread(&HeldKarp::CombinationPart, this, R, K));
 
 						if (threads.size() == concurentThreadsSupported)
 							waitForThreads(threads);
 					}
 					else
 					{
-						CombinationPart(R, K); //R è un riferimento
+						CombinationPart(R, K);
 					}
 
 					break;
@@ -186,7 +186,7 @@ private:
 			}
 		}
 
-		if (useMultiThreading)
+		if (useMultiThreading(K))
 			waitForThreads(threads);
 	}
 
@@ -224,7 +224,7 @@ public:
 		if (numThreads > -1)
 			concurentThreadsSupported = numThreads;
 
-		useMultiThreading = (concurentThreadsSupported > 0);
+		_useMultiThreading = (concurentThreadsSupported > 0);
 	}
 
 	/*
