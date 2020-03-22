@@ -1,0 +1,14 @@
+Using 0 threads to solve a graph of 3 nodes... Solved! Cost: 7 time: 0ms, path: 2 1 0
+Using 0 threads to solve a graph of 4 nodes... Solved! Cost: 21 time: 0ms, path: 2 3 1 0
+Using 0 threads to solve a graph of 6 nodes... Solved! Cost: 151 time: 0ms, path: 4 2 1 5 3 0
+Using 0 threads to solve a graph of 20 nodes... Solved! Cost: 162 time: 8296ms, path: 3 6 8 16 19 7 12 13 14 9 1 18 17 2 15 4 5 10 11 0
+
+Using 4 threads to solve a graph of 3 nodes... Solved! Cost: 7 time: 0ms, path: 2 1 0
+Using 4 threads to solve a graph of 4 nodes... Solved! Cost: 21 time: 0ms, path: 2 3 1 0
+Using 4 threads to solve a graph of 6 nodes... Solved! Cost: 151 time: 0ms, path: 4 2 1 5 3 0
+Using 4 threads to solve a graph of 20 nodes... Solved! Cost: 162 time: 67492ms, path: 3 6 8 16 19 7 12 13 14 9 1 18 17 2 15 4 5 10 11 0
+
+Using 6 threads to solve a graph of 3 nodes... Solved! Cost: 7 time: 0ms, path: 2 1 0
+Using 6 threads to solve a graph of 4 nodes... Solved! Cost: 21 time: 0ms, path: 2 3 1 0
+Using 6 threads to solve a graph of 6 nodes... Solved! Cost: 151 time: 0ms, path: 4 2 1 5 3 0
+Using 6 threads to solve a graph of 20 nodes... Solved! Cost: 162 time: 63168ms, path: 3 6 8 16 19 7 12 13 14 9 1 18 17 2 15 4 5 10 11 0
