@@ -8,8 +8,8 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 This is a multi-threaded version: for every set S ⊆ {2, ..., n} of cardinality |S| = s, s threads are executed.
 
 ## IDE
-1. C++11
-2. Visual Studio 2015 (http://visualstudio.microsoft.com)
+1. C++17
+2. Visual Studio 2017 (http://visualstudio.microsoft.com)
 
 
 ## License

@@ -21,9 +21,9 @@ unsigned int
 #include <algorithm>
 #include <chrono>
 #include <iostream>
-#include <list>
 #include <map>
 #include <set>
+#include <shared_mutex>
 #include <stack>
 #include <string>
 #include <thread>
@@ -44,17 +44,11 @@ private:
 
 
 	// Multi Thread ===============================================
-	struct MultiThreadMapContainer
-	{
-		map<unsigned long, map<unsigned char, unsigned short>> C;
-		map<unsigned long, map<unsigned char, unsigned char>> P;
-	};
-
-	list<MultiThreadMapContainer> maps_multiThread;
-
 	const unsigned char minCpus = 3;
 	unsigned char concurentThreadsSupported;
 	bool useMultiThreading;
+
+	mutable shared_mutex mutex_;
 	// Multi Thread ===============================================
 
 
@@ -93,53 +87,38 @@ private:
 	{
 		unsigned long code = 0;
 
-		for each(auto e in S)
+		for (auto e : S)
 			if (e != exclude)
 				code += 1 << e;
 
 		return code;
 	}
 
-	template <class T>
-	bool binSearch(vector<unsigned char> &arr, unsigned char len, T what)
-	{
-		long long low = 0;
-		long long high = len - 1;
-		long long mid;
-
-		while (low <= high)
-		{
-			mid = (low + high) / 2;
-
-			if (arr[mid] > what)
-				high = mid - 1;
-			else if (arr[mid] < what)
-				low = mid + 1;
-			else
-				return true;
-		}
-
-		return false;
-	}
-
 	void CombinationPart(vector<unsigned char> &S, const unsigned char s)
 	{
-		unsigned char k, m, π;
-		unsigned short opt, tmp;
+		unsigned char k, π;
+		unsigned short opt, tmp, v;
 		unsigned long code;
 
-		map<unsigned long, map<unsigned char, unsigned short>> C_multiThread;
-		map<unsigned long, map<unsigned char, unsigned char>> P_multiThread;
-
 		for (k = 1; k < numberOfNodes; k++)
-			if (!binSearch(S, s, k)) // S\{k}
+			if (!binary_search(S.begin(), S.end(), k)) // S\{k}			
 			{
 				π = 0;
 				opt = USHRT_MAX;
 
-				for each (m in S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
+				for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 				{
-					tmp = C[Powered2Code(S, m)][m] + distance[k][m];
+					if (useMultiThreading)
+					{
+						shared_lock lock(mutex_);
+						v = C[Powered2Code(S, m)][m];
+					}
+					else
+					{
+						v = C[Powered2Code(S, m)][m];
+					}
+
+					tmp = v + distance[k][m];
 
 					if (tmp < opt)
 					{
@@ -152,8 +131,9 @@ private:
 
 				if (useMultiThreading)
 				{
-					C_multiThread[code][k] = opt;
-					P_multiThread[code][k] = π;
+					unique_lock lock(mutex_);
+					C[code][k] = opt;
+					P[code][k] = π;
 				}
 				else
 				{
@@ -161,15 +141,6 @@ private:
 					P[code][k] = π;
 				}
 			}
-
-		if (useMultiThreading)
-		{
-			MultiThreadMapContainer M;
-			M.C = C_multiThread;
-			M.P = P_multiThread;
-
-			maps_multiThread.push_back(M);
-		}
 	}
 
 	void Combinations(const unsigned char K, const unsigned char N)
@@ -226,19 +197,6 @@ private:
 				th.join();
 
 		threads.clear();
-
-		for each (auto M in maps_multiThread)
-		{
-			for each (auto ul in M.C)
-				for each (auto m in M.C[ul.first])
-					C[ul.first][m.first] = m.second;
-
-			for each (auto ul in M.P)
-				for each (auto m in M.P[ul.first])
-					P[ul.first][m.first] = m.second;
-		}
-
-		maps_multiThread.clear();
 	}
 
 	template <class T>
@@ -304,7 +262,7 @@ public:
 
 
 		// PATH ===============================================================================================================================
-		unsigned char e, π = 0;
+		unsigned char π = 0;
 		unsigned short tmp, opt = USHRT_MAX;
 		unsigned long code;
 
@@ -312,7 +270,7 @@ public:
 		for (unsigned char z = 1; z < numberOfNodes; z++)
 			FullSet[z - 1] = z;
 
-		for each(e in FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
+		for (auto e : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
 		{
 			code = Powered2Code(FullSet, e);
 
