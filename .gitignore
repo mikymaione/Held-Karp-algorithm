@@ -4,6 +4,8 @@
 
 *.pdf
 
+Held-Karp-algorithm/*.sqlite
+
 ### C++ ###
 # Prerequisites
 *.d
