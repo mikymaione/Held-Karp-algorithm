@@ -36,7 +36,7 @@ void TSP_RND(const unsigned char NumberOfNodes, const int numThreads, const bool
 	TSP(DistanceMatrix2D, numThreads, useSQLite);
 }
 
-void StartElaboration(const int numThreads, const bool useSQLite, const string graphToSolve, const unsigned char NumberOfNodes)
+void StartElaboration(const unsigned int numThreads, const bool useSQLite, const string graphToSolve, const unsigned char NumberOfNodes)
 {
 	vector<vector<unsigned char>> distance3 =
 	{
@@ -201,7 +201,7 @@ int main(int argc, char **argv)
 		<< endl
 		<< endl;
 
-	auto numThreads = (argc > 1 ? atoi(argv[1]) : 0);
+	unsigned int numThreads = (argc > 1 ? atoi(argv[1]) : 0);
 	auto useSQLite = (argc > 2 ? atoi(argv[2]) : 0) == 1;
 	string graphToSolve = (argc > 3 ? argv[3] : "all");
 	auto NumberOfNodes = (argc > 4 ? atoi(argv[4]) : 3);
