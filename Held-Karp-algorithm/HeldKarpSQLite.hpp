@@ -6,11 +6,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include<iostream>
-
+#include <iostream>
+#include <concurrent_unordered_map.h>
 #include "sqlite_modern_cpp.h"
 #include "HeldKarp.hpp"
 
+using namespace concurrency;
 using namespace sqlite;
 using namespace std;
 
@@ -19,45 +20,96 @@ class HeldKarpSQLite : public HeldKarp
 private:
 	database *db;
 
+	// TSP ========================================================
+	concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned short>> *Ccur, *Cprev;
+	concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned char>> *Pcur, *Pprev;
+	// TSP ========================================================
+
+	bool DiskMode = false;
+
+private:
+	template <class tC, class tK, class tV>
+	void WriteMapToDisk(const string query, concurrent_unordered_map<tC, concurrent_unordered_map<tK, tV>> *Mcur, concurrent_unordered_map<tC, concurrent_unordered_map<tK, tV>> *Mprev)
+	{
+		if (Mcur != NULL)
+			for each (auto x in *Mcur)
+				for each (auto y in x.second)
+					*db << query
+					<< x.first
+					<< y.first
+					<< y.second;
+	}
+
 protected:
+	void CSave()
+	{
+		WriteMapToDisk("INSERT INTO C (code, k, val) VALUES (?, ?, ?);", Ccur, Cprev);
+		WriteMapToDisk("INSERT INTO P (code, k, val) VALUES (?, ?, ?);", Pcur, Pprev);
+
+		Cprev = Ccur;
+		Pprev = Pcur;
+
+		Ccur = NULL;
+		Pcur = NULL;
+	}
+
+	void CLoadAll()
+	{
+		DiskMode = true;
+	}
+
 	void CSet(const unsigned long code, const unsigned char key, const unsigned short val)
 	{
-		*db << "INSERT INTO C (code, k, val) VALUES (?, ?, ?);"
-			<< code
-			<< key
-			<< val;
+		if (Ccur == NULL)
+			Ccur = new concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned short>>();
+
+		(*Ccur)[code][key] = val;
 	}
 
 	void PSet(const unsigned long code, const unsigned char key, const unsigned char val)
 	{
-		*db << "INSERT INTO P (code, k, val) VALUES (?, ?, ?);"
-			<< code
-			<< key
-			<< val;
+		if (Pcur == NULL)
+			Pcur = new concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned char>>();
+
+		(*Pcur)[code][key] = val;
 	}
 
 	unsigned short CGet(const unsigned long code, const unsigned char key)
 	{
-		unsigned short r;
+		if (DiskMode)
+		{
+			unsigned short r;
 
-		*db << "SELECT val FROM C WHERE code = ? AND k = ?;"
-			<< code
-			<< key
-			>> r;
+			*db << "SELECT val FROM C WHERE code = ? AND k = ?;"
+				<< code
+				<< key
+				>> r;
 
-		return r;
+			return r;
+		}
+		else
+		{
+			return (*Cprev)[code][key];
+		}
 	}
 
 	unsigned char PGet(const unsigned long code, const unsigned char key)
 	{
-		unsigned char r;
+		if (DiskMode)
+		{
+			unsigned char r;
 
-		*db << "SELECT val FROM P WHERE code = ? AND k = ?;"
-			<< code
-			<< key
-			>> r;
+			*db << "SELECT val FROM P WHERE code = ? AND k = ?;"
+				<< code
+				<< key
+				>> r;
 
-		return r;
+			return r;
+		}
+		else
+		{
+			return (*Pprev)[code][key];
+		}
 	}
 
 public:
@@ -70,11 +122,24 @@ public:
 
 		*db << "DELETE FROM P;";
 		*db << "DELETE FROM C;";
+
+		Ccur = NULL;
+		Pcur = NULL;
+		Cprev = NULL;
+		Pprev = NULL;
+
+		CSave();
 	}
 
 	~HeldKarpSQLite()
 	{
 		delete db;
+
+		delete Ccur;
+		delete Pcur;
+
+		delete Cprev;
+		delete Pprev;
 	}
 
 };

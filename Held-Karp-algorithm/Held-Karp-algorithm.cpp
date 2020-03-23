@@ -8,7 +8,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "HeldKarpST.hpp"
 #include "HeldKarpSQLite.hpp"
 
-void TSP(vector<vector<unsigned char>> DistanceMatrix2D, const int numThreads, const bool useSQLite)
+void TSP(vector<vector<unsigned char>> &DistanceMatrix2D, const int numThreads, const bool useSQLite)
 {
 	if (useSQLite)
 	{

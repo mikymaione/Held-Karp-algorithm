@@ -45,6 +45,9 @@ protected:
 	// Multi Thread ===============================================
 
 protected:
+	virtual void CSave() = 0;
+	virtual void CLoadAll() = 0;
+
 	virtual void CSet(const unsigned long code, const unsigned char key, const unsigned short val) = 0;
 	virtual void PSet(const unsigned long code, const unsigned char key, const unsigned char val) = 0;
 
@@ -178,6 +181,8 @@ protected:
 
 		if (useMultiThreadingForK)
 			waitForThreads(threads);
+
+		CSave();
 	}
 
 	void waitForThreads(vector<thread> &threads)
@@ -203,7 +208,7 @@ protected:
 	}
 
 public:
-	HeldKarp(vector<vector<unsigned char>> & DistanceMatrix2D, int numThreads)
+	HeldKarp(vector<vector<unsigned char>> &DistanceMatrix2D, int numThreads)
 	{
 		distance = DistanceMatrix2D;
 		numberOfNodes = (unsigned char)distance.size();
@@ -247,10 +252,11 @@ public:
 		for (auto k = 1; k < numberOfNodes; k++)
 			CSet(0, k, distance[k][0]);
 
+		CSave();
+
 		for (unsigned char s = 1; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi				
 			Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s				
 		// TSP ================================================================================================================================
-
 
 		// PATH ===============================================================================================================================
 		unsigned char π = 0;
@@ -260,6 +266,8 @@ public:
 		vector<unsigned char> FullSet(numberOfNodes - 1);
 		for (unsigned char z = 1; z < numberOfNodes; z++)
 			FullSet[z - 1] = z;
+
+		CLoadAll();
 
 		for (auto e : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
 		{

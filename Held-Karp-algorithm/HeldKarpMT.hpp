@@ -20,6 +20,9 @@ protected:
 	concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned char>> P;
 	// TSP ========================================================
 
+	void CSave() {}
+	void CLoadAll() {}
+
 	void CSet(const unsigned long code, const unsigned char key, const unsigned short val)
 	{
 		C[code][key] = val;

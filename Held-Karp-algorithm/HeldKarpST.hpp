@@ -19,6 +19,9 @@ protected:
 	map<unsigned long, map<unsigned char, unsigned char>> P;
 	// TSP ========================================================
 
+	void CSave() {}
+	void CLoadAll() {}
+
 	void CSet(const unsigned long code, const unsigned char key, const unsigned short val)
 	{
 		C[code][key] = val;
