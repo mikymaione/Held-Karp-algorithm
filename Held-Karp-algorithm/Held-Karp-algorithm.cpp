@@ -8,27 +8,35 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "HeldKarpST.hpp"
 #include "HeldKarpSTFS .hpp"
 
-void TSP(vector<vector<unsigned char>> DistanceMatrix2D, const int numThreads)
+void TSP(vector<vector<unsigned char>> DistanceMatrix2D, const int numThreads, const bool useSQLite)
 {
-	if (numThreads > 0)
+	if (useSQLite)
 	{
 		HeldKarpSTFS hk(DistanceMatrix2D, numThreads);
 		hk.TSP();
 	}
 	else
 	{
-		HeldKarpSTFS hk(DistanceMatrix2D, numThreads);
-		hk.TSP();
+		if (numThreads > 0)
+		{
+			HeldKarpMT hk(DistanceMatrix2D, numThreads);
+			hk.TSP();
+		}
+		else
+		{
+			HeldKarpST hk(DistanceMatrix2D, numThreads);
+			hk.TSP();
+		}
 	}
 }
 
-void TSP_RND(const unsigned char NumberOfNodes, const int numThreads)
+void TSP_RND(const unsigned char NumberOfNodes, const int numThreads, const bool useSQLite)
 {
 	auto DistanceMatrix2D = HeldKarp::New_RND_Distances(NumberOfNodes);
-	TSP(DistanceMatrix2D, numThreads);
+	TSP(DistanceMatrix2D, numThreads, useSQLite);
 }
 
-void StartElaboration(const int numThreads)
+void StartElaboration(const int numThreads, const bool useSQLite, const string graphToSolve, const unsigned char NumberOfNodes)
 {
 	vector<vector<unsigned char>> distance3 =
 	{
@@ -107,24 +115,100 @@ void StartElaboration(const int numThreads)
 		{ 23, 21, 20, 23, 9, 24, 10, 24, 9, 16, 7, 1, 16, 12, 13, 24, 22, 18, 13, 10, 15, 1, 22, 13, 0, },
 	};
 
-	TSP(distance3, numThreads);
-	TSP(distance4, numThreads);
-	TSP(distance6, numThreads);
-	TSP(distance20, numThreads);
-	TSP(distance25, numThreads);
+	vector<vector<unsigned char>> distance40 = {
+		{ 0, 14, 18, 8, 14, 20, 15, 9, 4, 4, 6, 15, 15, 11, 18, 9, 6, 23, 15, 8, 6, 17, 12, 4, 22, 11, 3, 7, 3, 4, 11, 6, 22, 13, 10, 9, 5, 19, 5, 1, },
+		{ 2, 0, 24, 4, 23, 21, 19, 16, 23, 13, 21, 12, 11, 1, 6, 2, 8, 3, 15, 10, 4, 17, 9, 7, 24, 17, 24, 17, 2, 1, 10, 4, 11, 19, 14, 7, 6, 13, 14, 8, },
+		{ 4, 20, 0, 5, 18, 7, 17, 1, 5, 16, 11, 3, 7, 15, 9, 2, 9, 17, 18, 4, 6, 21, 3, 14, 22, 4, 17, 1, 16, 11, 24, 20, 20, 13, 8, 7, 8, 12, 16, 24, },
+		{ 8, 17, 19, 0, 1, 16, 23, 3, 14, 2, 17, 6, 14, 12, 9, 8, 11, 1, 6, 7, 14, 14, 16, 9, 19, 17, 16, 7, 18, 7, 3, 18, 21, 2, 19, 21, 14, 2, 2, 23, },
+		{ 24, 2, 4, 24, 0, 23, 6, 11, 8, 11, 5, 21, 6, 3, 6, 2, 10, 17, 8, 1, 9, 24, 16, 9, 7, 24, 24, 10, 12, 18, 13, 19, 9, 24, 8, 8, 13, 11, 17, 11, },
+		{ 13, 7, 8, 20, 14, 0, 10, 21, 16, 16, 1, 9, 4, 6, 1, 18, 23, 8, 17, 21, 24, 24, 21, 23, 15, 23, 10, 12, 7, 19, 23, 14, 24, 1, 22, 13, 3, 17, 20, 20, },
+		{ 21, 3, 8, 18, 12, 10, 0, 9, 14, 9, 7, 9, 24, 20, 15, 17, 11, 17, 8, 18, 22, 4, 23, 15, 22, 18, 11, 10, 4, 9, 13, 15, 6, 13, 22, 24, 22, 17, 3, 11, },
+		{ 5, 14, 21, 4, 1, 10, 23, 0, 19, 9, 8, 12, 21, 19, 24, 22, 16, 23, 13, 11, 1, 2, 1, 6, 6, 20, 16, 4, 11, 22, 16, 20, 19, 14, 22, 13, 9, 8, 19, 15, },
+		{ 12, 19, 17, 1, 21, 21, 17, 21, 0, 7, 15, 6, 1, 10, 6, 3, 10, 5, 9, 16, 9, 9, 7, 13, 21, 18, 13, 17, 7, 22, 11, 14, 9, 5, 23, 24, 7, 9, 24, 9, },
+		{ 9, 3, 20, 21, 21, 17, 16, 10, 13, 0, 12, 12, 8, 24, 17, 10, 6, 5, 7, 21, 8, 8, 4, 11, 24, 20, 1, 22, 20, 12, 7, 20, 2, 6, 24, 7, 6, 14, 10, 16, },
+		{ 4, 3, 3, 5, 20, 10, 4, 15, 17, 19, 0, 17, 19, 1, 12, 17, 2, 5, 17, 20, 2, 20, 19, 20, 23, 6, 16, 11, 3, 24, 10, 5, 16, 20, 15, 17, 6, 5, 24, 16, },
+		{ 15, 17, 11, 6, 1, 19, 13, 20, 14, 14, 23, 0, 3, 13, 18, 9, 21, 10, 7, 5, 23, 4, 23, 1, 15, 7, 15, 2, 23, 10, 20, 12, 21, 5, 2, 6, 9, 10, 14, 19, },
+		{ 5, 18, 21, 22, 14, 2, 7, 16, 22, 11, 19, 8, 0, 23, 1, 2, 12, 16, 16, 20, 23, 10, 17, 14, 10, 18, 3, 2, 22, 11, 13, 1, 11, 21, 12, 24, 6, 8, 1, 12, },
+		{ 14, 24, 24, 4, 13, 16, 13, 13, 21, 4, 15, 14, 18, 0, 15, 15, 10, 12, 4, 11, 5, 12, 24, 10, 5, 10, 11, 8, 11, 11, 1, 20, 5, 16, 4, 6, 23, 11, 13, 2, },
+		{ 18, 6, 14, 6, 18, 21, 23, 7, 20, 6, 3, 13, 2, 21, 0, 21, 1, 14, 15, 19, 19, 3, 9, 2, 2, 20, 8, 10, 23, 14, 9, 16, 23, 23, 3, 17, 24, 22, 19, 16, },
+		{ 8, 11, 4, 12, 6, 9, 13, 19, 9, 20, 4, 17, 9, 16, 19, 0, 23, 10, 4, 12, 10, 10, 12, 1, 18, 12, 14, 5, 14, 23, 4, 21, 3, 20, 23, 11, 8, 23, 21, 21, },
+		{ 18, 8, 14, 2, 4, 11, 17, 8, 7, 5, 4, 8, 20, 10, 9, 7, 0, 21, 11, 11, 1, 16, 4, 24, 20, 5, 23, 1, 21, 10, 6, 11, 24, 14, 7, 19, 3, 21, 11, 22, },
+		{ 8, 19, 6, 22, 9, 20, 21, 1, 18, 12, 17, 15, 22, 13, 20, 6, 14, 0, 8, 18, 21, 5, 10, 21, 23, 2, 19, 4, 18, 14, 16, 6, 10, 11, 14, 3, 7, 10, 7, 15, },
+		{ 1, 9, 22, 8, 10, 18, 15, 14, 12, 18, 2, 5, 19, 3, 14, 17, 22, 23, 0, 8, 21, 15, 16, 3, 12, 2, 6, 8, 5, 8, 10, 13, 21, 8, 18, 18, 12, 8, 3, 11, },
+		{ 5, 11, 6, 17, 1, 13, 11, 11, 7, 21, 21, 6, 9, 2, 10, 1, 10, 7, 11, 0, 6, 5, 11, 11, 6, 2, 5, 5, 22, 2, 10, 2, 10, 20, 12, 3, 10, 9, 23, 3, },
+		{ 23, 16, 19, 1, 8, 11, 5, 5, 19, 22, 17, 8, 6, 21, 21, 7, 19, 24, 1, 16, 0, 20, 8, 14, 9, 21, 19, 12, 11, 21, 23, 24, 16, 11, 5, 12, 15, 10, 10, 4, },
+		{ 19, 21, 1, 11, 24, 9, 2, 21, 13, 24, 5, 9, 10, 9, 7, 7, 16, 2, 10, 4, 13, 0, 24, 19, 8, 20, 22, 2, 22, 2, 10, 6, 22, 10, 21, 6, 20, 19, 22, 14, },
+		{ 1, 19, 23, 23, 12, 16, 15, 15, 7, 4, 22, 20, 13, 24, 6, 15, 20, 3, 17, 15, 2, 8, 0, 5, 19, 3, 18, 8, 23, 14, 4, 12, 12, 19, 12, 10, 9, 15, 1, 8, },
+		{ 16, 6, 8, 19, 18, 4, 15, 17, 22, 4, 7, 11, 17, 3, 7, 13, 18, 15, 4, 20, 18, 9, 16, 0, 2, 4, 17, 10, 2, 1, 14, 22, 24, 19, 20, 2, 10, 18, 13, 12, },
+		{ 15, 13, 1, 10, 20, 7, 17, 20, 10, 13, 24, 17, 19, 12, 5, 14, 8, 14, 7, 16, 2, 19, 13, 17, 0, 9, 7, 7, 16, 22, 2, 21, 19, 5, 4, 13, 7, 18, 23, 20, },
+		{ 19, 11, 21, 24, 14, 2, 22, 3, 13, 14, 6, 18, 20, 12, 21, 10, 21, 1, 9, 2, 14, 1, 1, 22, 9, 0, 16, 6, 12, 16, 23, 22, 20, 9, 18, 13, 5, 5, 19, 24, },
+		{ 15, 11, 4, 18, 3, 16, 8, 2, 8, 9, 18, 16, 7, 10, 22, 7, 18, 11, 24, 16, 23, 21, 10, 11, 15, 16, 0, 10, 10, 3, 23, 17, 6, 2, 1, 18, 15, 11, 8, 23, },
+		{ 7, 2, 15, 22, 4, 23, 7, 16, 11, 12, 12, 19, 19, 6, 4, 2, 19, 1, 17, 4, 11, 6, 22, 23, 9, 17, 12, 0, 14, 7, 16, 7, 20, 11, 12, 17, 14, 8, 23, 7, },
+		{ 13, 8, 1, 23, 22, 15, 4, 22, 1, 23, 23, 23, 15, 18, 5, 13, 1, 4, 16, 14, 12, 11, 17, 9, 20, 6, 16, 9, 0, 7, 13, 14, 18, 21, 19, 4, 20, 10, 7, 1, },
+		{ 8, 5, 19, 12, 16, 8, 17, 17, 3, 7, 24, 17, 10, 17, 9, 20, 3, 15, 16, 4, 17, 24, 20, 15, 13, 9, 5, 3, 20, 0, 14, 9, 3, 19, 4, 8, 10, 17, 23, 2, },
+		{ 1, 3, 14, 14, 2, 8, 21, 4, 2, 13, 23, 2, 5, 18, 4, 8, 9, 9, 5, 24, 7, 4, 15, 21, 13, 22, 22, 22, 7, 10, 0, 24, 3, 4, 14, 16, 1, 4, 10, 18, },
+		{ 7, 17, 5, 4, 15, 21, 13, 5, 9, 16, 20, 23, 1, 13, 24, 19, 22, 13, 17, 2, 5, 11, 23, 22, 17, 13, 21, 22, 16, 3, 3, 0, 5, 24, 16, 22, 8, 2, 24, 1, },
+		{ 24, 24, 18, 13, 7, 11, 11, 24, 15, 5, 19, 18, 13, 11, 8, 14, 21, 18, 8, 12, 2, 1, 16, 13, 7, 13, 16, 24, 10, 16, 16, 17, 0, 23, 13, 18, 2, 11, 23, 16, },
+		{ 11, 6, 14, 6, 17, 21, 10, 15, 18, 16, 2, 1, 14, 19, 13, 23, 23, 9, 5, 7, 18, 20, 12, 14, 24, 14, 2, 20, 1, 18, 7, 4, 23, 0, 2, 21, 6, 12, 20, 23, },
+		{ 16, 22, 23, 22, 8, 8, 15, 3, 23, 10, 14, 19, 17, 6, 17, 23, 15, 19, 24, 7, 4, 20, 14, 15, 1, 10, 23, 3, 12, 22, 7, 11, 4, 11, 0, 14, 9, 19, 23, 4, },
+		{ 6, 9, 11, 3, 10, 11, 23, 14, 22, 7, 4, 7, 11, 13, 13, 19, 21, 8, 9, 21, 22, 10, 13, 15, 1, 4, 3, 16, 7, 17, 8, 4, 17, 16, 19, 0, 23, 17, 17, 5, },
+		{ 4, 3, 21, 1, 21, 9, 16, 21, 23, 15, 16, 17, 2, 10, 2, 6, 20, 21, 21, 3, 7, 9, 8, 7, 6, 23, 24, 14, 20, 18, 15, 3, 5, 4, 6, 19, 0, 2, 10, 17, },
+		{ 6, 10, 7, 4, 1, 16, 24, 6, 18, 15, 10, 23, 2, 20, 15, 22, 20, 20, 14, 20, 22, 10, 3, 1, 6, 1, 14, 13, 23, 5, 8, 4, 11, 5, 15, 17, 24, 0, 5, 7, },
+		{ 16, 6, 17, 6, 23, 10, 20, 13, 7, 14, 6, 10, 24, 13, 15, 19, 21, 8, 6, 23, 24, 3, 12, 8, 14, 8, 6, 13, 22, 6, 22, 23, 16, 13, 23, 15, 5, 4, 0, 4, },
+		{ 16, 10, 12, 7, 23, 17, 19, 9, 16, 21, 10, 19, 10, 18, 6, 8, 14, 18, 10, 17, 16, 5, 8, 16, 2, 17, 8, 19, 12, 15, 1, 15, 17, 4, 15, 14, 12, 20, 13, 0, },
+	};
+
+	if (graphToSolve == "random")
+	{
+		TSP_RND(NumberOfNodes, numThreads, useSQLite);
+	}
+	else
+	{
+		if (graphToSolve == "all" || graphToSolve == "3")
+			TSP(distance3, numThreads, useSQLite);
+
+		if (graphToSolve == "all" || graphToSolve == "4")
+			TSP(distance4, numThreads, useSQLite);
+
+		if (graphToSolve == "all" || graphToSolve == "6")
+			TSP(distance6, numThreads, useSQLite);
+
+		if (graphToSolve == "all" || graphToSolve == "20")
+			TSP(distance20, numThreads, useSQLite);
+
+		if (graphToSolve == "all" || graphToSolve == "25")
+			TSP(distance25, numThreads, useSQLite);
+
+		if (graphToSolve == "all" || graphToSolve == "40")
+			TSP(distance40, numThreads, useSQLite);
+	}
 }
 
-int main(int argc, char ** argv)
+int main(int argc, char **argv)
 {
-	cout << "Multi-threaded Held-Karp algorithm to solve the Traveling Salesman Problem" << endl;
-	cout << "Copyright 2020 (c) [MAIONE MIKY]. All rights reserved." << endl;
-	cout << "Licensed under the MIT License." << endl << endl;
+	cout
+		<< "Multi-threaded Held-Karp algorithm to solve the Traveling Salesman Problem" << endl
+		<< endl
+		<< "Held-Karp-algorithm parameters: " << endl
+		<< " [number of threads = {0 - 32}]" << endl
+		<< " [use SQLite = {0 - 1}]" << endl
+		<< " [graph to solve = {3, 4, 6, 20, 25, 40, all, random}]" << endl
+		<< " [number of node of random graph = {3 - 255}]" << endl
+		<< endl
+		<< endl
+		<< "Copyright 2020 (c) [MAIONE MIKY]. All rights reserved." << endl
+		<< "Licensed under the MIT License." << endl
+		<< endl
+		<< endl;
 
-	auto numThreads = (argc == 2 ? atoi(argv[1]) : 0);
+	auto numThreads = (argc > 1 ? atoi(argv[1]) : 0);
+	auto useSQLite = (argc > 2 ? atoi(argv[2]) : 0) == 1;
+	string graphToSolve = (argc > 3 ? argv[3] : "all");
+	auto NumberOfNodes = (argc > 4 ? atoi(argv[4]) : 3);
 
 	try
 	{
-		StartElaboration(numThreads);
+		StartElaboration(numThreads, useSQLite, graphToSolve, NumberOfNodes);
 	}
 	catch (const exception &e)
 	{
