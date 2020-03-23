@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Held-Karp-algorithm.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HeldKarp.hpp" />
+    <ClInclude Include="HeldKarpMT.hpp" />
+    <ClInclude Include="HeldKarpST.hpp" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\errors.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\lists\error_codes.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\log.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\sqlcipher.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\utility\function_traits.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\utility\uncaught_exceptions.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\utility\utf16_utf8.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\utility\variant.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp.h" />
+    <ClInclude Include="sqlite_modern_cpp.h" />
+    <ClInclude Include="sqlite_modern_cpp\sqlcipher.h" />
+    <ClInclude Include="sqlite_modern_cpp\errors.h" />
+    <ClInclude Include="sqlite_modern_cpp\log.h" />
+    <ClInclude Include="sqlite_modern_cpp\utility\function_traits.h" />
+    <ClInclude Include="sqlite_modern_cpp\utility\uncaught_exceptions.h" />
+    <ClInclude Include="sqlite_modern_cpp\utility\utf16_utf8.h" />
+    <ClInclude Include="sqlite_modern_cpp\utility\variant.h" />
+    <ClInclude Include="sqlite_modern_cpp\lists\error_codes.h" />
+  </ItemGroup>
+</Project>

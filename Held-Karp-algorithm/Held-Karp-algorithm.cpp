@@ -6,17 +6,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #include "HeldKarpMT.hpp"
 #include "HeldKarpST.hpp"
+#include "HeldKarpSTFS .hpp"
 
 void TSP(vector<vector<unsigned char>> DistanceMatrix2D, const int numThreads)
 {
 	if (numThreads > 0)
 	{
-		HeldKarpMT hk(DistanceMatrix2D, numThreads);
+		HeldKarpSTFS hk(DistanceMatrix2D, numThreads);
 		hk.TSP();
 	}
 	else
 	{
-		HeldKarpST hk(DistanceMatrix2D, numThreads);
+		HeldKarpSTFS hk(DistanceMatrix2D, numThreads);
 		hk.TSP();
 	}
 }

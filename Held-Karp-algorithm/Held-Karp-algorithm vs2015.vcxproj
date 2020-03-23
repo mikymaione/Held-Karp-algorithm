@@ -72,12 +72,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -167,11 +171,32 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Held-Karp-algorithm.cpp" />
+    <ClCompile Include="sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hdr\sqlite_modern_cpp.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\errors.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\lists\error_codes.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\log.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\sqlcipher.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\utility\function_traits.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\utility\uncaught_exceptions.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\utility\utf16_utf8.h" />
+    <ClInclude Include="hdr\sqlite_modern_cpp\utility\variant.h" />
     <ClInclude Include="HeldKarp.hpp" />
     <ClInclude Include="HeldKarpMT.hpp" />
     <ClInclude Include="HeldKarpST.hpp" />
+    <ClInclude Include="HeldKarpSTFS .hpp" />
+    <ClInclude Include="sqlite3.h" />
+    <ClInclude Include="sqlite_modern_cpp.h" />
+    <ClInclude Include="sqlite_modern_cpp\errors.h" />
+    <ClInclude Include="sqlite_modern_cpp\lists\error_codes.h" />
+    <ClInclude Include="sqlite_modern_cpp\log.h" />
+    <ClInclude Include="sqlite_modern_cpp\sqlcipher.h" />
+    <ClInclude Include="sqlite_modern_cpp\utility\function_traits.h" />
+    <ClInclude Include="sqlite_modern_cpp\utility\uncaught_exceptions.h" />
+    <ClInclude Include="sqlite_modern_cpp\utility\utf16_utf8.h" />
+    <ClInclude Include="sqlite_modern_cpp\utility\variant.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

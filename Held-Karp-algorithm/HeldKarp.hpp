@@ -63,7 +63,16 @@ protected:
 		while (true)
 		{
 			S.erase(s);
-			s = PGet(Powered2Code(S), s);
+
+			try
+			{
+				s = PGet(Powered2Code(S), s);
+			}
+			catch (...)
+			{
+				s = 0;
+				// end.
+			}
 
 			path += to_string(s) + " ";
 
