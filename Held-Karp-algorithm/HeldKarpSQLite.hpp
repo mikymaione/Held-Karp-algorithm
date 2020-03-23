@@ -57,6 +57,9 @@ protected:
 		WriteMapToDisk("INSERT INTO C (code, k, val) VALUES (?, ?, ?);", Ccur, Cprev);
 		WriteMapToDisk("INSERT INTO P (code, k, val) VALUES (?, ?, ?);", Pcur, Pprev);
 
+		delete Cprev;
+		delete Pprev;
+
 		Cprev = Ccur;
 		Pprev = Pcur;
 
