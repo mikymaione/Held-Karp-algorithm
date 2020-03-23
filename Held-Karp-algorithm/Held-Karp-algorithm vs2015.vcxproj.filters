@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Held-Karp-algorithm.cpp" />
+    <ClCompile Include="sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HeldKarp.hpp" />
@@ -25,5 +26,7 @@
     <ClInclude Include="sqlite_modern_cpp\utility\utf16_utf8.h" />
     <ClInclude Include="sqlite_modern_cpp\utility\variant.h" />
     <ClInclude Include="sqlite_modern_cpp\lists\error_codes.h" />
+    <ClInclude Include="sqlite3.h" />
+    <ClInclude Include="HeldKarpSQLite.hpp" />
   </ItemGroup>
 </Project>

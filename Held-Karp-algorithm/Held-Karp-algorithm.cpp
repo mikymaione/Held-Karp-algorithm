@@ -6,13 +6,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #include "HeldKarpMT.hpp"
 #include "HeldKarpST.hpp"
-#include "HeldKarpSTFS .hpp"
+#include "HeldKarpSQLite.hpp"
 
 void TSP(vector<vector<unsigned char>> DistanceMatrix2D, const int numThreads, const bool useSQLite)
 {
 	if (useSQLite)
 	{
-		HeldKarpSTFS hk(DistanceMatrix2D, numThreads);
+		HeldKarpSQLite hk(DistanceMatrix2D, numThreads);
 		hk.TSP();
 	}
 	else

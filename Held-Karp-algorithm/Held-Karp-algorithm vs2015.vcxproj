@@ -186,7 +186,7 @@
     <ClInclude Include="HeldKarp.hpp" />
     <ClInclude Include="HeldKarpMT.hpp" />
     <ClInclude Include="HeldKarpST.hpp" />
-    <ClInclude Include="HeldKarpSTFS .hpp" />
+    <ClInclude Include="HeldKarpSQLite.hpp" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="sqlite_modern_cpp.h" />
     <ClInclude Include="sqlite_modern_cpp\errors.h" />

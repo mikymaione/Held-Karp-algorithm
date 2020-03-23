@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 using namespace sqlite;
 using namespace std;
 
-class HeldKarpSTFS : public HeldKarp
+class HeldKarpSQLite : public HeldKarp
 {
 private:
 	database *db;
@@ -61,10 +61,10 @@ protected:
 	}
 
 public:
-	HeldKarpSTFS(vector<vector<unsigned char>> &DistanceMatrix2D, const int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads)
+	HeldKarpSQLite(vector<vector<unsigned char>> &DistanceMatrix2D, const int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads)
 	{
 		sqlite_config config;
-		config.flags = OpenFlags::READWRITE | OpenFlags::FULLMUTEX;
+		config.flags = (numThreads > 0 ? OpenFlags::READWRITE | OpenFlags::FULLMUTEX : OpenFlags::READWRITE);
 
 		db = new database("DB.sqlite", config);
 
@@ -72,7 +72,7 @@ public:
 		*db << "DELETE FROM C;";
 	}
 
-	~HeldKarpSTFS()
+	~HeldKarpSQLite()
 	{
 		delete db;
 	}
