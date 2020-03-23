@@ -32,12 +32,23 @@ private:
 	void WriteMapToDisk(const string query, concurrent_unordered_map<tC, concurrent_unordered_map<tK, tV>> *Mcur, concurrent_unordered_map<tC, concurrent_unordered_map<tK, tV>> *Mprev)
 	{
 		if (Mcur != NULL)
+		{
+			*db << "begin;";
+			auto ps = *db << query;
+
 			for each (auto x in *Mcur)
 				for each (auto y in x.second)
-					*db << query
-					<< x.first
-					<< y.first
-					<< y.second;
+				{
+					ps
+						<< x.first
+						<< y.first
+						<< y.second;
+
+					ps++;
+				}
+
+			*db << "commit;";
+		}
 	}
 
 protected:

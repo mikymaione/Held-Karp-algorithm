@@ -217,4 +217,5 @@ int main(int argc, char **argv)
 	}
 
 	cout << endl << "End." << endl;
+	system("pause");
 }
