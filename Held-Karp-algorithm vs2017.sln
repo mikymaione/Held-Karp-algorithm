@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Held-Karp-algorithm", "Held-Karp-algorithm\Held-Karp-algorithm.vcxproj", "{9DC55EAA-C31A-4097-9C1E-6D3EAAF1010F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Held-Karp-algorithm vs2017", "Held-Karp-algorithm\Held-Karp-algorithm vs2017.vcxproj", "{9DC55EAA-C31A-4097-9C1E-6D3EAAF1010F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B5233459-35A1-4142-9C87-99E195C58240}
+		SolutionGuid = {1FF38178-CF15-48EE-8C4C-4969BFCA7F10}
 	EndGlobalSection
 EndGlobal

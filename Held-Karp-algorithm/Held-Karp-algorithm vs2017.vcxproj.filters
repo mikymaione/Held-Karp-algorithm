@@ -18,6 +18,9 @@
     <ClCompile Include="Held-Karp-algorithm.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="sqlite3.c">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HeldKarp.hpp">
@@ -27,6 +30,39 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="HeldKarpST.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="HeldKarpSTFS .hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\lists\error_codes.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\utility\function_traits.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\utility\uncaught_exceptions.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\utility\utf16_utf8.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\utility\variant.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\errors.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\log.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\sqlcipher.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,7 +11,7 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 
 
 ## IDE
-1. C++17
+1. C++14
 2. Microsoft Concurrency Runtime
 3. SQLite3
 4. Visual Studio 2017 (http://visualstudio.microsoft.com)
