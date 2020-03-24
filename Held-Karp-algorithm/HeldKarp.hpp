@@ -99,20 +99,29 @@ protected:
 		return code;
 	}
 
+	unsigned long Powered2Code(unsigned long code, const unsigned char exclude)
+	{
+		return code - (1 << exclude);
+	}
+
 	void CombinationPart(vector<unsigned char> S, const unsigned char s)
 	{
 		unsigned char π;
 		unsigned short opt, tmp;
+		unsigned long code_k, code;
+
+		code = Powered2Code(S);
 
 		for (auto k : S)
 		{
 			π = 0;
 			opt = USHRT_MAX;
+			code_k = Powered2Code(code, k);
 
 			for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 				if (m != k)
 				{
-					tmp = CGet(s - 1, Powered2Code(S, k), m) + distance[k][m];
+					tmp = CGet(s - 1, code_k, m) + distance[k][m];
 
 					if (tmp < opt)
 					{
@@ -121,8 +130,8 @@ protected:
 					}
 				}
 
-			CSet(s, Powered2Code(S), k, opt);
-			PSet(s - 1, Powered2Code(S, k), k, π);
+			CSet(s, code, k, opt);
+			PSet(s - 1, code_k, k, π);
 		}
 	}
 
