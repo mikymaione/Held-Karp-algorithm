@@ -45,23 +45,18 @@ protected:
 	// Multi Thread ===============================================
 
 protected:
-	virtual void CSave() = 0;
-	virtual void CLoadAll() = 0;
+	virtual void RemoveCardinality(const unsigned char K) = 0;
 
-	virtual void CSet(const unsigned long code, const unsigned char key, const unsigned short val) = 0;
-	virtual void PSet(const unsigned long code, const unsigned char key, const unsigned char val) = 0;
+	virtual void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val) = 0;
+	virtual void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val) = 0;
 
-	virtual unsigned short CGet(const unsigned long code, const unsigned char key) = 0;
-	virtual unsigned char PGet(const unsigned long code, const unsigned char key) = 0;
+	virtual unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key) = 0;
+	virtual unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key) = 0;
 
-	string PrintTour(const unsigned char N)
+	string PrintTour(set<unsigned char> &S)
 	{
-		string path;
+		string path = "0 ";
 		unsigned char s = 0;
-		set<unsigned char>  S;
-
-		for (unsigned char i = 0; i < N; i++)
-			S.insert(i);
 
 		while (true)
 		{
@@ -69,7 +64,7 @@ protected:
 
 			try
 			{
-				s = PGet(Powered2Code(S), s);
+				s = PGet(S.size(), Powered2Code(S), s);
 			}
 			catch (...)
 			{
@@ -106,19 +101,18 @@ protected:
 
 	void CombinationPart(vector<unsigned char> S, const unsigned char s)
 	{
-		unsigned char k, π;
+		unsigned char π;
 		unsigned short opt, tmp;
-		unsigned long code;
 
-		for (k = 1; k < numberOfNodes; k++)
-			if (!binary_search(S.begin(), S.end(), k)) // S\{k}			
-			{
-				π = 0;
-				opt = USHRT_MAX;
+		for (auto k : S)
+		{
+			π = 0;
+			opt = USHRT_MAX;
 
-				for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
+			for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
+				if (m != k)
 				{
-					tmp = CGet(Powered2Code(S, m), m) + distance[k][m];
+					tmp = CGet(s - 1, Powered2Code(S, k), m) + distance[k][m];
 
 					if (tmp < opt)
 					{
@@ -127,16 +121,14 @@ protected:
 					}
 				}
 
-				code = Powered2Code(S);
-
-				CSet(code, k, opt);
-				PSet(code, k, π);
-			}
+			CSet(s, Powered2Code(S), k, opt);
+			PSet(s - 1, Powered2Code(S, k), k, π);
+		}
 	}
 
 	void Combinations(const unsigned char K, const unsigned char N)
 	{
-		unsigned long long i;
+		size_t i;
 		unsigned char s;
 
 		auto useMultiThreadingForK = (useMultiThreading && N > 10 && K > 3);
@@ -181,8 +173,6 @@ protected:
 
 		if (useMultiThreadingForK)
 			waitForThreads(threads);
-
-		CSave();
 	}
 
 	void waitForThreads(vector<thread> &threads)
@@ -208,17 +198,17 @@ protected:
 	}
 
 public:
-	HeldKarp(vector<vector<unsigned char>> &DistanceMatrix2D, int numThreads)
+	HeldKarp(vector<vector<unsigned char>> &DistanceMatrix2D, const unsigned int numThreads)
 	{
 		distance = DistanceMatrix2D;
 		numberOfNodes = (unsigned char)distance.size();
 
 		auto hc = thread::hardware_concurrency();
 
-		if (numThreads > hc)
-			numThreads = hc;
+		if (numThreads < hc)
+			hc = numThreads;
 
-		concurentThreadsSupported = (numThreads >= minCpus ? numThreads - 2 : 0);
+		concurentThreadsSupported = (hc >= minCpus ? hc - 2 : 0);
 
 		useMultiThreading = (concurentThreadsSupported > 0);
 	}
@@ -233,8 +223,8 @@ public:
 	2. return to the starting point
 	3. be of minimum distance.
 
-	T(n) = O(n²2ⁿ)
-	S(n) = O(n2ⁿ)
+	T(n) = O(2ⁿn²)
+	S(n) = O(2ⁿn) + O(2ⁿ√n)
 	*/
 	void TSP()
 	{
@@ -250,12 +240,15 @@ public:
 		// TSP ================================================================================================================================				
 		// insieme vuoto
 		for (auto k = 1; k < numberOfNodes; k++)
-			CSet(0, k, distance[k][0]);
+			CSet(1, 1 << k, k, distance[k][0]);
 
-		CSave();
-
-		for (unsigned char s = 1; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi				
+		for (unsigned char s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi							
+		{
 			Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s				
+
+			if (s - 2 > -1)
+				RemoveCardinality(s - 2);
+		}
 		// TSP ================================================================================================================================
 
 		// PATH ===============================================================================================================================
@@ -263,31 +256,27 @@ public:
 		unsigned short tmp, opt = USHRT_MAX;
 		unsigned long code;
 
-		vector<unsigned char> FullSet(numberOfNodes - 1);
+		set<unsigned char> FullSet;
 		for (unsigned char z = 1; z < numberOfNodes; z++)
-			FullSet[z - 1] = z;
+			FullSet.insert(z);
 
-		CLoadAll();
+		code = Powered2Code(FullSet);
 
-		for (auto e : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
-		{
-			code = Powered2Code(FullSet, e);
-
-			if (CGet(code, e) > 0)
+		for (auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
+			if (CGet(numberOfNodes - 1, code, k) > 0)
 			{
-				tmp = CGet(code, e) + distance[0][e];
+				tmp = CGet(numberOfNodes - 1, code, k) + distance[0][k];
 
 				if (tmp < opt)
 				{
 					opt = tmp;
-					π = e;
+					π = k;
 				}
 			}
-		}
 
-		PSet(Powered2Code(FullSet), 0, π);
+		PSet(numberOfNodes - 1, Powered2Code(FullSet), 0, π);
 
-		auto path = PrintTour(numberOfNodes);
+		auto path = PrintTour(FullSet);
 		// PATH ===============================================================================================================================
 
 		cout

@@ -6,12 +6,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <iostream>
-#include <concurrent_unordered_map.h>
+#include<iostream>
+
 #include "sqlite_modern_cpp.h"
 #include "HeldKarp.hpp"
 
-using namespace concurrency;
 using namespace sqlite;
 using namespace std;
 
@@ -20,114 +19,62 @@ class HeldKarpSQLite : public HeldKarp
 private:
 	database *db;
 
-	// TSP ========================================================
-	concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned short>> *Ccur, *Cprev;
-	concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned char>> *Pcur, *Pprev;
-	// TSP ========================================================
-
-	bool DiskMode = false;
-
-private:
-	template <class tC, class tK, class tV>
-	void WriteMapToDisk(const string query, concurrent_unordered_map<tC, concurrent_unordered_map<tK, tV>> *Mcur, concurrent_unordered_map<tC, concurrent_unordered_map<tK, tV>> *Mprev)
-	{
-		if (Mcur != NULL)
-		{
-			*db << "begin;";
-			auto ps = *db << query;
-
-			for each (auto x in *Mcur)
-				for each (auto y in x.second)
-				{
-					ps
-						<< x.first
-						<< y.first
-						<< y.second;
-
-					ps++;
-				}
-
-			*db << "commit;";
-		}
-	}
-
 protected:
-	void CSave()
+	void RemoveCardinality(const unsigned char K)
 	{
-		WriteMapToDisk("INSERT INTO C (code, k, val) VALUES (?, ?, ?);", Ccur, Cprev);
-		WriteMapToDisk("INSERT INTO P (code, k, val) VALUES (?, ?, ?);", Pcur, Pprev);
+		*db << "DELETE FROM C where cardinality = ?;"
+			<< K;
 
-		delete Cprev;
-		delete Pprev;
-
-		Cprev = Ccur;
-		Pprev = Pcur;
-
-		Ccur = NULL;
-		Pcur = NULL;
+		/**db << "DELETE FROM P where cardinality = ?;"
+			<< K;*/
 	}
 
-	void CLoadAll()
+	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val)
 	{
-		DiskMode = true;
+		*db << "INSERT INTO C (cardinality, code, k, val) VALUES (?, ?, ?, ?);"
+			<< cardinality
+			<< code
+			<< key
+			<< val;
 	}
 
-	void CSet(const unsigned long code, const unsigned char key, const unsigned short val)
+	void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val)
 	{
-		if (Ccur == NULL)
-			Ccur = new concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned short>>();
-
-		(*Ccur)[code][key] = val;
+		*db << "INSERT INTO P (cardinality, code, k, val) VALUES (?, ?, ?, ?);"
+			<< cardinality
+			<< code
+			<< key
+			<< val;
 	}
 
-	void PSet(const unsigned long code, const unsigned char key, const unsigned char val)
+	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
 	{
-		if (Pcur == NULL)
-			Pcur = new concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned char>>();
+		unsigned short r;
 
-		(*Pcur)[code][key] = val;
+		*db << "SELECT val FROM C WHERE cardinality = ? AND code = ? AND k = ?;"
+			<< cardinality
+			<< code
+			<< key
+			>> r;
+
+		return r;
 	}
 
-	unsigned short CGet(const unsigned long code, const unsigned char key)
+	unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
 	{
-		if (DiskMode)
-		{
-			unsigned short r;
+		unsigned char r;
 
-			*db << "SELECT val FROM C WHERE code = ? AND k = ?;"
-				<< code
-				<< key
-				>> r;
+		*db << "SELECT val FROM P WHERE cardinality = ? AND code = ? AND k = ?;"
+			<< cardinality
+			<< code
+			<< key
+			>> r;
 
-			return r;
-		}
-		else
-		{
-			return (*Cprev)[code][key];
-		}
-	}
-
-	unsigned char PGet(const unsigned long code, const unsigned char key)
-	{
-		if (DiskMode)
-		{
-			unsigned char r;
-
-			*db << "SELECT val FROM P WHERE code = ? AND k = ?;"
-				<< code
-				<< key
-				>> r;
-
-			return r;
-		}
-		else
-		{
-			return (*Pprev)[code][key];
-		}
+		return r;
 	}
 
 public:
-	HeldKarpSQLite(vector<vector<unsigned char>> &DistanceMatrix2D, const int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads)
+	HeldKarpSQLite(vector<vector<unsigned char>> &DistanceMatrix2D, const unsigned int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads)
 	{
 		sqlite_config config;
 		config.flags = (numThreads > 0 ? OpenFlags::READWRITE | OpenFlags::FULLMUTEX : OpenFlags::READWRITE);
@@ -136,24 +83,11 @@ public:
 
 		*db << "DELETE FROM P;";
 		*db << "DELETE FROM C;";
-
-		Ccur = NULL;
-		Pcur = NULL;
-		Cprev = NULL;
-		Pprev = NULL;
-
-		CSave();
 	}
 
 	~HeldKarpSQLite()
 	{
 		delete db;
-
-		delete Ccur;
-		delete Pcur;
-
-		delete Cprev;
-		delete Pprev;
 	}
 
 };

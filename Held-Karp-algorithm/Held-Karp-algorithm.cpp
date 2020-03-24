@@ -8,7 +8,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "HeldKarpST.hpp"
 #include "HeldKarpSQLite.hpp"
 
-void TSP(vector<vector<unsigned char>> &DistanceMatrix2D, const int numThreads, const bool useSQLite)
+void TSP(vector<vector<unsigned char>> &DistanceMatrix2D, const unsigned int numThreads, const bool useSQLite)
 {
 	if (useSQLite)
 	{
@@ -201,10 +201,10 @@ int main(int argc, char **argv)
 		<< endl
 		<< endl;
 
-	unsigned int numThreads = (argc > 1 ? atoi(argv[1]) : 0);
-	auto useSQLite = (argc > 2 ? atoi(argv[2]) : 0) == 1;
-	string graphToSolve = (argc > 3 ? argv[3] : "all");
-	auto NumberOfNodes = (argc > 4 ? atoi(argv[4]) : 3);
+	const unsigned int numThreads = (argc > 1 ? atoi(argv[1]) : 0);
+	const auto useSQLite = (argc > 2 ? atoi(argv[2]) : 0) == 1;
+	const string graphToSolve = (argc > 3 ? argv[3] : "all");
+	const auto NumberOfNodes = (argc > 4 ? atoi(argv[4]) : 3);
 
 	try
 	{

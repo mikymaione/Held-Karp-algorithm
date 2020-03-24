@@ -6,17 +6,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 
 create table C (
+	cardinality int not null,
 	code int not null,
 	k int not null,
 	val int not null,
-	primary key (code, k)
+	primary key (cardinality, code, k)
 );
 
 create table P (
+	cardinality int not null,
 	code int not null,
 	k int not null,
 	val int not null,
-	primary key (code, k)
+	primary key (cardinality, code, k)
 );
 
 create table Combinations (

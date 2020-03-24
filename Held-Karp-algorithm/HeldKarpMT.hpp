@@ -16,34 +16,37 @@ class HeldKarpMT : public HeldKarp
 {
 protected:
 	// TSP ========================================================
-	concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned short>> C;
-	concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned char>> P;
+	concurrent_unordered_map<unsigned char, concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned short>>> C;
+	concurrent_unordered_map<unsigned char, concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned char>>> P;
 	// TSP ========================================================
 
-	void CSave() {}
-	void CLoadAll() {}
-
-	void CSet(const unsigned long code, const unsigned char key, const unsigned short val)
+	void RemoveCardinality(const unsigned char K)
 	{
-		C[code][key] = val;
+		C.unsafe_erase(K);
+		//P.unsafe_erase(K);
 	}
 
-	void PSet(const unsigned long code, const unsigned char key, const unsigned char val)
+	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val)
 	{
-		P[code][key] = val;
+		C[cardinality][code][key] = val;
 	}
 
-	unsigned short CGet(const unsigned long code, const unsigned char key)
+	void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val)
 	{
-		return C[code][key];
+		P[cardinality][code][key] = val;
 	}
 
-	unsigned char PGet(const unsigned long code, const unsigned char key)
+	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
 	{
-		return P[code][key];
+		return C[cardinality][code][key];
+	}
+
+	unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
+	{
+		return P[cardinality][code][key];
 	}
 
 public:
-	HeldKarpMT(vector<vector<unsigned char>> & DistanceMatrix2D, const int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads) {}
+	HeldKarpMT(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads) {}
 
 };

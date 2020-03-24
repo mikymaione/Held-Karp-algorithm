@@ -15,34 +15,38 @@ class HeldKarpST : public HeldKarp
 {
 protected:
 	// TSP ========================================================
-	map<unsigned long, map<unsigned char, unsigned short>> C;
-	map<unsigned long, map<unsigned char, unsigned char>> P;
+	map<unsigned char, map<unsigned long, map<unsigned char, unsigned short>>> C;
+	map<unsigned char, map<unsigned long, map<unsigned char, unsigned char>>> P;
 	// TSP ========================================================
 
-	void CSave() {}
-	void CLoadAll() {}
-
-	void CSet(const unsigned long code, const unsigned char key, const unsigned short val)
+	void RemoveCardinality(const unsigned char K)
 	{
-		C[code][key] = val;
+		C.erase(K);
+		//P.erase(K);
 	}
 
-	void PSet(const unsigned long code, const unsigned char key, const unsigned char val)
+	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val)
 	{
-		P[code][key] = val;
+		C[cardinality][code][key] = val;
 	}
 
-	unsigned short CGet(const unsigned long code, const unsigned char key)
+	void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val)
 	{
-		return C[code][key];
+		P[cardinality][code][key] = val;
 	}
 
-	unsigned char PGet(const unsigned long code, const unsigned char key)
+	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
 	{
-		return P[code][key];
+		return C[cardinality][code][key];
+	}
+
+	unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
+	{
+		auto r = P[cardinality][code][key];
+		return r;
 	}
 
 public:
-	HeldKarpST(vector<vector<unsigned char>> & DistanceMatrix2D, const int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads) {}
+	HeldKarpST(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads) {}
 
 };
