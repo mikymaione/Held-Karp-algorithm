@@ -53,7 +53,7 @@ protected:
 	virtual unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key) = 0;
 	virtual unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key) = 0;
 
-	string PrintTour(set<unsigned char> &S)
+	string PrintTour(set<unsigned char> S)
 	{
 		string path = "0 ";
 		unsigned char s = 0;
@@ -283,7 +283,7 @@ public:
 				}
 			}
 
-		PSet(numberOfNodes - 1, Powered2Code(FullSet), 0, π);
+		PSet(numberOfNodes - 1, code, 0, π);
 
 		auto path = PrintTour(FullSet);
 		// PATH ===============================================================================================================================
