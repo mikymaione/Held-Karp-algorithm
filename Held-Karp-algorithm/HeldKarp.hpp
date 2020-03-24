@@ -246,14 +246,14 @@ public:
 			<< to_string(numberOfNodes)
 			<< " nodes... ";
 
-		// TSP ================================================================================================================================				
+		// TSP ================================================================================================================================
 		// insieme vuoto
 		for (auto k = 1; k < numberOfNodes; k++)
 			CSet(1, 1 << k, k, distance[k][0]);
 
-		for (unsigned char s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi							
+		for (unsigned char s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
 		{
-			Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s				
+			Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s
 
 			if (s - 2 > -1)
 				RemoveCardinality(s - 2);
