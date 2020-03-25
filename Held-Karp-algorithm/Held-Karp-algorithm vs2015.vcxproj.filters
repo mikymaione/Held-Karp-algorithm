@@ -12,25 +12,43 @@
     <ClInclude Include="HeldKarp.hpp" />
     <ClInclude Include="HeldKarpMT.hpp" />
     <ClInclude Include="HeldKarpST.hpp" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\errors.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\lists\error_codes.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\log.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\sqlcipher.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\utility\function_traits.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\utility\uncaught_exceptions.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\utility\utf16_utf8.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\utility\variant.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp.h" />
     <ClInclude Include="sqlite_modern_cpp.h" />
-    <ClInclude Include="sqlite_modern_cpp\sqlcipher.h" />
-    <ClInclude Include="sqlite_modern_cpp\errors.h" />
-    <ClInclude Include="sqlite_modern_cpp\log.h" />
-    <ClInclude Include="sqlite_modern_cpp\utility\function_traits.h" />
-    <ClInclude Include="sqlite_modern_cpp\utility\uncaught_exceptions.h" />
-    <ClInclude Include="sqlite_modern_cpp\utility\utf16_utf8.h" />
-    <ClInclude Include="sqlite_modern_cpp\utility\variant.h" />
-    <ClInclude Include="sqlite_modern_cpp\lists\error_codes.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="HeldKarpSQLite.hpp" />
+    <ClInclude Include="sqlite_modern_cpp\sqlcipher.h">
+      <Filter>sqlite_modern_cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\log.h">
+      <Filter>sqlite_modern_cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\errors.h">
+      <Filter>sqlite_modern_cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\utility\function_traits.h">
+      <Filter>sqlite_modern_cpp\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\utility\utf16_utf8.h">
+      <Filter>sqlite_modern_cpp\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\utility\variant.h">
+      <Filter>sqlite_modern_cpp\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\utility\uncaught_exceptions.h">
+      <Filter>sqlite_modern_cpp\utility</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_modern_cpp\lists\error_codes.h">
+      <Filter>sqlite_modern_cpp\lists</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="sqlite_modern_cpp">
+      <UniqueIdentifier>{d44159cd-afe2-4419-afb5-6a9d1f8693e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sqlite_modern_cpp\utility">
+      <UniqueIdentifier>{5b5cf238-547b-454b-becf-a7dbde492812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sqlite_modern_cpp\lists">
+      <UniqueIdentifier>{0a09129e-b8e9-4c6f-b64f-71b115389b71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

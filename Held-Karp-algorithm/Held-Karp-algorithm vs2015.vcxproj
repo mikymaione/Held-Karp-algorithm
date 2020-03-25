@@ -178,15 +178,6 @@
     <ClCompile Include="sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="hdr\sqlite_modern_cpp.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\errors.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\lists\error_codes.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\log.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\sqlcipher.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\utility\function_traits.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\utility\uncaught_exceptions.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\utility\utf16_utf8.h" />
-    <ClInclude Include="hdr\sqlite_modern_cpp\utility\variant.h" />
     <ClInclude Include="HeldKarp.hpp" />
     <ClInclude Include="HeldKarpMT.hpp" />
     <ClInclude Include="HeldKarpST.hpp" />
