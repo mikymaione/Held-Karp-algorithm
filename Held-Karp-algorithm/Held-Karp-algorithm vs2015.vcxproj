@@ -172,6 +172,9 @@
   <ItemGroup>
     <ClCompile Include="Held-Karp-algorithm.cpp" />
     <ClCompile Include="HeldKarp.cpp" />
+    <ClCompile Include="HeldKarpMT.cpp" />
+    <ClCompile Include="HeldKarpSQLite.cpp" />
+    <ClCompile Include="HeldKarpST.cpp" />
     <ClCompile Include="sqlite3.c" />
   </ItemGroup>
   <ItemGroup>

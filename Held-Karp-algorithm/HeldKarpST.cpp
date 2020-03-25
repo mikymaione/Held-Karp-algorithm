@@ -6,26 +6,33 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <map>
-#include "HeldKarp.hpp"
+#include "HeldKarpST.hpp"
 
-class HeldKarpST : public HeldKarp
+void HeldKarpST::RemoveCardinality(const unsigned char K)
 {
-protected:
-	// TSP ========================================================
-	map<unsigned char, map<unsigned long, map<unsigned char, unsigned short>>> C;
-	map<unsigned char, map<unsigned long, map<unsigned char, unsigned char>>> P;
-	// TSP ========================================================
+	C.erase(K);
+	//P.erase(K);
+}
 
-	void RemoveCardinality(const unsigned char K);
+void HeldKarpST::CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val)
+{
+	C[cardinality][code][key] = val;
+}
 
-	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val);
-	void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val);
+void HeldKarpST::PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val)
+{
+	P[cardinality][code][key] = val;
+}
 
-	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
-	unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
+unsigned short HeldKarpST::CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
+{
+	return C[cardinality][code][key];
+}
 
-public:
-	HeldKarpST(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads);
+unsigned char HeldKarpST::PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
+{
+	auto r = P[cardinality][code][key];
+	return r;
+}
 
-};
+HeldKarpST::HeldKarpST(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads) {}

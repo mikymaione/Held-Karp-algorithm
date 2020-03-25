@@ -10,7 +10,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "HeldKarp.hpp"
 
 using namespace concurrency;
-using namespace std;
 
 class HeldKarpMT : public HeldKarp
 {
@@ -20,33 +19,15 @@ protected:
 	concurrent_unordered_map<unsigned char, concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned char>>> P;
 	// TSP ========================================================
 
-	void RemoveCardinality(const unsigned char K)
-	{
-		C.unsafe_erase(K);
-		//P.unsafe_erase(K);
-	}
+	void RemoveCardinality(const unsigned char K);
 
-	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val)
-	{
-		C[cardinality][code][key] = val;
-	}
+	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val);
+	void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val);
 
-	void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val)
-	{
-		P[cardinality][code][key] = val;
-	}
-
-	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
-	{
-		return C[cardinality][code][key];
-	}
-
-	unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
-	{
-		return P[cardinality][code][key];
-	}
+	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
+	unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
 
 public:
-	HeldKarpMT(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads) {}
+	HeldKarpMT(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads);
 
 };

@@ -6,13 +6,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include<iostream>
-
 #include "sqlite_modern_cpp.h"
 #include "HeldKarp.hpp"
 
 using namespace sqlite;
-using namespace std;
 
 class HeldKarpSQLite : public HeldKarp
 {
@@ -20,74 +17,16 @@ private:
 	database *db;
 
 protected:
-	void RemoveCardinality(const unsigned char K)
-	{
-		*db << "DELETE FROM C where cardinality = ?;"
-			<< K;
+	void RemoveCardinality(const unsigned char K);
 
-		/**db << "DELETE FROM P where cardinality = ?;"
-			<< K;*/
-	}
+	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val);
+	void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val);
 
-	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val)
-	{
-		*db << "INSERT INTO C (cardinality, code, k, val) VALUES (?, ?, ?, ?);"
-			<< cardinality
-			<< code
-			<< key
-			<< val;
-	}
-
-	void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val)
-	{
-		*db << "INSERT INTO P (cardinality, code, k, val) VALUES (?, ?, ?, ?);"
-			<< cardinality
-			<< code
-			<< key
-			<< val;
-	}
-
-	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
-	{
-		unsigned short r;
-
-		*db << "SELECT val FROM C WHERE cardinality = ? AND code = ? AND k = ?;"
-			<< cardinality
-			<< code
-			<< key
-			>> r;
-
-		return r;
-	}
-
-	unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
-	{
-		unsigned char r;
-
-		*db << "SELECT val FROM P WHERE cardinality = ? AND code = ? AND k = ?;"
-			<< cardinality
-			<< code
-			<< key
-			>> r;
-
-		return r;
-	}
+	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
+	unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
 
 public:
-	HeldKarpSQLite(vector<vector<unsigned char>> &DistanceMatrix2D, const unsigned int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads)
-	{
-		sqlite_config config;
-		config.flags = (numThreads > 0 ? OpenFlags::READWRITE | OpenFlags::FULLMUTEX : OpenFlags::READWRITE);
-
-		db = new database("DB.sqlite", config);
-
-		*db << "DELETE FROM P;";
-		*db << "DELETE FROM C;";
-	}
-
-	~HeldKarpSQLite()
-	{
-		delete db;
-	}
+	HeldKarpSQLite(vector<vector<unsigned char>> &DistanceMatrix2D, const unsigned int numThreads);
+	~HeldKarpSQLite();
 
 };
