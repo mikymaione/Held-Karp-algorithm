@@ -201,21 +201,25 @@ int main(int argc, char **argv)
 		<< endl
 		<< endl;
 
-	const unsigned int numThreads = (argc > 1 ? atoi(argv[1]) : 0);
-	const auto useSQLite = (argc > 2 ? atoi(argv[2]) : 0) == 1;
-	const string graphToSolve = (argc > 3 ? argv[3] : "all");
-	const auto NumberOfNodes = (argc > 4 ? atoi(argv[4]) : 3);
-
-	try
+	if (argc > 4)
 	{
-		StartElaboration(numThreads, useSQLite, graphToSolve, NumberOfNodes);
-	}
-	catch (const exception &e)
-	{
-		cout << endl << "Exception occurred: " << e.what() << endl;
-		throw;
+		const unsigned int numThreads = atoi(argv[1]);
+		const auto useSQLite = atoi(argv[2]);
+		const string graphToSolve = argv[3];
+		const auto NumberOfNodes = atoi(argv[4]);
+
+		try
+		{
+			StartElaboration(numThreads, useSQLite, graphToSolve, NumberOfNodes);
+		}
+		catch (const exception &e)
+		{
+			cout << endl << "Exception occurred: " << e.what() << endl;
+			throw;
+		}
+
+		cout << endl << "End." << endl;
 	}
 
-	cout << endl << "End." << endl;
 	system("pause");
 }
