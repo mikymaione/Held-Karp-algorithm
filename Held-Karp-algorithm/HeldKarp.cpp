@@ -154,6 +154,11 @@ void HeldKarp::waitForThreads(vector<thread> &threads)
 	threads.clear();
 }
 
+int HeldKarp::Pct(unsigned char current, unsigned char total)
+{
+	return current * 100 / total;
+}
+
 template <class T>
 T HeldKarp::generateRandomNumber(T startRange, T endRange, T limit)
 {
@@ -204,7 +209,8 @@ void HeldKarp::TSP()
 		<< to_string(concurentThreadsSupported)
 		<< " threads to solve a graph of "
 		<< to_string(numberOfNodes)
-		<< " nodes... ";
+		<< " nodes:"
+		<< endl;
 
 	// TSP ================================================================================================================================
 	// insieme vuoto
@@ -217,6 +223,9 @@ void HeldKarp::TSP()
 
 		if (s - 2 > -1)
 			RemoveCardinality(s - 2);
+
+		cout << Pct(s - 1, numberOfNodes - 2) << "%\r";
+		fflush(stdin);
 	}
 	// TSP ================================================================================================================================
 
@@ -249,7 +258,7 @@ void HeldKarp::TSP()
 	// PATH ===============================================================================================================================
 
 	cout
-		<< "Solved! Cost: "
+		<< " Cost: "
 		<< to_string(opt)
 		<< " time: "
 		<< chrono::duration_cast<chrono::milliseconds> (chrono::steady_clock::now() - begin).count()
