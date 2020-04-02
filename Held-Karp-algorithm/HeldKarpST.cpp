@@ -31,7 +31,7 @@ unsigned short HeldKarpST::CGet(const unsigned char cardinality, const unsigned 
 
 unsigned char HeldKarpST::PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
 {
-	return P[cardinality][code][key];	
+	return P[cardinality][code][key];
 }
 
 HeldKarpST::HeldKarpST(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads) {}

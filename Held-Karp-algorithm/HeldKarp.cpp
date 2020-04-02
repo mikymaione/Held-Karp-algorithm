@@ -14,6 +14,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include "HeldKarp.hpp"
 
+using namespace chrono;
+
 string HeldKarp::PrintTour(set<unsigned char> S)
 {
 	string path = "0 ";
@@ -154,11 +156,6 @@ void HeldKarp::waitForThreads(vector<thread> &threads)
 	threads.clear();
 }
 
-int HeldKarp::Pct(unsigned char current, unsigned char total)
-{
-	return current * 100 / total;
-}
-
 template <class T>
 T HeldKarp::generateRandomNumber(T startRange, T endRange, T limit)
 {
@@ -202,7 +199,7 @@ S(n) = O(2ⁿn) + O(2ⁿ√n)
 */
 void HeldKarp::TSP()
 {
-	auto begin = chrono::steady_clock::now();
+	auto begin = steady_clock::now();
 
 	cout
 		<< "Using "
@@ -224,7 +221,10 @@ void HeldKarp::TSP()
 		if (s - 2 > -1)
 			RemoveCardinality(s - 2);
 
-		cout << Pct(s - 1, numberOfNodes - 2) << "%\r";
+		cout
+			<< "ETL: "
+			<< (duration_cast<seconds>(steady_clock::now() - begin).count() / s) * (numberOfNodes - s)
+			<< "s\r";
 		fflush(stdin);
 	}
 	// TSP ================================================================================================================================
@@ -261,7 +261,7 @@ void HeldKarp::TSP()
 		<< " Cost: "
 		<< to_string(opt)
 		<< " time: "
-		<< chrono::duration_cast<chrono::milliseconds> (chrono::steady_clock::now() - begin).count()
+		<< duration_cast<milliseconds>(steady_clock::now() - begin).count()
 		<< "ms, path: "
 		<< path
 		<< endl;

@@ -50,8 +50,6 @@ protected:
 
 	string PrintTour(set<unsigned char> S);
 
-	int Pct(unsigned char current, unsigned char total);
-
 	template <class IEnumerable>
 	unsigned long Powered2Code(IEnumerable &S);
 
