@@ -222,9 +222,11 @@ void HeldKarp::TSP()
 			RemoveCardinality(s - 2);
 
 		cout
-			<< "ETL: "
-			<< (duration_cast<seconds>(steady_clock::now() - begin).count() / s) * (numberOfNodes - s)
-			<< "s\r";
+			<< "ET: "
+			<< duration_cast<milliseconds>(steady_clock::now() - begin).count()
+			<< "ms ETL: "
+			<< (duration_cast<milliseconds>(steady_clock::now() - begin).count() / s) * (numberOfNodes - s)
+			<< "ms\r";
 		fflush(stdin);
 	}
 	// TSP ================================================================================================================================
@@ -255,7 +257,6 @@ void HeldKarp::TSP()
 	PSet(numberOfNodes - 1, code, 0, π);
 
 	auto path = PrintTour(FullSet);
-	// PATH ===============================================================================================================================
 
 	cout
 		<< " Cost: "
@@ -265,6 +266,7 @@ void HeldKarp::TSP()
 		<< "ms, path: "
 		<< path
 		<< endl;
+	// PATH ===============================================================================================================================
 }
 
 vector<vector<unsigned char>> HeldKarp::New_RND_Distances(const unsigned char Size_of_RandomDistanceCosts)

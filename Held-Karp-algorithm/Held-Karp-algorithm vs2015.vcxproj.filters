@@ -51,4 +51,7 @@
       <UniqueIdentifier>{0a09129e-b8e9-4c6f-b64f-71b115389b71}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="DB.sqlite" />
+  </ItemGroup>
 </Project>
