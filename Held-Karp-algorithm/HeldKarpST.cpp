@@ -8,14 +8,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include "HeldKarpST.hpp"
 
-void HeldKarpST::CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val)
+void HeldKarpST::CSet(const unsigned long code, const unsigned char key, const unsigned short val)
 {
-	C[cardinality][code][key] = val;
+	C[code][key] = val;
 }
 
-unsigned short HeldKarpST::CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
+unsigned short HeldKarpST::CGet(const unsigned long code, const unsigned char key)
 {
-	return C[cardinality][code][key];
+	return C[code][key];
 }
 
 HeldKarpST::HeldKarpST(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads) {}

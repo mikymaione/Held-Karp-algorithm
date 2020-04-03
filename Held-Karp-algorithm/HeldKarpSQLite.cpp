@@ -9,21 +9,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <iostream>
 #include "HeldKarpSQLite.hpp"
 
-void HeldKarpSQLite::CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val)
+void HeldKarpSQLite::CSet(const unsigned long code, const unsigned char key, const unsigned short val)
 {
-	*db << "INSERT INTO C (cardinality, code, k, val) VALUES (?, ?, ?, ?);"
-		<< cardinality
+	*db << "INSERT INTO C (code, k, val) VALUES (?, ?, ?);"
 		<< code
 		<< key
 		<< val;
 }
 
-unsigned short HeldKarpSQLite::CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
+unsigned short HeldKarpSQLite::CGet(const unsigned long code, const unsigned char key)
 {
 	unsigned short r;
 
-	*db << "SELECT val FROM C WHERE cardinality = ? AND code = ? AND k = ?;"
-		<< cardinality
+	*db << "SELECT val FROM C WHERE code = ? AND k = ?;"
 		<< code
 		<< key
 		>> r;
@@ -38,7 +36,6 @@ HeldKarpSQLite::HeldKarpSQLite(vector<vector<unsigned char>> &DistanceMatrix2D, 
 
 	db = new database("DB.sqlite", config);
 
-	*db << "DELETE FROM P;";
 	*db << "DELETE FROM C;";
 }
 

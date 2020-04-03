@@ -17,8 +17,8 @@ private:
 	database *db;
 
 protected:
-	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val);
-	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
+	void CSet(const unsigned long code, const unsigned char key, const unsigned short val);
+	unsigned short CGet(const unsigned long code, const unsigned char key);
 
 public:
 	HeldKarpSQLite(vector<vector<unsigned char>> &DistanceMatrix2D, const unsigned int numThreads);

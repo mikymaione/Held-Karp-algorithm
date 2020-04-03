@@ -12,18 +12,3 @@ create table C (
 	val int not null,
 	primary key (cardinality, code, k)
 );
-
-create table P (
-	cardinality int not null,
-	code int not null,
-	k int not null,
-	val int not null,
-	primary key (cardinality, code, k)
-);
-
-create table Combinations (
-	n int not null,
-	k int not null,	
-	comb text,
-	primary key (n, k)
-);

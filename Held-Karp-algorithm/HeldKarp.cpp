@@ -26,7 +26,7 @@ unsigned char HeldKarp::CombinationPath(set<unsigned char> &S, const unsigned ch
 
 	for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}		
 	{
-		tmp = CGet(s, code, m) + distance[k][m];
+		tmp = CGet(code, m) + distance[k][m];
 
 		if (tmp < opt)
 		{
@@ -94,7 +94,7 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 		for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 			if (m != k)
 			{
-				tmp = CGet(s - 1, code_k, m) + distance[k][m];
+				tmp = CGet(code_k, m) + distance[k][m];
 
 				if (tmp < opt)
 				{
@@ -103,7 +103,7 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 				}
 			}
 
-		CSet(s, code, k, opt);
+		CSet(code, k, opt);
 	}
 }
 
@@ -221,7 +221,7 @@ void HeldKarp::TSP()
 	// TSP ================================================================================================================================
 	// insieme vuoto
 	for (auto k = 1; k < numberOfNodes; k++)
-		CSet(1, 1 << k, k, distance[k][0]);
+		CSet(1 << k, k, distance[k][0]);
 
 	for (unsigned char s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
 	{
@@ -249,9 +249,9 @@ void HeldKarp::TSP()
 	code = Powered2Code(FullSet);
 
 	for (auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
-		if (CGet(numberOfNodes - 1, code, k) > 0)
+		if (CGet(code, k) > 0)
 		{
-			tmp = CGet(numberOfNodes - 1, code, k) + distance[0][k];
+			tmp = CGet(code, k) + distance[0][k];
 
 			if (tmp < opt)
 			{

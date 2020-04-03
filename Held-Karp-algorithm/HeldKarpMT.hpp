@@ -14,11 +14,11 @@ using namespace concurrency;
 class HeldKarpMT : public HeldKarp
 {
 protected:
-	concurrent_unordered_map<unsigned char, concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned short>>> C;
+	concurrent_unordered_map<unsigned long, concurrent_unordered_map<unsigned char, unsigned short>> C;
 
 protected:
-	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val);
-	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
+	void CSet(const unsigned long code, const unsigned char key, const unsigned short val);
+	unsigned short CGet(const unsigned long code, const unsigned char key);
 
 public:
 	HeldKarpMT(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads);
