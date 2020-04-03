@@ -12,18 +12,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 class HeldKarpST : public HeldKarp
 {
 protected:
-	// TSP ========================================================
 	map<unsigned char, map<unsigned long, map<unsigned char, unsigned short>>> C;
-	map<unsigned char, map<unsigned long, map<unsigned char, unsigned char>>> P;
-	// TSP ========================================================
 
-	void RemoveCardinality(const unsigned char K);
-
+protected:
 	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val);
-	void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val);
-
 	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
-	unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
 
 public:
 	HeldKarpST(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads);

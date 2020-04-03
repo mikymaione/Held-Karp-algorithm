@@ -9,27 +9,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <iostream>
 #include "HeldKarpSQLite.hpp"
 
-void HeldKarpSQLite::RemoveCardinality(const unsigned char K)
-{
-	*db << "DELETE FROM C where cardinality = ?;"
-		<< K;
-
-	/**db << "DELETE FROM P where cardinality = ?;"
-		<< K;*/
-}
-
 void HeldKarpSQLite::CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val)
 {
 	*db << "INSERT INTO C (cardinality, code, k, val) VALUES (?, ?, ?, ?);"
-		<< cardinality
-		<< code
-		<< key
-		<< val;
-}
-
-void HeldKarpSQLite::PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val)
-{
-	*db << "INSERT INTO P (cardinality, code, k, val) VALUES (?, ?, ?, ?);"
 		<< cardinality
 		<< code
 		<< key
@@ -41,19 +23,6 @@ unsigned short HeldKarpSQLite::CGet(const unsigned char cardinality, const unsig
 	unsigned short r;
 
 	*db << "SELECT val FROM C WHERE cardinality = ? AND code = ? AND k = ?;"
-		<< cardinality
-		<< code
-		<< key
-		>> r;
-
-	return r;
-}
-
-unsigned char HeldKarpSQLite::PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
-{
-	unsigned char r;
-
-	*db << "SELECT val FROM P WHERE cardinality = ? AND code = ? AND k = ?;"
 		<< cardinality
 		<< code
 		<< key

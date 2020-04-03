@@ -16,32 +16,42 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace chrono;
 
-string HeldKarp::PrintTour(set<unsigned char> S)
+unsigned char HeldKarp::CombinationPath(set<unsigned char> &S, const unsigned char s, const unsigned char k)
 {
-	string path = "0 ";
-	unsigned char s = 0;
+	unsigned char π = 0;
+	unsigned short tmp;
 
-	while (true)
+	auto opt = USHRT_MAX;
+	auto code = Powered2Code(S);
+
+	for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}		
 	{
-		S.erase(s);
+		tmp = CGet(s, code, m) + distance[k][m];
 
-		try
+		if (tmp < opt)
 		{
-			s = PGet(S.size(), Powered2Code(S), s);
+			opt = tmp;
+			π = m;
 		}
-		catch (...)
-		{
-			s = 0;
-			// end.
-		}
-
-		path += to_string(s) + " ";
-
-		if (s == 0)
-			break;
 	}
 
-	return path;
+	return π;
+}
+
+string HeldKarp::PrintTour(set<unsigned char> S, const unsigned char π) // O(N³)
+{
+	unsigned char s = π;
+	string path = "0 " + to_string(s) + " ";
+
+	while (S.size() > 1)
+	{
+		S.erase(s);
+		s = CombinationPath(S, S.size(), s);
+
+		path += to_string(s) + " ";
+	}
+
+	return path + "0";
 }
 
 template <class IEnumerable>
@@ -94,7 +104,6 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 			}
 
 		CSet(s, code, k, opt);
-		PSet(s - 1, code_k, k, π);
 	}
 }
 
@@ -194,8 +203,8 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 2. return to the starting point
 3. be of minimum distance.
 
-T(n) = O(2ⁿn²)
-S(n) = O(2ⁿn) + O(2ⁿ√n)
+T(n) = O(2ⁿn²) + O(n³)
+S(n) = O(2ⁿn)
 */
 void HeldKarp::TSP()
 {
@@ -216,10 +225,7 @@ void HeldKarp::TSP()
 
 	for (unsigned char s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
 	{
-		Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s
-
-		if (s - 2 > -1)
-			RemoveCardinality(s - 2);
+		Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
 
 		cout
 			<< "ET: "
@@ -254,9 +260,7 @@ void HeldKarp::TSP()
 			}
 		}
 
-	PSet(numberOfNodes - 1, code, 0, π);
-
-	auto path = PrintTour(FullSet);
+	auto path = PrintTour(FullSet, π);
 
 	cout
 		<< " Cost: "

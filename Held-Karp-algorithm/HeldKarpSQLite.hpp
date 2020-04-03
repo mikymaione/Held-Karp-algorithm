@@ -17,13 +17,8 @@ private:
 	database *db;
 
 protected:
-	void RemoveCardinality(const unsigned char K);
-
 	void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val);
-	void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val);
-
 	unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
-	unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key);
 
 public:
 	HeldKarpSQLite(vector<vector<unsigned char>> &DistanceMatrix2D, const unsigned int numThreads);

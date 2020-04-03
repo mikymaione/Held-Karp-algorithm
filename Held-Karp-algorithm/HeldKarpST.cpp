@@ -8,30 +8,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include "HeldKarpST.hpp"
 
-void HeldKarpST::RemoveCardinality(const unsigned char K)
-{
-	C.erase(K);
-	//P.erase(K);
-}
-
 void HeldKarpST::CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val)
 {
 	C[cardinality][code][key] = val;
 }
 
-void HeldKarpST::PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val)
-{
-	P[cardinality][code][key] = val;
-}
-
 unsigned short HeldKarpST::CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
 {
 	return C[cardinality][code][key];
-}
-
-unsigned char HeldKarpST::PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key)
-{
-	return P[cardinality][code][key];
 }
 
 HeldKarpST::HeldKarpST(vector<vector<unsigned char>> & DistanceMatrix2D, const unsigned int numThreads) : HeldKarp::HeldKarp(DistanceMatrix2D, numThreads) {}

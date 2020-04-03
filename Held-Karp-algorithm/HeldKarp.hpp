@@ -40,15 +40,11 @@ protected:
 	// Multi Thread ===============================================
 
 protected:
-	virtual void RemoveCardinality(const unsigned char K) = 0;
-
 	virtual void CSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned short val) = 0;
-	virtual void PSet(const unsigned char cardinality, const unsigned long code, const unsigned char key, const unsigned char val) = 0;
-
 	virtual unsigned short CGet(const unsigned char cardinality, const unsigned long code, const unsigned char key) = 0;
-	virtual unsigned char PGet(const unsigned char cardinality, const unsigned long code, const unsigned char key) = 0;
 
-	string PrintTour(set<unsigned char> S);
+	unsigned char CombinationPath(set<unsigned char> &S, const unsigned char s, const unsigned char k);
+	string PrintTour(set<unsigned char> S, const unsigned char π);
 
 	template <class IEnumerable>
 	unsigned long Powered2Code(IEnumerable &S);
