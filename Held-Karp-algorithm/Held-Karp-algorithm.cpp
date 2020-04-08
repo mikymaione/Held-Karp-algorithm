@@ -204,9 +204,9 @@ int main(int argc, char **argv)
 	if (argc > 4)
 	{
 		const unsigned int numThreads = atoi(argv[1]);
-		const auto useSQLite = atoi(argv[2]);
+		const bool useSQLite = atoi(argv[2]) == 1;
 		const string graphToSolve = argv[3];
-		const auto NumberOfNodes = atoi(argv[4]);
+		const unsigned char NumberOfNodes = atoi(argv[4]);
 
 		try
 		{

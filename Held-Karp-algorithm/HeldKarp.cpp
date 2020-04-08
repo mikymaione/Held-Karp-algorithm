@@ -229,10 +229,10 @@ void HeldKarp::TSP()
 
 		cout
 			<< "ET: "
-			<< duration_cast<milliseconds>(steady_clock::now() - begin).count()
-			<< "ms ETL: "
-			<< (duration_cast<milliseconds>(steady_clock::now() - begin).count() / s) * (numberOfNodes - s)
-			<< "ms\r";
+			<< duration_cast<seconds>(steady_clock::now() - begin).count()
+			<< "s ETL: "
+			<< (duration_cast<seconds>(steady_clock::now() - begin).count() / s) * (numberOfNodes - s)
+			<< "s\r";
 		fflush(stdin);
 	}
 	// TSP ================================================================================================================================
