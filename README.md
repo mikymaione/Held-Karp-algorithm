@@ -6,7 +6,7 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 
 
 ## Complexity
-* T(n) = O(2ⁿn²) + O(n³)
+* T(n) = O(2ⁿn²)
 * S(n) = O(2ⁿ√n)
 
 

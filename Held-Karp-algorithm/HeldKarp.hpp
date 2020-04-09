@@ -32,7 +32,9 @@ private:
 		vector<unsigned char> path;
 	};
 
+	// <Cardinality, <Code, <Node, Data>>>
 	map<unsigned char, map<unsigned long, map<unsigned char, sInfo>>> C;
+
 	const vector<vector<unsigned char>> distance;
 	const unsigned char numberOfNodes;
 

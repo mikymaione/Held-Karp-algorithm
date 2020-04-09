@@ -16,6 +16,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace chrono;
 
+HeldKarp::HeldKarp(const vector<vector<unsigned char>> &DistanceMatrix2D) : numberOfNodes(DistanceMatrix2D.size()), distance(DistanceMatrix2D) {}
+
 string HeldKarp::PrintPath(const unsigned long code, const unsigned char π)
 {
 	string s;
@@ -122,8 +124,6 @@ T HeldKarp::generateRandomNumber(const T startRange, const T endRange, const T l
 	return num;
 }
 
-HeldKarp::HeldKarp(const vector<vector<unsigned char>> &DistanceMatrix2D) : numberOfNodes(DistanceMatrix2D.size()), distance(DistanceMatrix2D) {}
-
 /*
 Held–Karp algorithm
 
@@ -134,7 +134,7 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 2. return to the starting point
 3. be of minimum distance.
 
-T(n) = O(2ⁿn²) + O(n³)
+T(n) = O(2ⁿn²)
 S(n) = O(2ⁿ√n)
 */
 void HeldKarp::TSP()
