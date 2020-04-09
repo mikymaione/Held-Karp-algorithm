@@ -8,6 +8,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <chrono>
 #include <iostream>
+#include <set>
 #include <stack>
 #include <string>
 
@@ -15,42 +16,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace chrono;
 
-unsigned char HeldKarp::CombinationPath(set<unsigned char> &S, const unsigned char s, const unsigned char k)
+string HeldKarp::PrintPath(unsigned long code, const unsigned char π)
 {
-	unsigned char π = 0;
-	unsigned short tmp;
+	string s = "0 ";
+	auto path = C[numberOfNodes - 1][code][π].path;
 
-	auto opt = USHRT_MAX;
-	auto code = Powered2Code(S);
+	for (auto e : path)
+		s += to_string(e) + " ";
 
-	for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}		
-	{
-		tmp = C[code][m] + distance[k][m];
-
-		if (tmp < opt)
-		{
-			opt = tmp;
-			π = m;
-		}
-	}
-
-	return π;
-}
-
-string HeldKarp::PrintTour(set<unsigned char> S, const unsigned char π) // O(N³)
-{
-	unsigned char s = π;
-	string path = "0 " + to_string(s) + " ";
-
-	while (S.size() > 1)
-	{
-		S.erase(s);
-		s = CombinationPath(S, S.size(), s);
-
-		path += to_string(s) + " ";
-	}
-
-	return path + "0";
+	return s + "0";
 }
 
 template <class IEnumerable>
@@ -93,7 +67,7 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 		for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 			if (m != k)
 			{
-				tmp = C[code_k][m] + distance[k][m];
+				tmp = C[s - 1][code_k][m].cost + distance[k][m];
 
 				if (tmp < opt)
 				{
@@ -102,10 +76,11 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 				}
 			}
 
-		#pragma omp critical
-		{
-			C[code][k] = opt;
-		}
+		for (auto f : C[s - 1][code_k][π].path)
+			C[s][code][k].path.push_back(f);
+
+		C[s][code][k].path.push_back(π);
+		C[s][code][k].cost = opt;
 	}
 }
 
@@ -133,17 +108,11 @@ void HeldKarp::Combinations(const unsigned char K, const unsigned char N)
 
 			if (i == K)
 			{
-				#pragma omp parallel
-				{
-					CombinationPart(R, K);
-				}
-
+				CombinationPart(R, K);
 				break;
 			}
 		}
 	}
-
-	#pragma omp barrier
 }
 
 template <class T>
@@ -191,11 +160,14 @@ void HeldKarp::TSP()
 	// TSP ================================================================================================================================
 	// insieme vuoto
 	for (auto k = 1; k < numberOfNodes; k++)
-		C[1 << k][k] = distance[k][0];
+		C[1][1 << k][k].cost = distance[k][0];
 
 	for (unsigned char s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
 	{
 		Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
+
+		if (C.count(s - 2) > 0)
+			C.erase(s - 2);
 
 		cout
 			<< "ET: "
@@ -205,6 +177,8 @@ void HeldKarp::TSP()
 			<< "s\r";
 		fflush(stdin);
 	}
+
+	C.erase(numberOfNodes - 2);
 	// TSP ================================================================================================================================
 
 	// PATH ===============================================================================================================================
@@ -219,9 +193,9 @@ void HeldKarp::TSP()
 	code = Powered2Code(FullSet);
 
 	for (auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
-		if (C[code][k] > 0)
+		if (C[numberOfNodes - 1][code][k].cost > 0)
 		{
-			tmp = C[code][k] + distance[0][k];
+			tmp = C[numberOfNodes - 1][code][k].cost + distance[0][k];
 
 			if (tmp < opt)
 			{
@@ -230,7 +204,10 @@ void HeldKarp::TSP()
 			}
 		}
 
-	auto path = PrintTour(FullSet, π);
+	C[numberOfNodes - 1][code][π].cost = opt;
+	C[numberOfNodes - 1][code][π].path.push_back(π);
+
+	auto path = PrintPath(code, π);
 
 	cout
 		<< "-Cost: "

@@ -19,7 +19,6 @@ unsigned int
 #pragma once
 
 #include <map>
-#include <set>
 #include <vector>
 
 using namespace std;
@@ -27,14 +26,17 @@ using namespace std;
 class HeldKarp
 {
 private:
-	map<unsigned long, map<unsigned char, unsigned short>> C;
+	struct sInfo
+	{
+		unsigned short cost;
+		vector<unsigned char> path;
+	};
+
+	map<unsigned char, map<unsigned long, map<unsigned char, sInfo>>> C;
 	vector<vector<unsigned char>> distance;
 	unsigned char numberOfNodes;
 
 private:
-	unsigned char CombinationPath(set<unsigned char> &S, const unsigned char s, const unsigned char k);
-	string PrintTour(set<unsigned char> S, const unsigned char π);
-
 	template <class IEnumerable>
 	unsigned long Powered2Code(IEnumerable &S);
 
@@ -44,8 +46,9 @@ private:
 	unsigned long Powered2Code(unsigned long code, const unsigned char exclude);
 
 	void CombinationPart(vector<unsigned char> S, const unsigned char s);
-
 	void Combinations(const unsigned char K, const unsigned char N);
+
+	string PrintPath(unsigned long code, const unsigned char π);
 
 	template <class T>
 	static T generateRandomNumber(T startRange, T endRange, T limit);
