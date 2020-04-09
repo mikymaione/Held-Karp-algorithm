@@ -74,13 +74,14 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 					opt = tmp;
 					π = m;
 				}
-			}
+			}		
 
-		for (auto f : C[s - 1][code_k][π].path)
-			C[s][code][k].path.push_back(f);
-
-		C[s][code][k].path.push_back(π);
-		C[s][code][k].cost = opt;
+		#pragma omp critical
+		{
+			C[s][code][k].path = vector<unsigned char>(C[s - 1][code_k][π].path);
+			C[s][code][k].path.push_back(π);
+			C[s][code][k].cost = opt;
+		}		
 	}
 }
 
@@ -108,11 +109,17 @@ void HeldKarp::Combinations(const unsigned char K, const unsigned char N)
 
 			if (i == K)
 			{
-				CombinationPart(R, K);
+				#pragma omp parallel
+				{
+					CombinationPart(R, K);
+				}
+				
 				break;
 			}
 		}
 	}
+
+	#pragma omp barrier
 }
 
 template <class T>
