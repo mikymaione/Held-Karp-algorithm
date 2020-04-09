@@ -4,39 +4,22 @@ Copyright (c) 2020: Michele Maione
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#include "HeldKarpMT.hpp"
-#include "HeldKarpST.hpp"
-#include "HeldKarpSQLite.hpp"
+#include <iostream>
+#include "HeldKarp.hpp"
 
-void TSP(vector<vector<unsigned char>> &DistanceMatrix2D, const unsigned int numThreads, const bool useSQLite)
+void TSP(vector<vector<unsigned char>> &DistanceMatrix2D)
 {
-	if (useSQLite)
-	{
-		HeldKarpSQLite hk(DistanceMatrix2D, numThreads);
-		hk.TSP();
-	}
-	else
-	{
-		if (numThreads > 0)
-		{
-			HeldKarpMT hk(DistanceMatrix2D, numThreads);
-			hk.TSP();
-		}
-		else
-		{
-			HeldKarpST hk(DistanceMatrix2D, numThreads);
-			hk.TSP();
-		}
-	}
+	HeldKarp hk(DistanceMatrix2D);
+	hk.TSP();
 }
 
-void TSP_RND(const unsigned char NumberOfNodes, const int numThreads, const bool useSQLite)
+void TSP_RND(const unsigned char NumberOfNodes)
 {
 	auto DistanceMatrix2D = HeldKarp::New_RND_Distances(NumberOfNodes);
-	TSP(DistanceMatrix2D, numThreads, useSQLite);
+	TSP(DistanceMatrix2D);
 }
 
-void StartElaboration(const unsigned int numThreads, const bool useSQLite, const string graphToSolve, const unsigned char NumberOfNodes)
+void StartElaboration(const string graphToSolve, const unsigned char NumberOfNodes)
 {
 	vector<vector<unsigned char>> distance3 =
 	{
@@ -160,27 +143,27 @@ void StartElaboration(const unsigned int numThreads, const bool useSQLite, const
 
 	if (graphToSolve == "random")
 	{
-		TSP_RND(NumberOfNodes, numThreads, useSQLite);
+		TSP_RND(NumberOfNodes);
 	}
 	else
 	{
 		if (graphToSolve == "all" || graphToSolve == "3")
-			TSP(distance3, numThreads, useSQLite);
+			TSP(distance3);
 
 		if (graphToSolve == "all" || graphToSolve == "4")
-			TSP(distance4, numThreads, useSQLite);
+			TSP(distance4);
 
 		if (graphToSolve == "all" || graphToSolve == "6")
-			TSP(distance6, numThreads, useSQLite);
+			TSP(distance6);
 
 		if (graphToSolve == "all" || graphToSolve == "20")
-			TSP(distance20, numThreads, useSQLite);
+			TSP(distance20);
 
 		if (graphToSolve == "all" || graphToSolve == "25")
-			TSP(distance25, numThreads, useSQLite);
+			TSP(distance25);
 
 		if (graphToSolve == "all" || graphToSolve == "40")
-			TSP(distance40, numThreads, useSQLite);
+			TSP(distance40);
 	}
 }
 
@@ -190,8 +173,6 @@ int main(int argc, char **argv)
 		<< "Multi-threaded Held-Karp algorithm to solve the Traveling Salesman Problem" << endl
 		<< endl
 		<< "Held-Karp-algorithm parameters: " << endl
-		<< " [number of threads = {0 - 32}]" << endl
-		<< " [use SQLite = {0 - 1}]" << endl
 		<< " [graph to solve = {3, 4, 6, 20, 25, 40, all, random}]" << endl
 		<< " [number of node of random graph = {3 - 255}]" << endl
 		<< endl
@@ -201,16 +182,14 @@ int main(int argc, char **argv)
 		<< endl
 		<< endl;
 
-	if (argc > 4)
+	if (argc > 2)
 	{
-		const unsigned int numThreads = atoi(argv[1]);
-		const bool useSQLite = atoi(argv[2]) == 1;
-		const string graphToSolve = argv[3];
-		const unsigned char NumberOfNodes = atoi(argv[4]);
+		const string graphToSolve = argv[1];
+		const unsigned char NumberOfNodes = atoi(argv[2]);
 
 		try
 		{
-			StartElaboration(numThreads, useSQLite, graphToSolve, NumberOfNodes);
+			StartElaboration(graphToSolve, NumberOfNodes);
 		}
 		catch (const exception &e)
 		{

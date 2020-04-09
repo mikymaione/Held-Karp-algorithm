@@ -6,7 +6,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <stack>
@@ -26,7 +25,7 @@ unsigned char HeldKarp::CombinationPath(set<unsigned char> &S, const unsigned ch
 
 	for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}		
 	{
-		tmp = CGet(code, m) + distance[k][m];
+		tmp = C[code][m] + distance[k][m];
 
 		if (tmp < opt)
 		{
@@ -94,7 +93,10 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 		for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 			if (m != k)
 			{
-				tmp = CGet(code_k, m) + distance[k][m];
+				#pragma omp critical
+				{
+					tmp = C[code_k][m] + distance[k][m];
+				}
 
 				if (tmp < opt)
 				{
@@ -103,7 +105,10 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 				}
 			}
 
-		CSet(code, k, opt);
+		#pragma omp critical
+		{
+			C[code][k] = opt;
+		}
 	}
 }
 
@@ -111,10 +116,6 @@ void HeldKarp::Combinations(const unsigned char K, const unsigned char N)
 {
 	size_t i;
 	unsigned char s;
-
-	auto useMultiThreadingForK = (useMultiThreading && N > 10 && K > 3);
-
-	vector<thread> threads;
 
 	vector<unsigned char> R(K);
 	stack<unsigned char> S;
@@ -135,34 +136,17 @@ void HeldKarp::Combinations(const unsigned char K, const unsigned char N)
 
 			if (i == K)
 			{
-				if (useMultiThreadingForK)
-				{
-					threads.push_back(thread(&HeldKarp::CombinationPart, this, R, K));
-
-					if (threads.size() == concurentThreadsSupported)
-						waitForThreads(threads);
-				}
-				else
+				#pragma omp parallel
 				{
 					CombinationPart(R, K);
-				}
+				}				
 
 				break;
 			}
 		}
 	}
 
-	if (useMultiThreadingForK)
-		waitForThreads(threads);
-}
-
-void HeldKarp::waitForThreads(vector<thread> &threads)
-{
-	for (auto & th : threads)
-		if (th.joinable())
-			th.join();
-
-	threads.clear();
+	#pragma omp barrier
 }
 
 template <class T>
@@ -178,19 +162,10 @@ T HeldKarp::generateRandomNumber(T startRange, T endRange, T limit)
 	return num;
 }
 
-HeldKarp::HeldKarp(vector<vector<unsigned char>> &DistanceMatrix2D, const unsigned int numThreads)
+HeldKarp::HeldKarp(vector<vector<unsigned char>> &DistanceMatrix2D)
 {
 	distance = DistanceMatrix2D;
-	numberOfNodes = (unsigned char)distance.size();
-
-	auto hc = thread::hardware_concurrency();
-
-	if (numThreads < hc)
-		hc = numThreads;
-
-	concurentThreadsSupported = (hc >= minCpus ? hc - 2 : 0);
-
-	useMultiThreading = (concurentThreadsSupported > 0);
+	numberOfNodes = distance.size();
 }
 
 /*
@@ -211,9 +186,7 @@ void HeldKarp::TSP()
 	auto begin = steady_clock::now();
 
 	cout
-		<< "Using "
-		<< to_string(concurentThreadsSupported)
-		<< " threads to solve a graph of "
+		<< "Solving a graph of "
 		<< to_string(numberOfNodes)
 		<< " nodes:"
 		<< endl;
@@ -221,7 +194,7 @@ void HeldKarp::TSP()
 	// TSP ================================================================================================================================
 	// insieme vuoto
 	for (auto k = 1; k < numberOfNodes; k++)
-		CSet(1 << k, k, distance[k][0]);
+		C[1 << k][k] = distance[k][0];
 
 	for (unsigned char s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
 	{
@@ -229,9 +202,9 @@ void HeldKarp::TSP()
 
 		cout
 			<< "ET: "
-			<< duration_cast<seconds>(steady_clock::now() - begin).count()
+			<< duration_cast<milliseconds>(steady_clock::now() - begin).count() / 1000
 			<< "s ETL: "
-			<< (duration_cast<seconds>(steady_clock::now() - begin).count() / s) * (numberOfNodes - s)
+			<< (duration_cast<milliseconds>(steady_clock::now() - begin).count() / s) * (numberOfNodes - s) / 1000
 			<< "s\r";
 		fflush(stdin);
 	}
@@ -249,9 +222,9 @@ void HeldKarp::TSP()
 	code = Powered2Code(FullSet);
 
 	for (auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
-		if (CGet(code, k) > 0)
+		if (C[code][k] > 0)
 		{
-			tmp = CGet(code, k) + distance[0][k];
+			tmp = C[code][k] + distance[0][k];
 
 			if (tmp < opt)
 			{
@@ -263,7 +236,7 @@ void HeldKarp::TSP()
 	auto path = PrintTour(FullSet, π);
 
 	cout
-		<< " Cost: "
+		<< "-Cost: "
 		<< to_string(opt)
 		<< " time: "
 		<< duration_cast<milliseconds>(steady_clock::now() - begin).count()

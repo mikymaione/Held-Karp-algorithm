@@ -18,31 +18,20 @@ unsigned int
 */
 #pragma once
 
+#include <map>
 #include <set>
-#include <thread>
 #include <vector>
 
 using namespace std;
 
 class HeldKarp
 {
-protected:
-	// TSP ========================================================	
+private:
+	map<unsigned long, map<unsigned char, unsigned short>> C;
 	vector<vector<unsigned char>> distance;
 	unsigned char numberOfNodes;
-	// TSP ========================================================
 
-
-	// Multi Thread ===============================================
-	const unsigned char minCpus = 3;
-	unsigned char concurentThreadsSupported;
-	bool useMultiThreading;
-	// Multi Thread ===============================================
-
-protected:
-	virtual void CSet(const unsigned long code, const unsigned char key, const unsigned short val) = 0;
-	virtual unsigned short CGet(const unsigned long code, const unsigned char key) = 0;
-
+private:
 	unsigned char CombinationPath(set<unsigned char> &S, const unsigned char s, const unsigned char k);
 	string PrintTour(set<unsigned char> S, const unsigned char π);
 
@@ -58,13 +47,11 @@ protected:
 
 	void Combinations(const unsigned char K, const unsigned char N);
 
-	void waitForThreads(vector<thread> &threads);
-
 	template <class T>
 	static T generateRandomNumber(T startRange, T endRange, T limit);
 
 public:
-	HeldKarp(vector<vector<unsigned char>> &DistanceMatrix2D, const unsigned int numThreads);
+	HeldKarp(vector<vector<unsigned char>> &DistanceMatrix2D);
 
 	void TSP();
 
