@@ -145,7 +145,7 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 3. be of minimum distance.
 
 T(n) = O(2ⁿn²) + O(n³)
-S(n) = O(2ⁿn)
+S(n) = O(2ⁿ√n)
 */
 void HeldKarp::TSP()
 {
