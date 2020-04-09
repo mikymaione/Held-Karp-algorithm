@@ -5,6 +5,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include <iostream>
+#include <omp.h>
 #include "HeldKarp.hpp"
 
 void TSP(vector<vector<unsigned char>> &DistanceMatrix2D)
@@ -167,10 +168,11 @@ void StartElaboration(const string graphToSolve, const unsigned char NumberOfNod
 	}
 }
 
-int main(int argc, char **argv)
+void WriteTitle()
 {
 	cout
-		<< "Multi-threaded Held-Karp algorithm to solve the Traveling Salesman Problem" << endl
+		<< omp_get_max_threads()
+		<< "-threaded Held-Karp algorithm to solve the Traveling Salesman Problem" << endl
 		<< endl
 		<< "Held-Karp-algorithm parameters: " << endl
 		<< " [graph to solve = {3, 4, 6, 20, 25, 40, all, random}]" << endl
@@ -181,6 +183,11 @@ int main(int argc, char **argv)
 		<< "Licensed under the MIT License." << endl
 		<< endl
 		<< endl;
+}
+
+int main(int argc, char **argv)
+{
+	WriteTitle();
 
 	if (argc > 2)
 	{

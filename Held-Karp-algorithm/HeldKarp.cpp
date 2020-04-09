@@ -18,13 +18,12 @@ using namespace chrono;
 
 string HeldKarp::PrintPath(unsigned long code, const unsigned char π)
 {
-	string s = "0 ";
-	auto path = C[numberOfNodes - 1][code][π].path;
+	string s;
 
-	for (auto e : path)
-		s += to_string(e) + " ";
+	for (auto e : C[numberOfNodes - 1][code][π].path)
+		s =  to_string(e) + " " + s;
 
-	return s + "0";
+	return "0 " + s + "0";
 }
 
 template <class IEnumerable>
@@ -55,6 +54,7 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 	unsigned char π;
 	unsigned short opt, tmp;
 	unsigned long code_k, code;
+	sInfo newData;
 
 	code = Powered2Code(S);
 
@@ -76,12 +76,14 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 				}
 			}		
 
+		newData = C[s - 1][code_k][π];
+		newData.path.push_back(π);
+		newData.cost = opt;
+
 		#pragma omp critical
-		{
-			C[s][code][k].path = vector<unsigned char>(C[s - 1][code_k][π].path);
-			C[s][code][k].path.push_back(π);
-			C[s][code][k].cost = opt;
-		}		
+		{			
+			C[s][code][k] = newData;
+		}
 	}
 }
 
@@ -157,7 +159,7 @@ S(n) = O(2ⁿ√n)
 void HeldKarp::TSP()
 {
 	auto begin = steady_clock::now();
-
+	
 	cout
 		<< "Solving a graph of "
 		<< to_string(numberOfNodes)
