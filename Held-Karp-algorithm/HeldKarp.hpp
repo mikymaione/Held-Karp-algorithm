@@ -33,28 +33,28 @@ private:
 	};
 
 	map<unsigned char, map<unsigned long, map<unsigned char, sInfo>>> C;
-	vector<vector<unsigned char>> distance;
-	unsigned char numberOfNodes;
+	const vector<vector<unsigned char>> distance;
+	const unsigned char numberOfNodes;
 
 private:
 	template <class IEnumerable>
-	unsigned long Powered2Code(IEnumerable &S);
+	unsigned long Powered2Code(const IEnumerable &S);
 
 	template <class IEnumerable>
-	unsigned long Powered2Code(IEnumerable &S, const unsigned char exclude);
+	unsigned long Powered2Code(const IEnumerable &S, const unsigned char exclude);
 
 	unsigned long Powered2Code(unsigned long code, const unsigned char exclude);
 
-	void CombinationPart(vector<unsigned char> S, const unsigned char s);
+	void CombinationPart(const vector<unsigned char> &S, const unsigned char s);
 	void Combinations(const unsigned char K, const unsigned char N);
 
-	string PrintPath(unsigned long code, const unsigned char π);
+	string PrintPath(const unsigned long code, const unsigned char π);
 
 	template <class T>
-	static T generateRandomNumber(T startRange, T endRange, T limit);
+	static T generateRandomNumber(const T startRange, const T endRange, const T limit);
 
 public:
-	HeldKarp(vector<vector<unsigned char>> &DistanceMatrix2D);
+	HeldKarp(const vector<vector<unsigned char>> &DistanceMatrix2D);
 
 	void TSP();
 

@@ -16,28 +16,28 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace chrono;
 
-string HeldKarp::PrintPath(unsigned long code, const unsigned char π)
+string HeldKarp::PrintPath(const unsigned long code, const unsigned char π)
 {
 	string s;
 
-	for (auto e : C[numberOfNodes - 1][code][π].path)
-		s =  to_string(e) + " " + s;
+	for (const auto e : C[numberOfNodes - 1][code][π].path)
+		s = to_string(e) + " " + s;
 
 	return "0 " + s + "0";
 }
 
 template <class IEnumerable>
-unsigned long HeldKarp::Powered2Code(IEnumerable &S)
+unsigned long HeldKarp::Powered2Code(const IEnumerable &S)
 {
 	return Powered2Code(S, UCHAR_MAX);
 }
 
 template <class IEnumerable>
-unsigned long HeldKarp::Powered2Code(IEnumerable &S, const unsigned char exclude)
+unsigned long HeldKarp::Powered2Code(const IEnumerable &S, const unsigned char exclude)
 {
 	unsigned long code = 0;
 
-	for (auto e : S)
+	for (const auto e : S)
 		if (e != exclude)
 			code += 1 << e;
 
@@ -49,22 +49,21 @@ unsigned long HeldKarp::Powered2Code(unsigned long code, const unsigned char exc
 	return code - (1 << exclude);
 }
 
-void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
+void HeldKarp::CombinationPart(const vector<unsigned char> &S, const unsigned char s)
 {
 	unsigned char π;
 	unsigned short opt, tmp;
-	unsigned long code_k, code;
-	sInfo newData;
+	unsigned long code_k;
 
-	code = Powered2Code(S);
+	const auto code = Powered2Code(S);
 
-	for (auto k : S)
+	for (const auto k : S)
 	{
 		π = 0;
 		opt = USHRT_MAX;
 		code_k = Powered2Code(code, k);
 
-		for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
+		for (const auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 			if (m != k)
 			{
 				tmp = C[s - 1][code_k][m].cost + distance[k][m];
@@ -74,16 +73,11 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 					opt = tmp;
 					π = m;
 				}
-			}		
+			}
 
-		newData = C[s - 1][code_k][π];
-		newData.path.push_back(π);
-		newData.cost = opt;
-
-		#pragma omp critical
-		{			
-			C[s][code][k] = newData;
-		}
+		C[s][code][k] = C[s - 1][code_k][π];
+		C[s][code][k].path.push_back(π);
+		C[s][code][k].cost = opt;
 	}
 }
 
@@ -111,37 +105,24 @@ void HeldKarp::Combinations(const unsigned char K, const unsigned char N)
 
 			if (i == K)
 			{
-				#pragma omp parallel
-				{
-					CombinationPart(R, K);
-				}
-				
+				CombinationPart(R, K);
 				break;
 			}
 		}
 	}
-
-	#pragma omp barrier
 }
 
 template <class T>
-T HeldKarp::generateRandomNumber(T startRange, T endRange, T limit)
+T HeldKarp::generateRandomNumber(const T startRange, const T endRange, const T limit)
 {
-	T r = rand();
-
-	T range = endRange - startRange;
-	range++;
-
-	T num = r % range + startRange;
+	const T r = rand();
+	const T range = 1 + endRange - startRange;
+	const T num = r % range + startRange;
 
 	return num;
 }
 
-HeldKarp::HeldKarp(vector<vector<unsigned char>> &DistanceMatrix2D)
-{
-	distance = DistanceMatrix2D;
-	numberOfNodes = distance.size();
-}
+HeldKarp::HeldKarp(const vector<vector<unsigned char>> &DistanceMatrix2D) : numberOfNodes(DistanceMatrix2D.size()), distance(DistanceMatrix2D) {}
 
 /*
 Held–Karp algorithm
@@ -158,8 +139,8 @@ S(n) = O(2ⁿ√n)
 */
 void HeldKarp::TSP()
 {
-	auto begin = steady_clock::now();
-	
+	const auto begin = steady_clock::now();
+
 	cout
 		<< "Solving a graph of "
 		<< to_string(numberOfNodes)
@@ -168,7 +149,7 @@ void HeldKarp::TSP()
 
 	// TSP ================================================================================================================================
 	// insieme vuoto
-	for (auto k = 1; k < numberOfNodes; k++)
+	for (unsigned char k = 1; k < numberOfNodes; k++)
 		C[1][1 << k][k].cost = distance[k][0];
 
 	for (unsigned char s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
@@ -193,15 +174,14 @@ void HeldKarp::TSP()
 	// PATH ===============================================================================================================================
 	unsigned char π = 0;
 	unsigned short tmp, opt = USHRT_MAX;
-	unsigned long code;
 
 	set<unsigned char> FullSet;
 	for (unsigned char z = 1; z < numberOfNodes; z++)
 		FullSet.insert(z);
 
-	code = Powered2Code(FullSet);
+	const auto code = Powered2Code(FullSet);
 
-	for (auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
+	for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
 		if (C[numberOfNodes - 1][code][k].cost > 0)
 		{
 			tmp = C[numberOfNodes - 1][code][k].cost + distance[0][k];
@@ -216,7 +196,7 @@ void HeldKarp::TSP()
 	C[numberOfNodes - 1][code][π].cost = opt;
 	C[numberOfNodes - 1][code][π].path.push_back(π);
 
-	auto path = PrintPath(code, π);
+	const auto path = PrintPath(code, π);
 
 	cout
 		<< "-Cost: "
@@ -226,7 +206,7 @@ void HeldKarp::TSP()
 		<< "ms, path: "
 		<< path
 		<< endl;
-	// PATH ===============================================================================================================================
+	// PATH ===============================================================================================================================	
 }
 
 vector<vector<unsigned char>> HeldKarp::New_RND_Distances(const unsigned char Size_of_RandomDistanceCosts)
