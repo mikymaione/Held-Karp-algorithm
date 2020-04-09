@@ -7,6 +7,9 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 
 ## Features
 * Supports multi-thread: for every set S ⊆ {2, ..., n} of cardinality |S| = s, s threads are executed.
+* T(n) = O(2ⁿn²) + O(n³)
+* S(n) = O(2ⁿ√n)
+
 
 
 ## IDE
