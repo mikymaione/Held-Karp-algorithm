@@ -93,10 +93,7 @@ void HeldKarp::CombinationPart(vector<unsigned char> S, const unsigned char s)
 		for (auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 			if (m != k)
 			{
-				#pragma omp critical
-				{
-					tmp = C[code_k][m] + distance[k][m];
-				}
+				tmp = C[code_k][m] + distance[k][m];
 
 				if (tmp < opt)
 				{
@@ -139,7 +136,7 @@ void HeldKarp::Combinations(const unsigned char K, const unsigned char N)
 				#pragma omp parallel
 				{
 					CombinationPart(R, K);
-				}				
+				}
 
 				break;
 			}

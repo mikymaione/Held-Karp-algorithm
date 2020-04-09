@@ -162,7 +162,7 @@ void StartElaboration(const string graphToSolve, const unsigned char NumberOfNod
 		if (graphToSolve == "all" || graphToSolve == "25")
 			TSP(distance25);
 
-		if (graphToSolve == "all" || graphToSolve == "40")
+		if (graphToSolve == "40")
 			TSP(distance40);
 	}
 }

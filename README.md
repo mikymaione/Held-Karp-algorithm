@@ -7,20 +7,18 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 
 ## Features
 * Supports multi-thread: for every set S ⊆ {2, ..., n} of cardinality |S| = s, s threads are executed.
-* Supports SQLite storage for memorize the data for graph of cardinality greater than 25.
 
 
 ## IDE
 1. C++14
-2. Microsoft Concurrency Runtime
-3. SQLite3
-4. Visual Studio 2015 (http://visualstudio.microsoft.com)
+2. OpenMP 2.0
+3. Visual Studio 2015 (http://visualstudio.microsoft.com)
 
 
 ## Run the software
 1. Run the program:
 
-	```Held-Karp-algorithm.exe [number of threads = {0 - 32}] [use SQLite = {0 - 1}] [graph to solve = {3, 4, 6, 20, 25, 40, all, random}] [number of node of random graph = {3 - 255}]```
+	```Held-Karp-algorithm.exe [graph to solve = {3, 4, 6, 20, 25, 40, all, random}] [number of node of random graph = {3 - 255}]```
 
 
 ## License
