@@ -18,6 +18,13 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Held-Karp-algorithm\Held-Karp-algorithm.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\HeldKarp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Held-Karp-algorithm\HeldKarp.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{A2129843-A9C1-4F01-BFD1-5F3CB2C543B8}</ProjectGuid>
@@ -152,13 +159,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Held-Karp-algorithm.cpp" />
-    <ClCompile Include="HeldKarp.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="HeldKarp.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
