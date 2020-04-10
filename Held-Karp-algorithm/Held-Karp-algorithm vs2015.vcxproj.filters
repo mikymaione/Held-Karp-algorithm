@@ -9,5 +9,6 @@
     <ClInclude Include="tsl\sparse_growth_policy.h" />
     <ClInclude Include="tsl\sparse_hash.h" />
     <ClInclude Include="tsl\sparse_map.h" />
+    <ClInclude Include="tsl\sparse_set.h" />
   </ItemGroup>
 </Project>

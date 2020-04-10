@@ -7,10 +7,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #pragma once
 
 #include <chrono>
-#include <unordered_map>
 #include <vector>
 
 #include "tsl/sparse_map.h"
+#include "tsl/sparse_set.h"
 
 using namespace std;
 using namespace chrono;
@@ -25,8 +25,11 @@ private:
 		vector<uint8_t> path;
 	};
 
-	// <Cardinality, <Code, <Node, Data>>>
-	unordered_map<uint8_t, sparse_map<uint32_t, sparse_map<uint8_t, sInfo>>> C;
+	// <Node, <Code, Data>>
+	sparse_map<uint8_t, sparse_map<uint32_t, sInfo>> C;
+
+	// <Node, <Code>>
+	sparse_map<uint8_t, sparse_set<uint32_t>> garbage;
 
 	const vector<vector<uint8_t>> distance;
 	const uint8_t numberOfNodes;
@@ -43,6 +46,8 @@ private:
 	uint32_t Powered2Code(const uint32_t code, const uint8_t exclude);
 
 	void Combinations(const uint8_t K, const uint8_t N);
+
+	void FreeMem();
 
 	string PrintPath(const uint32_t code, const uint8_t π);
 	void ETL(const uint8_t s);

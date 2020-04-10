@@ -21,7 +21,7 @@ string HeldKarp::PrintPath(const uint32_t code, const uint8_t π)
 {
 	string s;
 
-	for (const auto e : C[numberOfNodes - 1][code][π].path)
+	for (const auto e : C[π][code].path)
 		s = to_string(e) + " " + s;
 
 	return "0 " + s + "0";
@@ -48,6 +48,17 @@ uint32_t HeldKarp::Powered2Code(const IEnumerable &S, const uint8_t exclude)
 uint32_t HeldKarp::Powered2Code(const uint32_t code, const uint8_t exclude)
 {
 	return code - (1 << exclude);
+}
+
+void HeldKarp::FreeMem()
+{
+	for (auto node : garbage)
+	{
+		for (const auto code : node.second)
+			C[node.first].erase(code);
+
+		node.second.clear();
+	}
 }
 
 void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
@@ -89,7 +100,7 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 					for (const auto m : R) // min(m≠k, m∈R) {C(R\{k}, m) + d[m,k]}
 						if (m != k)
 						{
-							tmp = C[K - 1][code_k][m].cost + distance[k][m];
+							tmp = C[m][code_k].cost + distance[k][m];
 
 							if (tmp < opt)
 							{
@@ -98,9 +109,11 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 							}
 						}
 
-					C[K][code][k] = C[K - 1][code_k][π];
-					C[K][code][k].path.push_back(π);
-					C[K][code][k].cost = opt;
+					C[k][code] = C[π][code_k];
+					C[k][code].path.push_back(π);
+					C[k][code].cost = opt;
+
+					garbage[k].insert(code);
 				}
 
 				if (numberOfNodes > 10)
@@ -167,12 +180,15 @@ void HeldKarp::TSP()
 	// TSP ================================================================================================================================
 	// insieme vuoto
 	for (uint8_t k = 1; k < numberOfNodes; k++)
-		C[1][1 << k][k].cost = distance[k][0];
+	{
+		C[k][1 << k].cost = distance[k][0];
+		garbage[k].insert(1 << k);
+	}
 
 	for (uint8_t s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
 	{
 		Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
-		C.erase(s - 1);
+		FreeMem();
 		ETL(s);
 	}
 	// TSP ================================================================================================================================
@@ -188,9 +204,9 @@ void HeldKarp::TSP()
 	const auto code = Powered2Code(FullSet);
 
 	for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
-		if (C[numberOfNodes - 1][code][k].cost > 0)
+		if (C[k][code].cost > 0)
 		{
-			tmp = C[numberOfNodes - 1][code][k].cost + distance[0][k];
+			tmp = C[k][code].cost + distance[0][k];
 
 			if (tmp < opt)
 			{
@@ -199,8 +215,8 @@ void HeldKarp::TSP()
 			}
 		}
 
-	C[numberOfNodes - 1][code][π].cost = opt;
-	C[numberOfNodes - 1][code][π].path.push_back(π);
+	C[π][code].cost = opt;
+	C[π][code].path.push_back(π);
 
 	const auto path = PrintPath(code, π);
 
