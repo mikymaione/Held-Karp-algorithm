@@ -155,9 +155,7 @@ void HeldKarp::TSP()
 	for (unsigned char s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
 	{
 		Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
-
-		if (C.count(s - 2) > 0)
-			C.erase(s - 2);
+		C.erase(s - 1);
 
 		cout
 			<< "ET: "
