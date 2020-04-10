@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Held-Karp-algorithm vs2017", "Held-Karp-algorithm\Held-Karp-algorithm vs2017.vcxproj", "{9DC55EAA-C31A-4097-9C1E-6D3EAAF1010F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Held-Karp-algorithm", "Held-Karp-algorithm\Held-Karp-algorithm.vcxproj", "{A2129843-A9C1-4F01-BFD1-5F3CB2C543B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,16 +13,19 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9DC55EAA-C31A-4097-9C1E-6D3EAAF1010F}.Debug|x64.ActiveCfg = Debug|x64
-		{9DC55EAA-C31A-4097-9C1E-6D3EAAF1010F}.Debug|x86.ActiveCfg = Debug|x64
-		{9DC55EAA-C31A-4097-9C1E-6D3EAAF1010F}.Release|x64.ActiveCfg = Release|x64
-		{9DC55EAA-C31A-4097-9C1E-6D3EAAF1010F}.Release|x64.Build.0 = Release|x64
-		{9DC55EAA-C31A-4097-9C1E-6D3EAAF1010F}.Release|x86.ActiveCfg = Release|x64
+		{A2129843-A9C1-4F01-BFD1-5F3CB2C543B8}.Debug|x64.ActiveCfg = Debug|x64
+		{A2129843-A9C1-4F01-BFD1-5F3CB2C543B8}.Debug|x64.Build.0 = Debug|x64
+		{A2129843-A9C1-4F01-BFD1-5F3CB2C543B8}.Debug|x86.ActiveCfg = Debug|Win32
+		{A2129843-A9C1-4F01-BFD1-5F3CB2C543B8}.Debug|x86.Build.0 = Debug|Win32
+		{A2129843-A9C1-4F01-BFD1-5F3CB2C543B8}.Release|x64.ActiveCfg = Release|x64
+		{A2129843-A9C1-4F01-BFD1-5F3CB2C543B8}.Release|x64.Build.0 = Release|x64
+		{A2129843-A9C1-4F01-BFD1-5F3CB2C543B8}.Release|x86.ActiveCfg = Release|Win32
+		{A2129843-A9C1-4F01-BFD1-5F3CB2C543B8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1FF38178-CF15-48EE-8C4C-4969BFCA7F10}
+		SolutionGuid = {C028DD41-AC88-4AB0-92C5-2E2672594F77}
 	EndGlobalSection
 EndGlobal

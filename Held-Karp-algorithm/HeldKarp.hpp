@@ -7,15 +7,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #pragma once
 
 #include <chrono>
+#include <map>
 #include <unordered_map>
 #include <vector>
 
-#include "tsl/sparse_map.h"
-#include "tsl/sparse_set.h"
-
 using namespace std;
 using namespace chrono;
-using namespace tsl;
 
 class HeldKarp
 {
@@ -27,7 +24,7 @@ private:
 	};
 
 	// <Cardinality, <Node, <Code, Data>>>
-	unordered_map<uint8_t, sparse_map<uint8_t, sparse_map<uint32_t, sInfo>>> C;
+	unordered_map<uint8_t, unordered_map<uint8_t, unordered_map<uint32_t, sInfo>>> C;
 
 	const vector<vector<uint8_t>> distance;
 	const uint8_t numberOfNodes;
