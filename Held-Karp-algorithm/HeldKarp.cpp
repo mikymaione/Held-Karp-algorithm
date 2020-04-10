@@ -131,7 +131,9 @@ void HeldKarp::ETL(const uint8_t s)
 	const auto T = duration_cast<seconds>(system_clock::now() - begin).count();
 
 	cout
-		<< "ET: "
+		<< " "
+		<< 100 * s / numberOfNodes
+		<< "% - ET: "
 		<< T
 		<< "s ETL: "
 		<< (numberOfNodes - s) * T / s
