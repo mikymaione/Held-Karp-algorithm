@@ -6,10 +6,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <chrono>
 #include <unordered_map>
 #include <vector>
 
 using namespace std;
+using namespace chrono;
 
 class HeldKarp
 {
@@ -26,6 +28,8 @@ private:
 	const vector<vector<uint8_t>> distance;
 	const uint8_t numberOfNodes;
 
+	time_point<system_clock> begin;
+
 private:
 	template <class IEnumerable>
 	uint32_t Powered2Code(const IEnumerable &S);
@@ -38,6 +42,7 @@ private:
 	void Combinations(const uint8_t K, const uint8_t N);
 
 	string PrintPath(const uint32_t code, const uint8_t π);
+	void ETL(const uint8_t s);
 
 	template <class T>
 	static T generateRandomNumber(const T startRange, const T endRange, const T limit);

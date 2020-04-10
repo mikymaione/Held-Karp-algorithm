@@ -6,7 +6,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <chrono>
 #include <iostream>
 #include <set>
 #include <stack>
@@ -14,9 +13,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include "HeldKarp.hpp"
 
-using namespace chrono;
-
-HeldKarp::HeldKarp(const vector<vector<uint8_t>> &DistanceMatrix2D) : numberOfNodes(DistanceMatrix2D.size()), distance(DistanceMatrix2D) {}
+HeldKarp::HeldKarp(const vector<vector<uint8_t>> &DistanceMatrix2D) :
+	numberOfNodes(DistanceMatrix2D.size()),
+	distance(DistanceMatrix2D) {}
 
 string HeldKarp::PrintPath(const uint32_t code, const uint8_t π)
 {
@@ -57,6 +56,8 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 	uint8_t π, s;
 	uint16_t opt, tmp;
 	uint32_t code_k, code;
+
+	auto showETL = system_clock::now();
 
 	vector<uint8_t> R(K);
 	stack<uint8_t> S;
@@ -102,6 +103,13 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 					C[K][code][k].cost = opt;
 				}
 
+				if (numberOfNodes > 10)
+					if (duration_cast<seconds>(system_clock::now() - showETL).count() > 1)
+					{
+						ETL(K);
+						showETL = system_clock::now();
+					}
+
 				break;
 			}
 		}
@@ -116,6 +124,19 @@ T HeldKarp::generateRandomNumber(const T startRange, const T endRange, const T l
 	const T num = r % range + startRange;
 
 	return num;
+}
+
+void HeldKarp::ETL(const uint8_t s)
+{
+	const auto T = duration_cast<seconds>(system_clock::now() - begin).count();
+
+	cout
+		<< "ET: "
+		<< T
+		<< "s ETL: "
+		<< (numberOfNodes - s) * T / s
+		<< "s\r";
+	fflush(stdin);
 }
 
 /*
@@ -133,7 +154,7 @@ S(n) = O(2ⁿ√n)
 */
 void HeldKarp::TSP()
 {
-	const auto begin = steady_clock::now();
+	begin = system_clock::now();
 
 	cout
 		<< "Solving a graph of "
@@ -150,14 +171,7 @@ void HeldKarp::TSP()
 	{
 		Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
 		C.erase(s - 1);
-
-		cout
-			<< "ET: "
-			<< duration_cast<milliseconds>(steady_clock::now() - begin).count() / 1000
-			<< "s ETL: "
-			<< (duration_cast<milliseconds>(steady_clock::now() - begin).count() / s) * (numberOfNodes - s) / 1000
-			<< "s\r";
-		fflush(stdin);
+		ETL(s);
 	}
 	// TSP ================================================================================================================================
 
@@ -192,7 +206,7 @@ void HeldKarp::TSP()
 		<< "-Cost: "
 		<< to_string(opt)
 		<< " time: "
-		<< duration_cast<milliseconds>(steady_clock::now() - begin).count()
+		<< duration_cast<milliseconds>(system_clock::now() - begin).count()
 		<< "ms, path: "
 		<< path
 		<< endl;
