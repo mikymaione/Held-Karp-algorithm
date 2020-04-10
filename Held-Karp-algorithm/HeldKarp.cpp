@@ -16,9 +16,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace chrono;
 
-HeldKarp::HeldKarp(const vector<vector<unsigned char>> &DistanceMatrix2D) : numberOfNodes(DistanceMatrix2D.size()), distance(DistanceMatrix2D) {}
+HeldKarp::HeldKarp(const vector<vector<uint8_t>> &DistanceMatrix2D) : numberOfNodes(DistanceMatrix2D.size()), distance(DistanceMatrix2D) {}
 
-string HeldKarp::PrintPath(const unsigned int code, const unsigned char π)
+string HeldKarp::PrintPath(const uint32_t code, const uint8_t π)
 {
 	string s;
 
@@ -29,15 +29,15 @@ string HeldKarp::PrintPath(const unsigned int code, const unsigned char π)
 }
 
 template <class IEnumerable>
-unsigned int HeldKarp::Powered2Code(const IEnumerable &S)
+uint32_t HeldKarp::Powered2Code(const IEnumerable &S)
 {
 	return Powered2Code(S, UCHAR_MAX);
 }
 
 template <class IEnumerable>
-unsigned int HeldKarp::Powered2Code(const IEnumerable &S, const unsigned char exclude)
+uint32_t HeldKarp::Powered2Code(const IEnumerable &S, const uint8_t exclude)
 {
-	unsigned int code = 0;
+	uint32_t code = 0;
 
 	for (const auto e : S)
 		if (e != exclude)
@@ -46,20 +46,20 @@ unsigned int HeldKarp::Powered2Code(const IEnumerable &S, const unsigned char ex
 	return code;
 }
 
-unsigned int HeldKarp::Powered2Code(const unsigned int code, const unsigned char exclude)
+uint32_t HeldKarp::Powered2Code(const uint32_t code, const uint8_t exclude)
 {
 	return code - (1 << exclude);
 }
 
-void HeldKarp::Combinations(const unsigned char K, const unsigned char N)
+void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 {
 	size_t i;
-	unsigned char π, s;
-	unsigned short opt, tmp;
-	unsigned int code_k, code;
+	uint8_t π, s;
+	uint16_t opt, tmp;
+	uint32_t code_k, code;
 
-	vector<unsigned char> R(K);
-	stack<unsigned char> S;
+	vector<uint8_t> R(K);
+	stack<uint8_t> S;
 	S.push(0);
 
 	while (S.size() > 0)
@@ -143,10 +143,10 @@ void HeldKarp::TSP()
 
 	// TSP ================================================================================================================================
 	// insieme vuoto
-	for (unsigned char k = 1; k < numberOfNodes; k++)
+	for (uint8_t k = 1; k < numberOfNodes; k++)
 		C[1][1 << k][k].cost = distance[k][0];
 
-	for (unsigned char s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
+	for (uint8_t s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
 	{
 		Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s		
 		C.erase(s - 1);
@@ -162,11 +162,11 @@ void HeldKarp::TSP()
 	// TSP ================================================================================================================================
 
 	// PATH ===============================================================================================================================
-	unsigned char π = 0;
-	unsigned short tmp, opt = USHRT_MAX;
+	uint8_t π = 0;
+	uint16_t tmp, opt = USHRT_MAX;
 
-	set<unsigned char> FullSet;
-	for (unsigned char z = 1; z < numberOfNodes; z++)
+	set<uint8_t> FullSet;
+	for (uint8_t z = 1; z < numberOfNodes; z++)
 		FullSet.insert(z);
 
 	const auto code = Powered2Code(FullSet);
@@ -199,9 +199,9 @@ void HeldKarp::TSP()
 	// PATH ===============================================================================================================================	
 }
 
-vector<vector<unsigned char>> HeldKarp::New_RND_Distances(const unsigned char Size_of_RandomDistanceCosts)
+vector<vector<uint8_t>> HeldKarp::New_RND_Distances(const uint8_t Size_of_RandomDistanceCosts)
 {
-	vector<vector<unsigned char>> A(Size_of_RandomDistanceCosts, vector<unsigned char>(Size_of_RandomDistanceCosts, 0));
+	vector<vector<uint8_t>> A(Size_of_RandomDistanceCosts, vector<uint8_t>(Size_of_RandomDistanceCosts, 0));
 
 	for (auto x = 0; x < Size_of_RandomDistanceCosts; x++)
 		for (auto y = 0; y < Size_of_RandomDistanceCosts; y++)
