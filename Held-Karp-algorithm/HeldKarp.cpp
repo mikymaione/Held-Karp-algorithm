@@ -18,7 +18,7 @@ using namespace chrono;
 
 HeldKarp::HeldKarp(const vector<vector<unsigned char>> &DistanceMatrix2D) : numberOfNodes(DistanceMatrix2D.size()), distance(DistanceMatrix2D) {}
 
-string HeldKarp::PrintPath(const unsigned long code, const unsigned char π)
+string HeldKarp::PrintPath(const unsigned int code, const unsigned char π)
 {
 	string s;
 
@@ -29,15 +29,15 @@ string HeldKarp::PrintPath(const unsigned long code, const unsigned char π)
 }
 
 template <class IEnumerable>
-unsigned long HeldKarp::Powered2Code(const IEnumerable &S)
+unsigned int HeldKarp::Powered2Code(const IEnumerable &S)
 {
 	return Powered2Code(S, UCHAR_MAX);
 }
 
 template <class IEnumerable>
-unsigned long HeldKarp::Powered2Code(const IEnumerable &S, const unsigned char exclude)
+unsigned int HeldKarp::Powered2Code(const IEnumerable &S, const unsigned char exclude)
 {
-	unsigned long code = 0;
+	unsigned int code = 0;
 
 	for (const auto e : S)
 		if (e != exclude)
@@ -46,7 +46,7 @@ unsigned long HeldKarp::Powered2Code(const IEnumerable &S, const unsigned char e
 	return code;
 }
 
-unsigned long HeldKarp::Powered2Code(unsigned long code, const unsigned char exclude)
+unsigned int HeldKarp::Powered2Code(unsigned int code, const unsigned char exclude)
 {
 	return code - (1 << exclude);
 }
@@ -55,7 +55,7 @@ void HeldKarp::CombinationPart(const vector<unsigned char> &S, const unsigned ch
 {
 	unsigned char π;
 	unsigned short opt, tmp;
-	unsigned long code_k;
+	unsigned int code_k;
 
 	const auto code = Powered2Code(S);
 

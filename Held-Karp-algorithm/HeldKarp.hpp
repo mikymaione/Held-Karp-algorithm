@@ -18,7 +18,7 @@ unsigned int
 */
 #pragma once
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 using namespace std;
@@ -32,25 +32,25 @@ private:
 		vector<unsigned char> path;
 	};
 
-	// <Cardinality, <Code, <Node, Data>>>
-	map<unsigned char, map<unsigned long, map<unsigned char, sInfo>>> C;
+	// <Cardinality, <Node, <Code, Data>>>
+	unordered_map<unsigned char, unordered_map<unsigned int, unordered_map<unsigned char, sInfo>>> C;
 
 	const vector<vector<unsigned char>> distance;
 	const unsigned char numberOfNodes;
 
 private:
 	template <class IEnumerable>
-	unsigned long Powered2Code(const IEnumerable &S);
+	unsigned int Powered2Code(const IEnumerable &S);
 
 	template <class IEnumerable>
-	unsigned long Powered2Code(const IEnumerable &S, const unsigned char exclude);
+	unsigned int Powered2Code(const IEnumerable &S, const unsigned char exclude);
 
-	unsigned long Powered2Code(unsigned long code, const unsigned char exclude);
+	unsigned int Powered2Code(unsigned int code, const unsigned char exclude);
 
 	void CombinationPart(const vector<unsigned char> &S, const unsigned char s);
 	void Combinations(const unsigned char K, const unsigned char N);
 
-	string PrintPath(const unsigned long code, const unsigned char π);
+	string PrintPath(const unsigned int code, const unsigned char π);
 
 	template <class T>
 	static T generateRandomNumber(const T startRange, const T endRange, const T limit);
