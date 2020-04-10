@@ -51,42 +51,12 @@ unsigned int HeldKarp::Powered2Code(unsigned int code, const unsigned char exclu
 	return code - (1 << exclude);
 }
 
-void HeldKarp::CombinationPart(const vector<unsigned char> &S, const unsigned char s)
-{
-	unsigned char π;
-	unsigned short opt, tmp;
-	unsigned int code_k;
-
-	const auto code = Powered2Code(S);
-
-	for (const auto k : S)
-	{
-		π = 0;
-		opt = USHRT_MAX;
-		code_k = Powered2Code(code, k);
-
-		for (const auto m : S) // min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
-			if (m != k)
-			{
-				tmp = C[s - 1][code_k][m].cost + distance[k][m];
-
-				if (tmp < opt)
-				{
-					opt = tmp;
-					π = m;
-				}
-			}
-
-		C[s][code][k] = C[s - 1][code_k][π];
-		C[s][code][k].path.push_back(π);
-		C[s][code][k].cost = opt;
-	}
-}
-
 void HeldKarp::Combinations(const unsigned char K, const unsigned char N)
 {
 	size_t i;
-	unsigned char s;
+	unsigned char π, s;
+	unsigned short opt, tmp;
+	unsigned int code_k, code;
 
 	vector<unsigned char> R(K);
 	stack<unsigned char> S;
@@ -107,7 +77,31 @@ void HeldKarp::Combinations(const unsigned char K, const unsigned char N)
 
 			if (i == K)
 			{
-				CombinationPart(R, K);
+				code = Powered2Code(R);
+
+				for (const auto k : R)
+				{
+					π = 0;
+					opt = USHRT_MAX;
+					code_k = Powered2Code(code, k);
+
+					for (const auto m : R) // min(m≠k, m∈R) {C(R\{k}, m) + d[m,k]}
+						if (m != k)
+						{
+							tmp = C[K - 1][code_k][m].cost + distance[k][m];
+
+							if (tmp < opt)
+							{
+								opt = tmp;
+								π = m;
+							}
+						}
+
+					C[K][code][k] = C[K - 1][code_k][π];
+					C[K][code][k].path.push_back(π);
+					C[K][code][k].cost = opt;
+				}
+
 				break;
 			}
 		}

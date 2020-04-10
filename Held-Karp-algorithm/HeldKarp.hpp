@@ -46,8 +46,7 @@ private:
 	unsigned int Powered2Code(const IEnumerable &S, const unsigned char exclude);
 
 	unsigned int Powered2Code(unsigned int code, const unsigned char exclude);
-
-	void CombinationPart(const vector<unsigned char> &S, const unsigned char s);
+	
 	void Combinations(const unsigned char K, const unsigned char N);
 
 	string PrintPath(const unsigned int code, const unsigned char π);
