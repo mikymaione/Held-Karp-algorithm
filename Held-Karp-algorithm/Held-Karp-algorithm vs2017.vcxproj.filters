@@ -26,5 +26,14 @@
     <ClInclude Include="HeldKarp.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="tsl\sparse_growth_policy.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="tsl\sparse_hash.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="tsl\sparse_map.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -178,6 +178,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HeldKarp.hpp" />
+    <ClInclude Include="tsl\sparse_growth_policy.h" />
+    <ClInclude Include="tsl\sparse_hash.h" />
+    <ClInclude Include="tsl\sparse_map.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
