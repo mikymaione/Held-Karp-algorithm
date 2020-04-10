@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Held-Karp-algorithm\bst.hpp" />
     <ClInclude Include="Held-Karp-algorithm\HeldKarp.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +111,7 @@
       <PrecompiledHeaderFile />
       <CompileAs>CompileAsCpp</CompileAs>
       <OpenMPSupport>false</OpenMPSupport>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +148,9 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OpenMPSupport>false</OpenMPSupport>
+      <SDLCheck>false</SDLCheck>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

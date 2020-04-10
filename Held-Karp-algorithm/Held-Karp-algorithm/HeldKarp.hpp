@@ -24,7 +24,7 @@ private:
 	};
 
 	// <Cardinality, <Node, <Code, Data>>>
-	unordered_map<uint8_t, unordered_map<uint8_t, unordered_map<uint32_t, sInfo>>> C;
+	unordered_map<uint8_t, unordered_map<uint32_t, unordered_map<uint8_t, sInfo>>> C;
 
 	const vector<vector<uint8_t>> distance;
 	const uint8_t numberOfNodes;
