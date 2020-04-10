@@ -46,7 +46,7 @@ unsigned int HeldKarp::Powered2Code(const IEnumerable &S, const unsigned char ex
 	return code;
 }
 
-unsigned int HeldKarp::Powered2Code(unsigned int code, const unsigned char exclude)
+unsigned int HeldKarp::Powered2Code(const unsigned int code, const unsigned char exclude)
 {
 	return code - (1 << exclude);
 }
