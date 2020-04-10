@@ -10,6 +10,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <unordered_map>
 #include <vector>
 
+#include "tsl/sparse_map.h"
+
 using namespace std;
 using namespace chrono;
 
@@ -23,7 +25,7 @@ private:
 	};
 
 	// <Cardinality, <Code, <Node, Data>>>
-	unordered_map<uint8_t, unordered_map<uint32_t, unordered_map<uint8_t, sInfo>>> C;
+	tsl::sparse_map<uint8_t, tsl::sparse_map<uint32_t, tsl::sparse_map<uint8_t, sInfo>>> C;
 
 	const vector<vector<uint8_t>> distance;
 	const uint8_t numberOfNodes;
