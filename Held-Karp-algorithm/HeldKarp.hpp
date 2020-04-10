@@ -14,6 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace std;
 using namespace chrono;
+using namespace tsl;
 
 class HeldKarp
 {
@@ -25,7 +26,7 @@ private:
 	};
 
 	// <Cardinality, <Code, <Node, Data>>>
-	tsl::sparse_map<uint8_t, tsl::sparse_map<uint32_t, tsl::sparse_map<uint8_t, sInfo>>> C;
+	unordered_map<uint8_t, sparse_map<uint32_t, sparse_map<uint8_t, sInfo>>> C;
 
 	const vector<vector<uint8_t>> distance;
 	const uint8_t numberOfNodes;
