@@ -6,6 +6,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <atomic>
 #include <chrono>
 #include <queue>
 #include <unordered_map>
@@ -23,13 +24,14 @@ private:
 		vector<uint8_t> path;
 	};
 
-	// <Node, <Code, Data>>
+	// <Code, <Node, Data>>
 	queue<unordered_map<uint32_t, unordered_map<uint8_t, sInfo>>> C;
 
 	const vector<vector<uint8_t>> distance;
 	const uint8_t numberOfNodes;
 
 	time_point<system_clock> begin;
+	atomic<bool> cycleEnded;
 
 private:
 	template <class IEnumerable>
@@ -45,6 +47,7 @@ private:
 
 	string PrintPath(const uint32_t code, const uint8_t π);
 	void ETL(const uint8_t s);
+	void ETLw(const uint8_t s);
 
 	template <class T>
 	static T generateRandomNumber(const T startRange, const T endRange, const T limit);

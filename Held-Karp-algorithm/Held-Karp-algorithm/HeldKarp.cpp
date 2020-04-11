@@ -10,6 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <set>
 #include <stack>
 #include <string>
+#include <thread>
 
 #include "HeldKarp.hpp"
 
@@ -56,8 +57,6 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 	uint8_t π, s;
 	uint16_t opt, tmp;
 	uint32_t code;
-
-	auto showETL = system_clock::now();
 
 	vector<uint8_t> R(K);
 	stack<uint8_t> S;
@@ -112,13 +111,6 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 					info->cost = opt;
 				}
 
-				if (numberOfNodes > 10)
-					if (duration_cast<seconds>(system_clock::now() - showETL).count() > 3)
-					{
-						ETL(K);
-						showETL = system_clock::now();
-					}
-
 				break;
 			}
 		}
@@ -135,7 +127,7 @@ T HeldKarp::generateRandomNumber(const T startRange, const T endRange, const T l
 	return num;
 }
 
-void HeldKarp::ETL(const uint8_t s)
+void HeldKarp::ETLw(const uint8_t s)
 {
 	const auto T = duration_cast<seconds>(system_clock::now() - begin).count();
 
@@ -150,10 +142,22 @@ void HeldKarp::ETL(const uint8_t s)
 	fflush(stdin);
 }
 
+void HeldKarp::ETL(const uint8_t s)
+{
+	auto lastShow = system_clock::now();
+
+	while (!cycleEnded)
+		if (duration_cast<seconds>(system_clock::now() - lastShow).count() > 1)
+		{
+			ETLw(s);
+			lastShow = system_clock::now();
+		}
+}
+
 void HeldKarp::AddNewToQueue()
 {
-	unordered_map<uint32_t, unordered_map<uint8_t, sInfo>> New;
-	C.push(New);
+	unordered_map<uint32_t, unordered_map<uint8_t, sInfo>> new_map;
+	C.push(new_map);
 }
 
 /*
@@ -179,10 +183,11 @@ void HeldKarp::TSP()
 
 	begin = system_clock::now();
 
-	AddNewToQueue();
 	// TSP ================================================================================================================================
 	// insieme vuoto
 	{
+		AddNewToQueue();
+
 		auto CF1 = &C.front();
 		for (uint8_t k = 1; k < numberOfNodes; k++)
 			(*CF1)[1 << k][k].cost = distance[k][0];
@@ -190,50 +195,60 @@ void HeldKarp::TSP()
 
 	for (uint8_t s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
 	{
+		cycleEnded = false;
+		thread tETL(&HeldKarp::ETL, this, s);
+
 		AddNewToQueue();
 
 		Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s						
 
 		C.pop();
-		ETL(s);
+
+		cycleEnded = true;
+		if (tETL.joinable())
+			tETL.join();
+
+		ETLw(s);
 	}
 	// TSP ================================================================================================================================
 
 	// PATH ===============================================================================================================================
-	uint8_t π = 0;
-	uint16_t tmp, opt = USHRT_MAX;
+	{
+		uint8_t π = 0;
+		uint16_t tmp, opt = USHRT_MAX;
 
-	set<uint8_t> FullSet;
-	for (uint8_t z = 1; z < numberOfNodes; z++)
-		FullSet.insert(z);
+		set<uint8_t> FullSet;
+		for (uint8_t z = 1; z < numberOfNodes; z++)
+			FullSet.insert(z);
 
-	const auto code = Powered2Code(FullSet);
+		const auto code = Powered2Code(FullSet);
 
-	for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
-		if (C.front()[code][k].cost > 0)
-		{
-			tmp = C.front()[code][k].cost + distance[0][k];
-
-			if (tmp < opt)
+		for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
+			if (C.front()[code][k].cost > 0)
 			{
-				opt = tmp;
-				π = k;
+				tmp = C.front()[code][k].cost + distance[0][k];
+
+				if (tmp < opt)
+				{
+					opt = tmp;
+					π = k;
+				}
 			}
-		}
 
-	C.front()[code][π].cost = opt;
-	C.front()[code][π].path.push_back(π);
+		C.front()[code][π].cost = opt;
+		C.front()[code][π].path.push_back(π);
 
-	const auto path = PrintPath(code, π);
+		const auto path = PrintPath(code, π);
 
-	cout
-		<< "-Cost: "
-		<< to_string(opt)
-		<< " time: "
-		<< duration_cast<milliseconds>(system_clock::now() - begin).count()
-		<< "ms, path: "
-		<< path
-		<< endl;
+		cout
+			<< "-Cost: "
+			<< to_string(opt)
+			<< " time: "
+			<< duration_cast<milliseconds>(system_clock::now() - begin).count()
+			<< "ms, path: "
+			<< path
+			<< endl;
+	}
 	// PATH ===============================================================================================================================	
 }
 

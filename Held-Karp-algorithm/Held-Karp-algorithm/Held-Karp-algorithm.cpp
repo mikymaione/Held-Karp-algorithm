@@ -177,23 +177,22 @@ int main(int argc, char **argv)
 {
 	WriteTitle();
 
-	if (argc > 2)
+	try
 	{
-		const string graphToSolve = argv[1];
-		const uint8_t NumberOfNodes = atoi(argv[2]);
-
-		try
+		if (argc > 2)
 		{
+			const string graphToSolve = argv[1];
+			const uint8_t NumberOfNodes = atoi(argv[2]);
+
 			StartElaboration(graphToSolve, NumberOfNodes);
 		}
-		catch (const exception &e)
-		{
-			cout << endl << "Exception occurred: " << e.what() << endl;
-			throw;
-		}
-
-		cout << endl << "End." << endl;
+	}
+	catch (const exception &e)
+	{
+		cout << endl << "Exception occurred: " << e.what() << endl;
+		throw;
 	}
 
+	cout << endl << "End." << endl;
 	system("pause");
 }
