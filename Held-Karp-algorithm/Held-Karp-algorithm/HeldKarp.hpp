@@ -7,7 +7,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #pragma once
 
 #include <chrono>
-#include <map>
+#include <queue>
 #include <unordered_map>
 #include <vector>
 
@@ -23,8 +23,8 @@ private:
 		vector<uint8_t> path;
 	};
 
-	// <Cardinality, <Node, <Code, Data>>>
-	unordered_map<uint8_t, unordered_map<uint32_t, unordered_map<uint8_t, sInfo>>> C;
+	// <Node, <Code, Data>>
+	queue<unordered_map<uint32_t, unordered_map<uint8_t, sInfo>>> C;
 
 	const vector<vector<uint8_t>> distance;
 	const uint8_t numberOfNodes;
@@ -41,6 +41,7 @@ private:
 	uint32_t Powered2Code(const uint32_t code, const uint8_t exclude);
 
 	void Combinations(const uint8_t K, const uint8_t N);
+	void AddNewToQueue();
 
 	string PrintPath(const uint32_t code, const uint8_t π);
 	void ETL(const uint8_t s);
