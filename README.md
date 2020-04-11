@@ -11,35 +11,37 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 
 ## Benchmarks:
 
-### PC1
-Intel Celeron J1900 @2.00GHz - 8GB DDR3 RAM - SSD - Windows 10 (64 bits)
+| PC  | CPU | CPU GHz | RAM | HD | OS | 
+| --- | ----| ---------: | -- | -- | -- |
+| 1 | Intel Celeron J1900 | 2.00 | 8GB DDR3 | SSD | Windows 10 |
+| 2 | AMD Ryzen5 2500U | 2.00 | 8GB DDR4 | SSD | Windows 10 |
+| 3 | Intel Core2 Duo E6550 | 2.33 | 4GB DDR2 | SSD | Windows 10 |
+
+### PC 1
 | Nodes  | Time | 
-| ------------- | ------------- |
+| ------ | ---: |
 | 3 | 2ms |
 | 4 | 112ms |
 | 6 | 110ms |
 | 20 | 13429ms |
 | 25 | 1874242ms |
 
-### PC2
-AMD Ryzen5 2500U @2.00GHz - 8GB DDR4 RAM - SSD - Windows 10 (64 bits)
+### PC 2
 | Nodes  | Time | 
-| ------------- | ------------- |
+| ------ | ---: |
 | 3 | 1ms |
 | 4 | 1ms |
 | 6 | 2ms |
 | 20 | 10652ms |
 | 25 | 0ms |
 
-### PC3
-Intel Core2 Duo E6550 @2.33GHZ - 4GB DDR2 RAM - SSD - Windows 10 (64 bits)
+### PC 3
 | Nodes  | Time | 
-| ------------- | ------------- |
+| ------ | ---: |
 | 3 | 1ms |
 | 4 | 101ms |
 | 6 | 106ms |
 | 20 | 7895ms |
-| 25 | 0ms |
 
 
 ## IDE

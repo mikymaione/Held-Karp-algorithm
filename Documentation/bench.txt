@@ -1,10 +1,41 @@
-Using 0 threads to solve a graph of 3 nodes:
- Cost: 7 time: 0ms, path: 0 2 1 0
-Using 0 threads to solve a graph of 4 nodes:
- Cost: 21 time: 0ms, path: 0 2 3 1 0
-Using 0 threads to solve a graph of 6 nodes:
- Cost: 151 time: 0ms, path: 0 4 2 1 5 3 0
-Using 0 threads to solve a graph of 20 nodes:
- Cost: 162 time: 9470ms, path: 0 3 6 8 16 19 7 12 13 14 9 1 18 17 2 15 4 5 10 11 0							   
-Using 0 threads to solve a graph of 25 nodes:
- Cost: 47 time: 555416ms, path: 0 16 5 13 17 14 2 6 11 22 24 21 7 10 4 18 3 20 8 9 1 23 19 12 15 0
+PC BABBO 
+Intel Celeron J1900 2GHz, 8GB Ram, SSD
+Solving a graph of 3 nodes:
+-Cost: 7 time: 2ms, path: 0 2 1 0
+Solving a graph of 4 nodes:
+-Cost: 21 time: 112ms, path: 0 2 3 1 0
+Solving a graph of 6 nodes:
+-Cost: 151 time: 110ms, path: 0 4 2 1 5 3 0
+Solving a graph of 20 nodes:
+-Cost: 162 time: 13429ms, path: 0 3 6 8 16 19 7 12 13 14 9 1 18 17 2 15 
+4 5 10 11 0
+Solving a graph of 25 nodes:
+-Cost: 47 time: 1874242ms, path: 0 16 5 13 17 14 2 6 11 22 24 21 7 10 4 
+18 3 20 8 9 1 23 19 12 15 0
+
+
+PC Portatile
+AMD Ryzen5 2500U 2GHz, 8GB RAM, SSD
+Solving a graph of 3 nodes:
+-Cost: 7 time: 2ms, path: 0 2 1 0
+Solving a graph of 4 nodes:
+-Cost: 21 time: 116ms, path: 0 2 3 1 0
+Solving a graph of 6 nodes:
+-Cost: 151 time: 1ms, path: 0 4 2 1 5 3 0
+Solving a graph of 20 nodes:
+-Cost: 162 time: 10652ms, path: 0 3 6 8 16 19 7 12 13 14 9 1 18 17 2 15 4 5 10 11 0
+Solving a graph of 25 nodes:
+
+
+
+Fisso
+Intel Core2 Duo E6550 2.33GHZ 4GB RAM, SSD
+Solving a graph of 3 nodes:
+-Cost: 7 time: 1ms, path: 0 2 1 0
+Solving a graph of 4 nodes:
+-Cost: 21 time: 101ms, path: 0 2 3 1 0
+Solving a graph of 6 nodes:
+-Cost: 151 time: 101ms, path: 0 4 2 1 5 3 0
+Solving a graph of 20 nodes:
+-Cost: 162 time: 7895ms, path: 0 3 6 8 16 19 7 12 13 14 9 1 18 17 2 15 4 5 10 11 0
+Solving a graph of 25 nodes:
