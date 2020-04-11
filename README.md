@@ -12,29 +12,20 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 ## Benchmarks
 
 ### PCs
-| PC  | CPU | CPU GHz | RAM | HD | OS | 
-| --: | ----| ---------: | -- | -- | -- |
-| 1 | Intel Celeron J1900 | 2.00 | 8GB DDR3 | SSD | Windows 10 |
-| 2 | AMD Ryzen5 2500U | 2.00 | 8GB DDR4 | SSD | Windows 10 |
-| 3 | Intel Core2 Duo E6550 | 2.33 | 4GB DDR2 | SSD | Windows 10 |
+| CPU | CPU GHz | RAM | HD | OS | 
+| --- | ---------: | -- | -- | -- |
+| AMD Ryzen5 2500U | 2.00 | 8GB DDR4 | SSD | Windows 10 |
+| Intel Celeron J1900 | 2.00 | 8GB DDR3 | SSD | Windows 10 |
+| Intel Core2 Duo E6550 | 2.33 | 4GB DDR2 | SSD | Windows 10 |
 
 ### Results
 | PC | Nodes  | Time | 
-| --: | -----: | ---: |
-| 1 | 3 | 2ms |
-| 1 | 4 | 112ms |
-| 1 | 6 | 110ms |
-| 1 | 20 | 13429ms |
-| 1 | 25 | 1874242ms |
-| 2 | 3 | 1ms |
-| 2 | 4 | 1ms |
-| 2 | 6 | 2ms |
-| 2 | 20 | 10652ms |
-| 2 | 25 | 0ms |
-| 3 | 3 | 1ms |
-| 3 | 4 | 101ms |
-| 3 | 6 | 106ms |
-| 3 | 20 | 7895ms |
+| -- | -----: | ---: |
+| Ryzen5 | 20 | 9387ms |
+| Ryzen5 | 25 | 1638066ms |
+| Celeron | 20 | 13429ms |
+| Celeron | 25 | 1874242ms |
+| Core2 | 20 | 7895ms |
 
 
 ## IDE
