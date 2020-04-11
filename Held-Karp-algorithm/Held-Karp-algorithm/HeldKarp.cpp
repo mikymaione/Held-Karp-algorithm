@@ -10,6 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <set>
 #include <stack>
 #include <string>
+#include <sstream>
 #include <thread>
 
 #include "HeldKarp.hpp"
@@ -51,6 +52,57 @@ uint32_t HeldKarp::Powered2Code(const uint32_t code, const uint8_t exclude)
 	return code - (1 << exclude);
 }
 
+template <class T>
+T HeldKarp::generateRandomNumber(const T startRange, const T endRange, const T limit)
+{
+	const T r = rand();
+	const T range = 1 + endRange - startRange;
+	const T num = r % range + startRange;
+
+	return num;
+}
+
+void HeldKarp::ETLw()
+{
+	while (writingBuffer)
+		this_thread::sleep_for(milliseconds(100));
+
+	writingBuffer = true;
+
+	const auto T = duration_cast<seconds>(system_clock::now() - begin).count();
+	const auto s = currentCardinality._My_val;
+
+	stringstream ss;
+	ss
+		<< " "
+		<< 100 * s / numberOfNodes
+		<< "% - ET: "
+		<< T
+		<< "s ETL: "
+		<< (numberOfNodes - s) * T / s
+		<< "s\r";
+
+	cout << ss.str();
+	fflush(stdin);
+
+	writingBuffer = false;
+}
+
+void HeldKarp::ETL()
+{
+	while (currentCardinality < numberOfNodes - 1)
+	{
+		ETLw();
+		this_thread::sleep_for(seconds(1));
+	}
+}
+
+void HeldKarp::AddNewToQueue()
+{
+	unordered_map<uint32_t, unordered_map<uint8_t, sInfo>> new_map;
+	C.push(new_map);
+}
+
 void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 {
 	size_t i;
@@ -58,9 +110,9 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 	uint16_t opt, tmp;
 	uint32_t code;
 
-	vector<uint8_t> R(K);
-	stack<uint8_t> S;
-	S.push(0);
+	vector<uint8_t> S(K);
+	stack<uint8_t> Q;
+	Q.push(0);
 
 	// mem opt
 	const auto tempC = &C.front();
@@ -68,31 +120,33 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 	sInfo *info;
 	// mem opt
 
-	while (S.size() > 0)
+	while (Q.size() > 0)
 	{
-		i = S.size() - 1;
-		s = S.top();
-		S.pop();
+		i = Q.size() - 1;
+		s = Q.top();
+		Q.pop();
 
 		while (s < N)
 		{
 			s++;
-			R[i] = s;
-			S.push(s);
+			S[i] = s;
+			Q.push(s);
 			i++;
 
 			if (i == K)
 			{
-				code = Powered2Code(R);
+				code = Powered2Code(S);
 
-				for (const auto k : R)
+				for (const auto k : S) // ALGO[05]
 				{
+					// ALGO[06]
+					// min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 					π = 0;
 					opt = USHRT_MAX;
 
 					tempC_k = &tempC->at(Powered2Code(code, k));
 
-					for (const auto m : R) // min(m≠k, m∈R) {C(R\{k}, m) + d[m,k]}
+					for (const auto m : S)
 						if (m != k)
 						{
 							tmp = tempC_k->at(m).cost + distance[k][m];
@@ -109,55 +163,13 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 					info = &C.back()[code][k];
 					info->path.push_back(π);
 					info->cost = opt;
+					// ALGO[06]
 				}
 
 				break;
 			}
 		}
 	}
-}
-
-template <class T>
-T HeldKarp::generateRandomNumber(const T startRange, const T endRange, const T limit)
-{
-	const T r = rand();
-	const T range = 1 + endRange - startRange;
-	const T num = r % range + startRange;
-
-	return num;
-}
-
-void HeldKarp::ETLw(const uint8_t s)
-{
-	const auto T = duration_cast<seconds>(system_clock::now() - begin).count();
-
-	cout
-		<< " "
-		<< 100 * s / numberOfNodes
-		<< "% - ET: "
-		<< T
-		<< "s ETL: "
-		<< (numberOfNodes - s) * T / s
-		<< "s\r";
-	fflush(stdin);
-}
-
-void HeldKarp::ETL(const uint8_t s)
-{
-	auto lastShow = system_clock::now();
-
-	while (!cycleEnded)
-		if (duration_cast<seconds>(system_clock::now() - lastShow).count() > 1)
-		{
-			ETLw(s);
-			lastShow = system_clock::now();
-		}
-}
-
-void HeldKarp::AddNewToQueue()
-{
-	unordered_map<uint32_t, unordered_map<uint8_t, sInfo>> new_map;
-	C.push(new_map);
 }
 
 /*
@@ -172,6 +184,18 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 
 T(n) = O(2ⁿn²)
 S(n) = O(2ⁿ√n)
+
+ALGO:
+00	function algorithm TSP (G, n) is
+01		for k := 2 to n
+02			C({k}, k) := d1,k
+03		for s := 2 to n−1
+04			for all S ⊆ {2, . . . , n}, |S| = s
+05				for all k ∈ S
+06					C(S, k) := minm≠k,m∈S [C(S\{k}, m) + dm,k]
+07		opt := mink≠1 [C({2, 3, . . . , n}, k) + dk, 1]
+08		return (opt)
+09	end function
 */
 void HeldKarp::TSP()
 {
@@ -182,9 +206,10 @@ void HeldKarp::TSP()
 		<< endl;
 
 	begin = system_clock::now();
+	thread tETL(&HeldKarp::ETL, this);
 
 	// TSP ================================================================================================================================
-	// insieme vuoto
+	// ALGO[01:02]
 	{
 		AddNewToQueue();
 
@@ -192,27 +217,23 @@ void HeldKarp::TSP()
 		for (uint8_t k = 1; k < numberOfNodes; k++)
 			(*CF1)[1 << k][k].cost = distance[k][0];
 	}
+	// ALGO[01:02]
 
-	for (uint8_t s = 2; s < numberOfNodes; s++) // O(N) cardinalità degli insiemi
+	// ALGO[03:06]
+	for (currentCardinality = 2; currentCardinality < numberOfNodes; currentCardinality++) // O(N) cardinalità degli insiemi // ALGO[03]
 	{
-		cycleEnded = false;
-		thread tETL(&HeldKarp::ETL, this, s);
-
 		AddNewToQueue();
 
-		Combinations(s, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s						
+		Combinations(currentCardinality, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s // ALGO[04]
 
 		C.pop();
-
-		cycleEnded = true;
-		if (tETL.joinable())
-			tETL.join();
-
-		ETLw(s);
+		ETLw();
 	}
+	// ALGO[03:06]
 	// TSP ================================================================================================================================
 
 	// PATH ===============================================================================================================================
+	// ALGO[07:08]
 	{
 		uint8_t π = 0;
 		uint16_t tmp, opt = USHRT_MAX;
@@ -223,7 +244,7 @@ void HeldKarp::TSP()
 
 		const auto code = Powered2Code(FullSet);
 
-		for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]}
+		for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]} ALGO[07]
 			if (C.front()[code][k].cost > 0)
 			{
 				tmp = C.front()[code][k].cost + distance[0][k];
@@ -249,7 +270,11 @@ void HeldKarp::TSP()
 			<< path
 			<< endl;
 	}
+	// ALGO[07:08]
 	// PATH ===============================================================================================================================	
+
+	if (tETL.joinable())
+		tETL.join();
 }
 
 vector<vector<uint8_t>> HeldKarp::New_RND_Distances(const uint8_t Size_of_RandomDistanceCosts)

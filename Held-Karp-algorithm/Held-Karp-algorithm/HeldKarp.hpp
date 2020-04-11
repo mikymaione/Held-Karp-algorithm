@@ -31,7 +31,8 @@ private:
 	const uint8_t numberOfNodes;
 
 	time_point<system_clock> begin;
-	atomic<bool> cycleEnded;
+	atomic<uint8_t> currentCardinality = 2;
+	atomic<bool> writingBuffer = false;
 
 private:
 	template <class IEnumerable>
@@ -46,8 +47,8 @@ private:
 	void AddNewToQueue();
 
 	string PrintPath(const uint32_t code, const uint8_t π);
-	void ETL(const uint8_t s);
-	void ETLw(const uint8_t s);
+	void ETL();
+	void ETLw();
 
 	template <class T>
 	static T generateRandomNumber(const T startRange, const T endRange, const T limit);
