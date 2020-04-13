@@ -12,15 +12,15 @@ Solving a graph of 25 nodes:
 
 AMD Ryzen5 2500U 2GHz, 8GB RAM, SSD
 Solving a graph of 3 nodes:
--Cost: 7 time: 1ms, path: 0 2 1 0
+-Cost: 7 time: 2ms, path: 0 2 1 0
 Solving a graph of 4 nodes:
--Cost: 21 time: 101ms, path: 0 2 3 1 0
+-Cost: 21 time: 113ms, path: 0 2 3 1 0
 Solving a graph of 6 nodes:
 -Cost: 151 time: 0ms, path: 0 4 2 1 5 3 0
 Solving a graph of 20 nodes:
--Cost: 162 time: 9387ms, path: 0 3 6 8 16 19 7 12 13 14 9 1 18 17 2 15 4 5 10 11 0
+-Cost: 162 time: 8473ms, path: 0 3 6 8 16 19 7 12 13 14 9 1 18 17 2 15 4 5 10 11 0
 Solving a graph of 25 nodes:
--Cost: 47 time: 1638066ms, path: 0 16 5 13 17 14 2 6 11 22 24 21 7 10 4 18 3 20 8 9 1 23 19 12 15 0
+-Cost: 47 time: 891070ms, path: 0 16 5 13 17 14 2 6 11 22 24 21 7 10 4 18 3 20 8 9 1 23 19 12 15 0
 
 Intel Core2 Duo E6550 2.33GHZ 4GB RAM, SSD
 Solving a graph of 3 nodes:
