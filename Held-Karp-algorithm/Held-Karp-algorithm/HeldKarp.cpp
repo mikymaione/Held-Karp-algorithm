@@ -11,7 +11,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <string>
 
 #include <set>
-#include <stack>
 
 #include <thread>
 
@@ -106,6 +105,42 @@ void HeldKarp::AddNewToQueue()
 	C.push(new_map);
 }
 
+void HeldKarp::Combinations_FreeMem(stack<uint8_t> &Q, vector<uint8_t> &S, const uint8_t K, const uint8_t N, const uint8_t sCur)
+{
+	size_t i;
+	uint8_t s;
+	uint32_t code;
+
+	Q.push(sCur - 1);
+
+	while (Q.size() > 0)
+	{
+		i = Q.size() - 1;
+		s = Q.top();
+		Q.pop();
+
+		while (s < N)
+		{
+			s++;
+
+			if (i == 0 && s > sCur)
+				return;
+
+			S[i] = s;
+			Q.push(s);
+			i++;
+
+			if (i == K)
+			{
+				code = Powered2Code(S);
+				C.front().erase(code);
+
+				break;
+			}
+		}
+	}
+}
+
 void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 {
 	size_t i;
@@ -117,9 +152,9 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 	stack<uint8_t> Q;
 	Q.push(0);
 
-	// mem opt
-	unordered_map<uint8_t, stack<uint32_t>> toDelete;
-	stack<uint32_t> *curToDelete;
+	// mem opt	
+	vector<uint8_t> S_freeMem(K - 1);
+	stack<uint8_t> Q_freeMem;
 
 	const auto tempC = &C.front();
 	unordered_map<uint8_t, sInfo> *tempC_k;
@@ -135,17 +170,7 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 		while (s < N)
 		{
 			if (i == 0 && s > 0)
-			{
-				curToDelete = &toDelete[s];
-
-				while (!curToDelete->empty())
-				{
-					tempC->erase(curToDelete->top());
-					curToDelete->pop();
-				}
-
-				toDelete.erase(s);
-			}
+				Combinations_FreeMem(Q_freeMem, S_freeMem, K - 1, N, s);
 
 			s++;
 			S[i] = s;
@@ -154,9 +179,6 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 
 			if (i == K)
 			{
-				if (s < N)
-					curToDelete = &toDelete[s];
-
 				code = Powered2Code(S);
 
 				for (const auto k : S) // ALGO[05]
@@ -168,9 +190,6 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 
 					code_k = Powered2Code(code, k);
 					tempC_k = &tempC->at(code_k);
-
-					if (s < N)
-						curToDelete->push(code_k);
 
 					for (const auto m : S)
 						if (m != k)

@@ -11,6 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <chrono>
 
 #include <queue>
+#include <stack>
 #include <unordered_map>
 #include <vector>
 
@@ -48,6 +49,7 @@ private:
 
 	void Combinations(const uint8_t K, const uint8_t N);
 	void AddNewToQueue();
+	void Combinations_FreeMem(stack<uint8_t> &Q, vector<uint8_t> &S, const uint8_t K, const uint8_t N, const uint8_t sCur);
 
 	string PrintPath(const uint32_t code, const uint8_t π);
 	void ETL();
