@@ -111,14 +111,16 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 	size_t i;
 	uint8_t π, s;
 	uint16_t opt, tmp;
-	uint32_t code;
+	uint32_t code, code_k;
 
 	vector<uint8_t> S(K);
-	stack<uint32_t> toDelete;
 	stack<uint8_t> Q;
 	Q.push(0);
 
 	// mem opt
+	unordered_map<uint8_t, stack<uint32_t>> toDelete;
+	stack<uint32_t> *curToDelete;
+
 	const auto tempC = &C.front();
 	unordered_map<uint8_t, sInfo> *tempC_k;
 	sInfo *info;
@@ -132,6 +134,19 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 
 		while (s < N)
 		{
+			if (i == 0 && s > 0)
+			{
+				curToDelete = &toDelete[s];
+
+				while (!curToDelete->empty())
+				{
+					tempC->erase(curToDelete->top());
+					curToDelete->pop();
+				}
+
+				toDelete.erase(s);
+			}
+
 			s++;
 			S[i] = s;
 			Q.push(s);
@@ -139,8 +154,8 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 
 			if (i == K)
 			{
+				curToDelete = &toDelete[s];
 				code = Powered2Code(S);
-				toDelete.push(code);
 
 				for (const auto k : S) // ALGO[05]
 				{
@@ -149,7 +164,9 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 					π = 0;
 					opt = USHRT_MAX;
 
-					tempC_k = &tempC->at(Powered2Code(code, k));
+					code_k = Powered2Code(code, k);
+					tempC_k = &tempC->at(code_k);
+					curToDelete->push(code_k);
 
 					for (const auto m : S)
 						if (m != k)
@@ -174,13 +191,6 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 				break;
 			}
 		}
-
-		if (s == N)
-			while (!toDelete.empty())
-			{
-				tempC->erase(toDelete.top());
-				toDelete.pop();
-			}
 	}
 }
 
