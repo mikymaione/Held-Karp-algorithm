@@ -7,13 +7,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #pragma once
 
 #include <iostream>
+#include <sstream>
+#include <string>
+
 #include <set>
 #include <stack>
-#include <string>
-#include <sstream>
+
 #include <thread>
 
 #include "HeldKarp.hpp"
+
 
 HeldKarp::HeldKarp(const vector<vector<uint8_t>> &DistanceMatrix2D) :
 	numberOfNodes(DistanceMatrix2D.size()),
@@ -111,6 +114,7 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 	uint32_t code;
 
 	vector<uint8_t> S(K);
+	stack<uint32_t> toDelete;
 	stack<uint8_t> Q;
 	Q.push(0);
 
@@ -136,6 +140,7 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 			if (i == K)
 			{
 				code = Powered2Code(S);
+				toDelete.push(code);
 
 				for (const auto k : S) // ALGO[05]
 				{
@@ -169,6 +174,13 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 				break;
 			}
 		}
+
+		if (s == N)
+			while (!toDelete.empty())
+			{
+				tempC->erase(toDelete.top());
+				toDelete.pop();
+			}
 	}
 }
 
