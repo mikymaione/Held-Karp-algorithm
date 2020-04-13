@@ -154,7 +154,9 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 
 			if (i == K)
 			{
-				curToDelete = &toDelete[s];
+				if (s < N)
+					curToDelete = &toDelete[s];
+
 				code = Powered2Code(S);
 
 				for (const auto k : S) // ALGO[05]
@@ -166,7 +168,9 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 
 					code_k = Powered2Code(code, k);
 					tempC_k = &tempC->at(code_k);
-					curToDelete->push(code_k);
+
+					if (s < N)
+						curToDelete->push(code_k);
 
 					for (const auto m : S)
 						if (m != k)
