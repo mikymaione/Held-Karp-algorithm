@@ -36,6 +36,15 @@ void StartElaboration(const string graphToSolve, const uint8_t NumberOfNodes)
 		{ 6, 3, 12, 0 }
 	};
 
+	const vector<vector<uint8_t>> distance5 =
+	{
+		{ 0, 1, 1, 2, 4, },
+		{ 1, 0, 3, 2, 2, },
+		{ 1, 3, 0, 4, 1, },
+		{ 2, 2, 4, 0, 3, },
+		{ 4, 2, 1, 3, 0, },
+	};
+
 	const vector<vector<uint8_t>> distance6 =
 	{
 		{ 0, 59, 75, 22, 46, 38 },
@@ -44,6 +53,25 @@ void StartElaboration(const string graphToSolve, const uint8_t NumberOfNodes)
 		{ 5, 82, 18, 0, 90, 90 },
 		{ 74, 77, 1, 46, 0, 79 },
 		{ 76, 23, 94, 61, 47, 0 }
+	};
+
+	const vector<vector<uint8_t>> distance15 =
+	{
+		{ 0, 5, 4, 4, 9, 7, 13, 3, 14, 9, 2, 14, 6, 1, 1, },
+		{ 5, 0, 7, 3, 14, 2, 12, 4, 7, 2, 12, 11, 3, 11, 4, },
+		{ 4, 7, 0, 11, 13, 2, 1, 11, 5, 2, 6, 14, 3, 12, 3, },
+		{ 4, 3, 11, 0, 12, 5, 2, 14, 12, 8, 3, 1, 8, 9, 13, },
+		{ 9, 14, 13, 12, 0, 14, 14, 4, 8, 3, 4, 7, 7, 7, 11, },
+		{ 7, 2, 2, 5, 14, 0, 10, 6, 1, 7, 2, 3, 1, 14, 10, },
+		{ 13, 12, 1, 2, 14, 10, 0, 8, 14, 3, 13, 1, 13, 6, 2, },
+		{ 3, 4, 11, 14, 4, 6, 8, 0, 14, 4, 14, 10, 10, 3, 1, },
+		{ 14, 7, 5, 12, 8, 1, 14, 14, 0, 2, 1, 8, 12, 13, 2, },
+		{ 9, 2, 2, 8, 3, 7, 3, 4, 2, 0, 8, 10, 5, 7, 2, },
+		{ 2, 12, 6, 3, 4, 2, 13, 14, 1, 8, 0, 14, 2, 7, 11, },
+		{ 14, 11, 14, 1, 7, 3, 1, 10, 8, 10, 14, 0, 5, 2, 2, },
+		{ 6, 3, 3, 8, 7, 1, 13, 10, 12, 5, 2, 5, 0, 12, 2, },
+		{ 1, 11, 12, 9, 7, 14, 6, 3, 13, 7, 7, 2, 12, 0, 13, },
+		{ 1, 4, 3, 13, 11, 10, 2, 1, 2, 2, 11, 2, 2, 13, 0, },
 	};
 
 	const vector<vector<uint8_t>> distance20 =
@@ -143,8 +171,14 @@ void StartElaboration(const string graphToSolve, const uint8_t NumberOfNodes)
 		if (graphToSolve == "all" || graphToSolve == "4")
 			TSP(distance4);
 
+		if (graphToSolve == "all" || graphToSolve == "5")
+			TSP(distance5);
+
 		if (graphToSolve == "all" || graphToSolve == "6")
 			TSP(distance6);
+
+		if (graphToSolve == "all" || graphToSolve == "15")
+			TSP(distance15);
 
 		if (graphToSolve == "all" || graphToSolve == "20")
 			TSP(distance20);
@@ -163,7 +197,7 @@ void WriteTitle()
 		<< "Held-Karp algorithm to solve the Traveling Salesman Problem" << endl
 		<< endl
 		<< "Held-Karp-algorithm parameters: " << endl
-		<< " [graph to solve = {3, 4, 6, 20, 25, 30, all, random}]" << endl
+		<< " [graph to solve = {3, 4, 5, 6, 15, 20, 25, 30, all, random}]" << endl
 		<< " [number of node of random graph = {3 - 255}]" << endl
 		<< endl
 		<< endl
