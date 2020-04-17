@@ -224,7 +224,6 @@ int main(int argc, char **argv)
 	catch (const exception &e)
 	{
 		cout << endl << "Exception occurred: " << e.what() << endl;
-		throw;
 	}
 
 	cout << endl << "End." << endl;

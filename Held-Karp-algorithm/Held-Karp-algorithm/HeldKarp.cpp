@@ -110,6 +110,7 @@ void HeldKarp::Combinations_FreeMem(stack<uint8_t> &Q, vector<uint8_t> &S, const
 	size_t i;
 	uint8_t s;
 	uint32_t code;
+	auto tempC = &C.front();
 
 	Q.push(sCur - 1);
 
@@ -133,7 +134,7 @@ void HeldKarp::Combinations_FreeMem(stack<uint8_t> &Q, vector<uint8_t> &S, const
 			if (i == K)
 			{
 				code = Powered2Code(S);
-				C.front().erase(code);
+				tempC->erase(code);
 
 				break;
 			}
@@ -157,7 +158,7 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 	stack<uint8_t> Q_freeMem;
 
 	const auto tempC = &C.front();
-	unordered_map<uint8_t, sInfo> *tempC_k;
+	unordered_map<uint8_t, sInfo> *tempC_k, *tempCBack;
 	sInfo *info;
 	// mem opt
 
@@ -180,6 +181,7 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 			if (i == K)
 			{
 				code = Powered2Code(S);
+				tempCBack = &C.back()[code];
 
 				for (const auto k : S) // ALGO[05]
 				{
@@ -203,9 +205,9 @@ void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
 							}
 						}
 
-					C.back()[code][k] = tempC_k->at(π); // copy path vector
+					(*tempCBack)[k] = tempC_k->at(π); // copy path vector
 
-					info = &C.back()[code][k];
+					info = &(*tempCBack)[k];
 					info->path.push_back(π);
 					info->cost = opt;
 					// ALGO[06]
@@ -253,70 +255,80 @@ void HeldKarp::TSP()
 	begin = system_clock::now();
 	thread tETL(&HeldKarp::ETL, this);
 
-	// TSP ================================================================================================================================
-	// ALGO[01:02]
+	try
 	{
-		AddNewToQueue();
+		// TSP ================================================================================================================================
+		// ALGO[01:02]
+		{
+			AddNewToQueue();
 
-		auto CF1 = &C.front();
-		for (uint8_t k = 1; k < numberOfNodes; k++)
-			(*CF1)[1 << k][k].cost = distance[k][0];
-	}
-	// ALGO[01:02]
+			auto CF1 = &C.front();
+			for (uint8_t k = 1; k < numberOfNodes; k++)
+				(*CF1)[1 << k][k].cost = distance[k][0];
+		}
+		// ALGO[01:02]
 
-	// ALGO[03:06]
-	for (currentCardinality = 2; currentCardinality < numberOfNodes; currentCardinality++) // O(N) cardinalità degli insiemi // ALGO[03]
-	{
-		AddNewToQueue();
+		// ALGO[03:06]
+		for (currentCardinality = 2; currentCardinality < numberOfNodes; currentCardinality++) // O(N) cardinalità degli insiemi // ALGO[03]
+		{
+			AddNewToQueue();
 
-		Combinations(currentCardinality, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s // ALGO[04]
+			Combinations(currentCardinality, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s // ALGO[04]
 
-		C.pop();
-		ETLw();
-	}
-	// ALGO[03:06]
-	// TSP ================================================================================================================================
+			C.pop();
+			ETLw();
+		}
+		// ALGO[03:06]
+		// TSP ================================================================================================================================
 
-	// PATH ===============================================================================================================================
-	// ALGO[07:08]
-	{
-		uint8_t π = 0;
-		uint16_t tmp, opt = USHRT_MAX;
+		// PATH ===============================================================================================================================
+		// ALGO[07:08]
+		{
+			uint8_t π = 0;
+			uint16_t tmp, opt = USHRT_MAX;
 
-		set<uint8_t> FullSet;
-		for (uint8_t z = 1; z < numberOfNodes; z++)
-			FullSet.insert(z);
+			set<uint8_t> FullSet;
+			for (uint8_t z = 1; z < numberOfNodes; z++)
+				FullSet.insert(z);
 
-		const auto code = Powered2Code(FullSet);
+			const auto code = Powered2Code(FullSet);
 
-		for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]} ALGO[07]
-			if (C.front()[code][k].cost > 0)
-			{
-				tmp = C.front()[code][k].cost + distance[0][k];
-
-				if (tmp < opt)
+			for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]} ALGO[07]
+				if (C.front()[code][k].cost > 0)
 				{
-					opt = tmp;
-					π = k;
+					tmp = C.front()[code][k].cost + distance[0][k];
+
+					if (tmp < opt)
+					{
+						opt = tmp;
+						π = k;
+					}
 				}
-			}
 
-		C.front()[code][π].cost = opt;
-		C.front()[code][π].path.push_back(π);
+			C.front()[code][π].cost = opt;
+			C.front()[code][π].path.push_back(π);
 
-		const auto path = PrintPath(code, π);
+			const auto path = PrintPath(code, π);
 
-		cout
-			<< "-Cost: "
-			<< to_string(opt)
-			<< " time: "
-			<< duration_cast<milliseconds>(system_clock::now() - begin).count()
-			<< "ms, path: "
-			<< path
-			<< endl;
+			cout
+				<< "-Cost: "
+				<< to_string(opt)
+				<< " time: "
+				<< duration_cast<milliseconds>(system_clock::now() - begin).count()
+				<< "ms, path: "
+				<< path
+				<< endl;
+		}
+		// ALGO[07:08]
+		// PATH ===============================================================================================================================	
 	}
-	// ALGO[07:08]
-	// PATH ===============================================================================================================================	
+	catch (const exception &e)
+	{
+		if (tETL.joinable())
+			tETL.join();
+
+		throw e;
+	}
 
 	if (tETL.joinable())
 		tETL.join();
