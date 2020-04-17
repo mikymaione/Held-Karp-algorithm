@@ -7,28 +7,28 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <iostream>
 #include "HeldKarp.hpp"
 
-void TSP(const vector<vector<uint8_t>> &DistanceMatrix2D)
+void TSP(const vector<vector<uint_least8_t>> &DistanceMatrix2D)
 {
 	HeldKarp hk(DistanceMatrix2D);
 	hk.TSP();
 }
 
-void TSP_RND(const uint8_t NumberOfNodes)
+void TSP_RND(const uint_least8_t NumberOfNodes)
 {
 	const auto DistanceMatrix2D = HeldKarp::New_RND_Distances(NumberOfNodes);
 	TSP(DistanceMatrix2D);
 }
 
-void StartElaboration(const string graphToSolve, const uint8_t NumberOfNodes)
+void StartElaboration(const string graphToSolve, const uint_least8_t NumberOfNodes)
 {
-	const vector<vector<uint8_t>> distance3 =
+	const vector<vector<uint_least8_t>> distance3 =
 	{
 		{ 0, 1, 3 },
 		{ 3, 0, 2 },
 		{ 5, 1, 0 }
 	};
 
-	const vector<vector<uint8_t>> distance4 =
+	const vector<vector<uint_least8_t>> distance4 =
 	{
 		{ 0, 2, 9, 10 },
 		{ 1, 0, 6, 4 },
@@ -36,7 +36,7 @@ void StartElaboration(const string graphToSolve, const uint8_t NumberOfNodes)
 		{ 6, 3, 12, 0 }
 	};
 
-	const vector<vector<uint8_t>> distance5 =
+	const vector<vector<uint_least8_t>> distance5 =
 	{
 		{ 0, 1, 1, 2, 4, },
 		{ 1, 0, 3, 2, 2, },
@@ -45,7 +45,7 @@ void StartElaboration(const string graphToSolve, const uint8_t NumberOfNodes)
 		{ 4, 2, 1, 3, 0, },
 	};
 
-	const vector<vector<uint8_t>> distance6 =
+	const vector<vector<uint_least8_t>> distance6 =
 	{
 		{ 0, 59, 75, 22, 46, 38 },
 		{ 25, 0, 79, 60, 75, 12 },
@@ -55,7 +55,7 @@ void StartElaboration(const string graphToSolve, const uint8_t NumberOfNodes)
 		{ 76, 23, 94, 61, 47, 0 }
 	};
 
-	const vector<vector<uint8_t>> distance15 =
+	const vector<vector<uint_least8_t>> distance15 =
 	{
 		{ 0, 5, 4, 4, 9, 7, 13, 3, 14, 9, 2, 14, 6, 1, 1, },
 		{ 5, 0, 7, 3, 14, 2, 12, 4, 7, 2, 12, 11, 3, 11, 4, },
@@ -74,7 +74,7 @@ void StartElaboration(const string graphToSolve, const uint8_t NumberOfNodes)
 		{ 1, 4, 3, 13, 11, 10, 2, 1, 2, 2, 11, 2, 2, 13, 0, },
 	};
 
-	const vector<vector<uint8_t>> distance20 =
+	const vector<vector<uint_least8_t>> distance20 =
 	{
 		{ 0, 44, 12, 11, 44, 5, 63, 74, 50, 43, 77, 36, 47, 50, 94, 61, 75, 80, 51, 39 },
 		{ 58, 0, 90, 24, 86, 24, 97, 67, 85, 17, 85, 37, 58, 60, 39, 6, 8, 16, 9, 30 },
@@ -98,7 +98,7 @@ void StartElaboration(const string graphToSolve, const uint8_t NumberOfNodes)
 		{ 52, 78, 77, 78, 12, 13, 93, 13, 98, 60, 87, 85, 59, 61, 60, 82, 23, 88, 88, 0 }
 	};
 
-	const vector<vector<uint8_t>> distance25 = {
+	const vector<vector<uint_least8_t>> distance25 = {
 		{ 0, 22, 4, 9, 7, 20, 14, 12, 11, 24, 6, 5, 18, 4, 16, 14, 1, 6, 23, 22, 10, 22, 20, 9, 20, },
 		{ 12, 0, 17, 20, 16, 19, 13, 4, 14, 13, 5, 11, 3, 16, 20, 18, 12, 16, 23, 17, 5, 3, 21, 2, 14, },
 		{ 23, 7, 0, 9, 8, 11, 3, 20, 3, 20, 13, 19, 4, 18, 21, 17, 11, 2, 16, 5, 23, 5, 12, 9, 10, },
@@ -126,7 +126,7 @@ void StartElaboration(const string graphToSolve, const uint8_t NumberOfNodes)
 		{ 23, 21, 20, 23, 9, 24, 10, 24, 9, 16, 7, 1, 16, 12, 13, 24, 22, 18, 13, 10, 15, 1, 22, 13, 0, },
 	};
 
-	const vector<vector<uint8_t>> distance30 = {
+	const vector<vector<uint_least8_t>> distance30 = {
 		{ 0, 17, 8, 12, 16, 11, 1, 2, 22, 16, 17, 20, 4, 13, 5, 14, 8, 1, 18, 11, 14, 7, 23, 19, 19, 15, 18, 17, 7, 16, },
 		{ 11, 0, 20, 3, 1, 24, 4, 22, 6, 20, 7, 22, 24, 4, 3, 1, 14, 7, 24, 18, 16, 17, 17, 21, 15, 2, 20, 19, 14, 18, },
 		{ 1, 17, 0, 9, 20, 6, 5, 22, 17, 4, 13, 1, 16, 2, 6, 12, 13, 15, 3, 21, 18, 6, 9, 19, 24, 15, 23, 19, 23, 13, },
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
 		if (argc > 2)
 		{
 			const string graphToSolve = argv[1];
-			const uint8_t NumberOfNodes = atoi(argv[2]);
+			const uint_least8_t NumberOfNodes = atoi(argv[2]);
 
 			StartElaboration(graphToSolve, NumberOfNodes);
 		}

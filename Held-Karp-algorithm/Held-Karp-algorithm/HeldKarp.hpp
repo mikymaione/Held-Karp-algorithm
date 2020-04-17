@@ -24,34 +24,34 @@ class HeldKarp
 private:
 	struct sInfo
 	{
-		uint16_t cost;
-		vector<uint8_t> path;
+		uint_least16_t cost;
+		vector<uint_least8_t> path;
 	};
 
 	// <Code, <Node, Data>>
-	queue<unordered_map<uint32_t, unordered_map<uint8_t, sInfo>>> C;
+	queue<unordered_map<uint_least32_t, unordered_map<uint_least8_t, sInfo>>> C;
 
-	const vector<vector<uint8_t>> distance;
-	const uint8_t numberOfNodes;
+	const vector<vector<uint_least8_t>> distance;
+	const uint_least8_t numberOfNodes;
 
 	time_point<system_clock> begin;
-	atomic<uint8_t> currentCardinality = 2;
+	atomic<uint_least8_t> currentCardinality = 2;
 	atomic<bool> writingBuffer = false;
 
 private:
 	template <class IEnumerable>
-	uint32_t Powered2Code(const IEnumerable &S);
+	uint_least32_t Powered2Code(const IEnumerable &S);
 
 	template <class IEnumerable>
-	uint32_t Powered2Code(const IEnumerable &S, const uint8_t exclude);
+	uint_least32_t Powered2Code(const IEnumerable &S, const uint_least8_t exclude);
 
-	uint32_t Powered2Code(const uint32_t code, const uint8_t exclude);
+	uint_least32_t Powered2Code(const uint_least32_t code, const uint_least8_t exclude);
 
-	void Combinations(const uint8_t K, const uint8_t N);
+	void Combinations(const uint_least8_t K, const uint_least8_t N);
 	void AddNewToQueue();
-	void Combinations_FreeMem(stack<uint8_t> &Q, vector<uint8_t> &S, const uint8_t K, const uint8_t N, const uint8_t sCur);
+	void Combinations_FreeMem(stack<uint_least8_t> &Q, vector<uint_least8_t> &S, const uint_least8_t K, const uint_least8_t N, const uint_least8_t sCur);
 
-	string PrintPath(const uint32_t code, const uint8_t π);
+	string PrintPath(const uint_least32_t code, const uint_least8_t π);
 	void ETL();
 	void ETLw();
 
@@ -59,10 +59,10 @@ private:
 	static T generateRandomNumber(const T startRange, const T endRange, const T limit);
 
 public:
-	HeldKarp(const vector<vector<uint8_t>> &DistanceMatrix2D);
+	HeldKarp(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
 
 	void TSP();
 
-	static vector<vector<uint8_t>> New_RND_Distances(const uint8_t Size_of_RandomDistanceCosts);
+	static vector<vector<uint_least8_t>> New_RND_Distances(const uint_least8_t Size_of_RandomDistanceCosts);
 
 };

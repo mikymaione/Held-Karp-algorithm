@@ -17,11 +17,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "HeldKarp.hpp"
 
 
-HeldKarp::HeldKarp(const vector<vector<uint8_t>> &DistanceMatrix2D) :
+HeldKarp::HeldKarp(const vector<vector<uint_least8_t>> &DistanceMatrix2D) :
 	numberOfNodes(DistanceMatrix2D.size()),
 	distance(DistanceMatrix2D) {}
 
-string HeldKarp::PrintPath(const uint32_t code, const uint8_t π)
+string HeldKarp::PrintPath(const uint_least32_t code, const uint_least8_t π)
 {
 	string s;
 
@@ -32,15 +32,15 @@ string HeldKarp::PrintPath(const uint32_t code, const uint8_t π)
 }
 
 template <class IEnumerable>
-uint32_t HeldKarp::Powered2Code(const IEnumerable &S)
+uint_least32_t HeldKarp::Powered2Code(const IEnumerable &S)
 {
 	return Powered2Code(S, UCHAR_MAX);
 }
 
 template <class IEnumerable>
-uint32_t HeldKarp::Powered2Code(const IEnumerable &S, const uint8_t exclude)
+uint_least32_t HeldKarp::Powered2Code(const IEnumerable &S, const uint_least8_t exclude)
 {
-	uint32_t code = 0;
+	uint_least32_t code = 0;
 
 	for (const auto e : S)
 		if (e != exclude)
@@ -49,7 +49,7 @@ uint32_t HeldKarp::Powered2Code(const IEnumerable &S, const uint8_t exclude)
 	return code;
 }
 
-uint32_t HeldKarp::Powered2Code(const uint32_t code, const uint8_t exclude)
+uint_least32_t HeldKarp::Powered2Code(const uint_least32_t code, const uint_least8_t exclude)
 {
 	return code - (1 << exclude);
 }
@@ -101,15 +101,15 @@ void HeldKarp::ETL()
 
 void HeldKarp::AddNewToQueue()
 {
-	unordered_map<uint32_t, unordered_map<uint8_t, sInfo>> new_map;
+	unordered_map<uint_least32_t, unordered_map<uint_least8_t, sInfo>> new_map;
 	C.push(new_map);
 }
 
-void HeldKarp::Combinations_FreeMem(stack<uint8_t> &Q, vector<uint8_t> &S, const uint8_t K, const uint8_t N, const uint8_t sCur)
+void HeldKarp::Combinations_FreeMem(stack<uint_least8_t> &Q, vector<uint_least8_t> &S, const uint_least8_t K, const uint_least8_t N, const uint_least8_t sCur)
 {
 	size_t i;
-	uint8_t s;
-	uint32_t code;
+	uint_least8_t s;
+	uint_least32_t code;
 	auto tempC = &C.front();
 
 	Q.push(sCur - 1);
@@ -142,23 +142,23 @@ void HeldKarp::Combinations_FreeMem(stack<uint8_t> &Q, vector<uint8_t> &S, const
 	}
 }
 
-void HeldKarp::Combinations(const uint8_t K, const uint8_t N)
+void HeldKarp::Combinations(const uint_least8_t K, const uint_least8_t N)
 {
 	size_t i;
-	uint8_t π, s;
-	uint16_t opt, tmp;
-	uint32_t code, code_k;
+	uint_least8_t π, s;
+	uint_least16_t opt, tmp;
+	uint_least32_t code, code_k;
 
-	vector<uint8_t> S(K);
-	stack<uint8_t> Q;
+	vector<uint_least8_t> S(K);
+	stack<uint_least8_t> Q;
 	Q.push(0);
 
 	// mem opt	
-	vector<uint8_t> S_freeMem(K - 1);
-	stack<uint8_t> Q_freeMem;
+	vector<uint_least8_t> S_freeMem(K - 1);
+	stack<uint_least8_t> Q_freeMem;
 
 	const auto tempC = &C.front();
-	unordered_map<uint8_t, sInfo> *tempC_k, *tempCBack;
+	unordered_map<uint_least8_t, sInfo> *tempC_k, *tempCBack;
 	sInfo *info;
 	// mem opt
 
@@ -263,7 +263,7 @@ void HeldKarp::TSP()
 			AddNewToQueue();
 
 			auto CF1 = &C.front();
-			for (uint8_t k = 1; k < numberOfNodes; k++)
+			for (uint_least8_t k = 1; k < numberOfNodes; k++)
 				(*CF1)[1 << k][k].cost = distance[k][0];
 		}
 		// ALGO[01:02]
@@ -284,11 +284,11 @@ void HeldKarp::TSP()
 		// PATH ===============================================================================================================================
 		// ALGO[07:08]
 		{
-			uint8_t π = 0;
-			uint16_t tmp, opt = USHRT_MAX;
+			uint_least8_t π = 0;
+			uint_least16_t tmp, opt = USHRT_MAX;
 
-			set<uint8_t> FullSet;
-			for (uint8_t z = 1; z < numberOfNodes; z++)
+			set<uint_least8_t> FullSet;
+			for (uint_least8_t z = 1; z < numberOfNodes; z++)
 				FullSet.insert(z);
 
 			const auto code = Powered2Code(FullSet);
@@ -334,9 +334,9 @@ void HeldKarp::TSP()
 		tETL.join();
 }
 
-vector<vector<uint8_t>> HeldKarp::New_RND_Distances(const uint8_t Size_of_RandomDistanceCosts)
+vector<vector<uint_least8_t>> HeldKarp::New_RND_Distances(const uint_least8_t Size_of_RandomDistanceCosts)
 {
-	vector<vector<uint8_t>> A(Size_of_RandomDistanceCosts, vector<uint8_t>(Size_of_RandomDistanceCosts, 0));
+	vector<vector<uint_least8_t>> A(Size_of_RandomDistanceCosts, vector<uint_least8_t>(Size_of_RandomDistanceCosts, 0));
 
 	for (auto x = 0; x < Size_of_RandomDistanceCosts; x++)
 		for (auto y = 0; y < Size_of_RandomDistanceCosts; y++)
