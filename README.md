@@ -28,7 +28,7 @@ The Held–Karp algorithm, also called Bellman–Held–Karp algorithm, is a dyn
 | Core2 Duo | 20 | 00'07"89 |
 | Ryzen5 | 20 | 00'08"47 |
 | Celeron | 20 | 00'13"43 |
-| -- | -----: | ---: |
+|||
 | Ryzen5 | 25 | 14'51"70 |
 | Celeron | 25 | 31'14"42 |
 
