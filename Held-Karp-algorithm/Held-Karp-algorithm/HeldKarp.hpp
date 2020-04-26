@@ -12,7 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <queue>
 #include <stack>
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 using namespace std;
@@ -29,7 +29,7 @@ private:
 	};
 
 	// <Code, <Node, Data>>
-	queue<unordered_map<uint_least32_t, unordered_map<uint_least8_t, sInfo>>> C;
+	queue<map<uint_least32_t, map<uint_least8_t, sInfo>>> C;
 
 	const vector<vector<uint_least8_t>> distance;
 	const uint_least8_t numberOfNodes;

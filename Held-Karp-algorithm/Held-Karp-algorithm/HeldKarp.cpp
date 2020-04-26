@@ -101,7 +101,7 @@ void HeldKarp::ETL()
 
 void HeldKarp::AddNewToQueue()
 {
-	unordered_map<uint_least32_t, unordered_map<uint_least8_t, sInfo>> new_map;
+	map<uint_least32_t, map<uint_least8_t, sInfo>> new_map;
 	C.push(new_map);
 }
 
@@ -158,7 +158,7 @@ void HeldKarp::Combinations(const uint_least8_t K, const uint_least8_t N)
 	stack<uint_least8_t> Q_freeMem;
 
 	const auto tempC = &C.front();
-	unordered_map<uint_least8_t, sInfo> *tempC_k, *tempCBack;
+	map<uint_least8_t, sInfo> *tempC_k, *tempCBack;
 	sInfo *info;
 	// mem opt
 
