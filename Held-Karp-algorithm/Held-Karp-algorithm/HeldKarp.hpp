@@ -47,8 +47,9 @@ private:
 
 	uint_least32_t Powered2Code(const uint_least32_t code, const uint_least8_t exclude);
 
-	void Combinations(const uint_least8_t K, const uint_least8_t N);
 	void AddNewToQueue();
+
+	void Combinations(const uint_least8_t K, const uint_least8_t N);
 	void Combinations_FreeMem(stack<uint_least8_t> &Q, vector<uint_least8_t> &S, const uint_least8_t K, const uint_least8_t N, const uint_least8_t sCur);
 
 	string PrintPath(const uint_least32_t code, const uint_least8_t π);
