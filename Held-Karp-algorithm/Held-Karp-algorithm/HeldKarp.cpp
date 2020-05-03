@@ -44,14 +44,15 @@ uint_least32_t HeldKarp::Powered2Code(const IEnumerable &S, const uint_least8_t 
 
 	for (const auto e : S)
 		if (e != exclude)
-			code += 1 << e;
+			code += POWER2[e]; //code += 1 << e;
 
 	return code;
 }
 
 uint_least32_t HeldKarp::Powered2Code(const uint_least32_t code, const uint_least8_t exclude)
 {
-	return code - (1 << exclude);
+	return code - POWER2[exclude];
+	//return code - (1 << exclude);
 }
 
 template <class T>
