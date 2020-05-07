@@ -47,10 +47,12 @@ protected:
 	template <class T>
 	static T generateRandomNumber(const T startRange, const T endRange, const T limit);
 
+	virtual void Solve(uint_least16_t &opt, string &path) = 0;
+
 public:
 	HeldKarp(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
 
-	virtual void TSP() = 0;
+	void TSP();
 
 	static vector<vector<uint_least8_t>> New_RND_Distances(const uint_least8_t Size_of_RandomDistanceCosts);
 

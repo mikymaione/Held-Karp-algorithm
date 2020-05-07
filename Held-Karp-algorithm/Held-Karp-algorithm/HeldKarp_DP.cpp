@@ -175,92 +175,62 @@ ALGO:
 08		return (opt)
 09	end function
 */
-void HeldKarp_DP::TSP()
+void HeldKarp_DP::Solve(uint_least16_t &opt, string &path)
 {
-	cout
-		<< "Solving a graph of "
-		<< to_string(numberOfNodes)
-		<< " nodes:"
-		<< endl;
-
-	begin = system_clock::now();
-	thread tETL(&HeldKarp_DP::ETL, this);
-
-	try
+	// TSP ================================================================================================================================
+	// ALGO[01:02]
 	{
-		// TSP ================================================================================================================================
-		// ALGO[01:02]
-		{
-			AddNewToQueue();
+		AddNewToQueue();
 
-			auto CF1 = &C.front();
-			for (uint_least8_t k = 1; k < numberOfNodes; k++)
-				(*CF1)[1 << k][k].cost = distance[k][0];
-		}
-		// ALGO[01:02]
+		auto CF1 = &C.front();
+		for (uint_least8_t k = 1; k < numberOfNodes; k++)
+			(*CF1)[1 << k][k].cost = distance[k][0];
+	}
+	// ALGO[01:02]
 
-		// ALGO[03:06]
-		for (currentCardinality = 2; currentCardinality < numberOfNodes; currentCardinality++) // O(N) cardinalità degli insiemi // ALGO[03]
-		{
-			AddNewToQueue();
+	// ALGO[03:06]
+	for (currentCardinality = 2; currentCardinality < numberOfNodes; currentCardinality++) // O(N) cardinalità degli insiemi // ALGO[03]
+	{
+		AddNewToQueue();
 
-			Combinations(currentCardinality, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s // ALGO[04]
+		Combinations(currentCardinality, numberOfNodes - 1); // O(2ⁿ) genera (2^s)-1 insiemi differenti di cardinalità s // ALGO[04]
 
-			C.pop();
-			ETLw();
-		}
-		// ALGO[03:06]
-		// TSP ================================================================================================================================
+		C.pop();
+		ETLw();
+	}
+	// ALGO[03:06]
+	// TSP ================================================================================================================================
 
-		// PATH ===============================================================================================================================
-		// ALGO[07:08]
-		{
-			uint_least8_t π = 0;
-			uint_least16_t tmp, opt = USHRT_MAX;
+	// PATH ===============================================================================================================================
+	// ALGO[07:08]
+	{
+		uint_least8_t π = 0;
+		uint_least16_t tmp;
+		opt = USHRT_MAX;
 
-			vector<uint_least8_t> FullSet;
-			for (uint_least8_t z = 1; z < numberOfNodes; z++)
-				FullSet.push_back(z);
+		vector<uint_least8_t> FullSet;
+		for (uint_least8_t z = 1; z < numberOfNodes; z++)
+			FullSet.push_back(z);
 
-			const auto code = Powered2Code(FullSet);
+		const auto code = Powered2Code(FullSet);
 
-			for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]} ALGO[07]
-				if (C.front()[code][k].cost > 0)
+		for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]} ALGO[07]
+			if (C.front()[code][k].cost > 0)
+			{
+				tmp = C.front()[code][k].cost + distance[0][k];
+
+				if (tmp < opt)
 				{
-					tmp = C.front()[code][k].cost + distance[0][k];
-
-					if (tmp < opt)
-					{
-						opt = tmp;
-						π = k;
-					}
+					opt = tmp;
+					π = k;
 				}
+			}
 
-			C.front()[code][π].cost = opt;
-			C.front()[code][π].path.push_back(π);
+		C.front()[code][π].cost = opt;
+		C.front()[code][π].path.push_back(π);
 
-			const auto path = PrintPath(code, π);
-
-			cout
-				<< "-Cost: "
-				<< to_string(opt)
-				<< " time: "
-				<< duration_cast<milliseconds>(system_clock::now() - begin).count()
-				<< "ms, path: "
-				<< path
-				<< endl;
-		}
-		// ALGO[07:08]
-		// PATH ===============================================================================================================================	
+		path = PrintPath(code, π);
 	}
-	catch (const exception &e)
-	{
-		if (tETL.joinable())
-			tETL.join();
-
-		throw e;
-	}
-
-	if (tETL.joinable())
-		tETL.join();
+	// ALGO[07:08]
+	// PATH ===============================================================================================================================	
 }

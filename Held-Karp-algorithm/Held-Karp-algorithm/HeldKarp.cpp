@@ -95,3 +95,42 @@ vector<vector<uint_least8_t>> HeldKarp::New_RND_Distances(const uint_least8_t Si
 
 	return A;
 }
+
+void HeldKarp::TSP()
+{
+	cout
+		<< "Solving a graph of "
+		<< to_string(numberOfNodes)
+		<< " nodes:"
+		<< endl;
+
+	begin = system_clock::now();
+	thread tETL(&HeldKarp::ETL, this);
+
+	try
+	{
+		uint_least16_t opt;
+		string path;
+
+		Solve(opt, path);
+
+		cout
+			<< "-Cost: "
+			<< to_string(opt)
+			<< " time: "
+			<< duration_cast<milliseconds>(system_clock::now() - begin).count()
+			<< "ms, path: "
+			<< path
+			<< endl;
+	}
+	catch (const exception &e)
+	{
+		if (tETL.joinable())
+			tETL.join();
+
+		throw e;
+	}
+
+	if (tETL.joinable())
+		tETL.join();
+}

@@ -6,44 +6,29 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <atomic>
+#include <iostream>
+#include <sstream>
+#include <string>
 
-#include <chrono>
+#include <thread>
 
-#include <queue>
-#include <stack>
-#include <map>
-#include <vector>
-
-#include "HeldKarp.hpp"
-
-using namespace std;
-using namespace chrono;
+#include "HeldKarp_GR.hpp"
 
 
-class HeldKarp_DP : public HeldKarp
+HeldKarp_GR::HeldKarp_GR(const vector<vector<uint_least8_t>> &DistanceMatrix2D) :
+	HeldKarp(DistanceMatrix2D) {}
+
+string HeldKarp_GR::PrintPath(const uint_least32_t code, const uint_least8_t π)
 {
-protected:
-	struct sInfo
-	{
-		uint_least16_t cost;
-		vector<uint_least8_t> path;
-	};
+	string s;
 
-	// <Code, <Node, Data>>
-	queue<map<uint_least32_t, map<uint_least8_t, sInfo>>> C;
+	return "0 " + s + "0";
+}
 
-protected:
-	void AddNewToQueue();
+/*
+Held–Karp algorithm
+*/
+void HeldKarp_GR::Solve(uint_least16_t &opt, string &path)
+{
 
-	string PrintPath(const uint_least32_t code, const uint_least8_t π);
-
-	void Combinations(const uint_least8_t K, const uint_least8_t N);
-	void Combinations_FreeMem(stack<uint_least8_t> &Q, vector<uint_least8_t> &S, const uint_least8_t K, const uint_least8_t N, const uint_least8_t sCur);
-
-	void Solve(uint_least16_t &opt, string &path);
-
-public:
-	HeldKarp_DP(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
-
-};
+}
