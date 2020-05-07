@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Held-Karp-algorithm\HeldKarp.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\HeldKarp_DP.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Held-Karp-algorithm\Held-Karp-algorithm.cpp" />
     <ClCompile Include="Held-Karp-algorithm\HeldKarp.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\HeldKarp_DP.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{68D19670-7460-4074-88CC-E4FD36288FFE}</ProjectGuid>
