@@ -19,13 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Held-Karp-algorithm\BranchAndBound.hpp" />
     <ClInclude Include="Held-Karp-algorithm\HeldKarp.hpp" />
     <ClInclude Include="Held-Karp-algorithm\HeldKarp_DP.hpp" />
     <ClInclude Include="Held-Karp-algorithm\HeldKarp_GR.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\HeldKarp_Relax.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Held-Karp-algorithm\BranchAndBound.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\HeldKarp_Relax.cpp" />
     <ClCompile Include="Held-Karp-algorithm\main.cpp" />
     <ClCompile Include="Held-Karp-algorithm\HeldKarp.cpp" />
     <ClCompile Include="Held-Karp-algorithm\HeldKarp_DP.cpp" />

@@ -6,20 +6,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <vector>
+#include <algorithm>
 
-#include "HeldKarp.hpp"
+#include "HeldKarp_Relax.hpp"
 
-using namespace std;
 
-class BranchAndBound : public HeldKarp
+HeldKarp_Relax::HeldKarp_Relax(const vector<vector<uint_least8_t>> &DistanceMatrix2D) :
+	HeldKarp(DistanceMatrix2D) {}
+
+string HeldKarp_Relax::PrintPath(const uint_least32_t code, const uint_least8_t π)
 {
-protected:
-	string PrintPath(const uint_least32_t code, const uint_least8_t π);
+	string s;
 
-	void Solve(uint_least16_t &opt, string &path);
+	return "0 " + s + "0";
+}
 
-public:
-	BranchAndBound(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
+void HeldKarp_Relax::Solve(uint_least16_t &opt, string &path)
+{
 
-};
+	currentCardinality = numberOfNodes;
+}
