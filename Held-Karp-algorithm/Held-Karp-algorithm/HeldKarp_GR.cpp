@@ -6,11 +6,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <iostream>
-#include <sstream>
-#include <string>
-
-#include <thread>
+#include <algorithm>
 
 #include "HeldKarp_GR.hpp"
 
@@ -25,10 +21,116 @@ string HeldKarp_GR::PrintPath(const uint_least32_t code, const uint_least8_t π)
 	return "0 " + s + "0";
 }
 
-/*
-Held–Karp algorithm
-*/
+void HeldKarp_GR::makeSet(vector<Node> &node, size_t x)
+{
+	node[x].r = 0;
+	node[x].p = x;
+}
+
+uint_least8_t HeldKarp_GR::findSet(vector<Node> &node, uint_least8_t x)
+{
+	if (node[x].p != x)
+		node[x].p = findSet(node, node[x].p);
+
+	return node[x].p;
+}
+
+void HeldKarp_GR::setUnion(vector<Node> &node, uint_least8_t x, uint_least8_t y)
+{
+	if (node[x].r > node[y].r)
+	{
+		node[y].p = x;
+	}
+	else
+	{
+		node[x].p = y;
+
+		if (node[x].r == node[y].r)
+			node[y].r++;
+	}
+}
+
+vector<HeldKarp_GR::Edge*> HeldKarp_GR::Kruskal(vector<Node> &node, vector<Edge> &edge)
+{
+	vector<Edge*> A;
+	uint_least16_t min = UINT16_MAX;
+	size_t i;
+
+	for (i = 0; i < node.size(); i++)
+		makeSet(node, i);
+
+	sort(edge.begin(), edge.end());
+
+	for (i = 0; i < edge.size(); i++)
+	{
+		auto x = edge[i].u;
+		auto y = edge[i].v;
+		auto x_parent = findSet(node, x);
+		auto y_parent = findSet(node, y);
+
+		if (x_parent != y_parent)
+		{
+			if (edge[i].w < min)
+				min = edge[i].w;
+
+			A.push_back(&edge[i]);
+			setUnion(node, x_parent, y_parent);
+		}
+	}
+
+	for (i = 0; i < A.size(); i++)
+		A[i]->w -= min;
+
+	return A;
+}
+
+HeldKarp_GR::Graph HeldKarp_GR::graphFromDistanceMatrix(const uint_least8_t nodes)
+{
+	vector<Node> node(nodes);
+	vector<Edge> edge(nodes * nodes);
+
+	size_t i = 0;
+	for (uint_least8_t x = 0; x < nodes; x++)
+		for (uint_least8_t y = 0; y < nodes; y++)
+		{
+			edge[i].u = x;
+			edge[i].v = y;
+			edge[i].w = distance[x][y];
+
+			i++;
+		}
+
+	Graph G;
+	G.edge = edge;
+	G.node = node;
+
+	return G;
+}
+
 void HeldKarp_GR::Solve(uint_least16_t &opt, string &path)
 {
+	const uint_least8_t r = numberOfNodes - 1;
 
+	auto G_k = graphFromDistanceMatrix(r);
+	auto S = Kruskal(G_k.node, G_k.edge);
+
+	vector<Edge> D(2);
+	{
+		// calculate D
+		vector<Edge> toSort;
+		auto G = graphFromDistanceMatrix(numberOfNodes);
+
+		for (const auto e : G.edge)
+			if (e.v == r && e.v != e.u)
+				toSort.push_back(e);
+
+		sort(toSort.begin(), toSort.end());
+
+		for (size_t x = 0; x < 2; x++)
+			D[x] = toSort[x];
+	}
+
+
+
+	currentCardinality = numberOfNodes;
 }
