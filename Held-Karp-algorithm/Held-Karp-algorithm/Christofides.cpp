@@ -202,23 +202,33 @@ namespace TSP
 
 		{
 			vector<Christofides::e2<uint_least8_t, uint_least16_t>> path_vals(numberOfNodes);
-			uint_least16_t best = UINT16_MAX;
+			uint_least16_t min = UINT16_MAX;
 
 			for (uint_least8_t t = 0; t < numberOfNodes; t++)
 			{
 				path_vals[t].a = t;
 				path_vals[t].b = findBestPath(t);
 
-				if (path_vals[t].b < best)
+				if (path_vals[t].b < min)
 				{
 					bestIndex = path_vals[t].a;
-					best = path_vals[t].b;
+					min = path_vals[t].b;
 				}
 			}
 		}
 
 		circuit = euler_tour(bestIndex);
 		opt = make_hamiltonian(circuit);
+
+		{
+			auto head = circuit.front();
+			auto tail = circuit.back();
+
+			circuit.push_back(head);
+
+			opt += distance[tail][head];
+		}
+
 		path = PrintPath(0, 0);
 
 		currentCardinality = numberOfNodes;
