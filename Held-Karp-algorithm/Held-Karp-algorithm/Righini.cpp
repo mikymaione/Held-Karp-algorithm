@@ -8,26 +8,25 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <algorithm>
 
-#include "HeldKarp_GR.hpp"
+#include "Righini.hpp"
 
 
-HeldKarp_GR::HeldKarp_GR(const vector<vector<uint_least8_t>> &DistanceMatrix2D) :
-	HeldKarp(DistanceMatrix2D) {}
+Righini::Righini(const vector<vector<uint_least8_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-string HeldKarp_GR::PrintPath(const uint_least32_t code, const uint_least8_t π)
+string Righini::PrintPath(const uint_least32_t code, const uint_least8_t π)
 {
 	string s;
 
 	return "0 " + s + "0";
 }
 
-void HeldKarp_GR::makeSet(vector<Node> &node, size_t x)
+void Righini::makeSet(vector<Node> &node, size_t x)
 {
 	node[x].r = 0;
 	node[x].p = x;
 }
 
-uint_least8_t HeldKarp_GR::findSet(vector<Node> &node, uint_least8_t x)
+uint_least8_t Righini::findSet(vector<Node> &node, uint_least8_t x)
 {
 	if (node[x].p != x)
 		node[x].p = findSet(node, node[x].p);
@@ -35,7 +34,7 @@ uint_least8_t HeldKarp_GR::findSet(vector<Node> &node, uint_least8_t x)
 	return node[x].p;
 }
 
-void HeldKarp_GR::setUnion(vector<Node> &node, uint_least8_t x, uint_least8_t y)
+void Righini::setUnion(vector<Node> &node, uint_least8_t x, uint_least8_t y)
 {
 	if (node[x].r > node[y].r)
 	{
@@ -50,7 +49,7 @@ void HeldKarp_GR::setUnion(vector<Node> &node, uint_least8_t x, uint_least8_t y)
 	}
 }
 
-vector<HeldKarp_GR::Edge*> HeldKarp_GR::Kruskal(vector<Node> &node, vector<Edge> &edge)
+vector<Righini::Edge*> Righini::Kruskal(vector<Node> &node, vector<Edge> &edge)
 {
 	vector<Edge*> A;
 	uint_least16_t min = UINT16_MAX;
@@ -84,7 +83,7 @@ vector<HeldKarp_GR::Edge*> HeldKarp_GR::Kruskal(vector<Node> &node, vector<Edge>
 	return A;
 }
 
-HeldKarp_GR::Graph HeldKarp_GR::graphFromDistanceMatrix(const uint_least8_t nodes)
+Righini::Graph Righini::graphFromDistanceMatrix(const uint_least8_t nodes)
 {
 	vector<Node> node(nodes);
 	vector<Edge> edge(nodes * nodes);
@@ -107,7 +106,7 @@ HeldKarp_GR::Graph HeldKarp_GR::graphFromDistanceMatrix(const uint_least8_t node
 	return G;
 }
 
-void HeldKarp_GR::Solve(uint_least16_t &opt, string &path)
+void Righini::Solve(uint_least16_t &opt, string &path)
 {
 	const uint_least8_t r = numberOfNodes - 1;
 

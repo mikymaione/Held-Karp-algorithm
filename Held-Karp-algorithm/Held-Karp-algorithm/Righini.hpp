@@ -6,44 +6,52 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <atomic>
-
-#include <chrono>
-
-#include <queue>
-#include <stack>
-#include <map>
 #include <vector>
 
-#include "HeldKarp.hpp"
+#include "TSP.hpp"
 
 using namespace std;
-using namespace chrono;
 
-
-class HeldKarp_DP : public HeldKarp
+class Righini : public TSP
 {
 protected:
-	struct sInfo
+	struct Node
 	{
-		uint_least16_t cost;
-		vector<uint_least8_t> path;
+		uint_least8_t r, p;
 	};
 
-	// <Code, <Node, Data>>
-	queue<map<uint_least32_t, map<uint_least8_t, sInfo>>> C;
+	struct Edge
+	{
+		uint_least8_t u, v, w;
+
+		bool operator < (const Edge& e) const
+		{
+			return (w < e.w);
+		}
+	};
+
+	struct Graph
+	{
+		vector<Node> node;
+		vector<Edge> edge;
+	};
 
 protected:
-	void AddNewToQueue();
-
 	string PrintPath(const uint_least32_t code, const uint_least8_t π);
-
-	void Combinations(const uint_least8_t K, const uint_least8_t N);
-	void Combinations_FreeMem(stack<uint_least8_t> &Q, vector<uint_least8_t> &S, const uint_least8_t K, const uint_least8_t N, const uint_least8_t sCur);
 
 	void Solve(uint_least16_t &opt, string &path);
 
+private:
+	Graph graphFromDistanceMatrix(const uint_least8_t nodes);
+
+	// Kruskal
+	uint_least8_t findSet(vector<Node> &node, uint_least8_t x);
+	void makeSet(vector<Node> &node, size_t x);
+	void setUnion(vector<Node> &node, uint_least8_t x, uint_least8_t y);
+	vector<Edge*> Kruskal(vector<Node> &node, vector<Edge> &edge);
+	// Kruskal
+
 public:
-	HeldKarp_DP(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
+	Righini(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
 
 };

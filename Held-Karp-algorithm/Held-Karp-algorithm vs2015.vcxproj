@@ -19,17 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Held-Karp-algorithm\TSP.hpp" />
     <ClInclude Include="Held-Karp-algorithm\HeldKarp.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\HeldKarp_DP.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\HeldKarp_GR.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\HeldKarp_Relax.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\Righini.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\Christofides.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Held-Karp-algorithm\HeldKarp_Relax.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\Christofides.cpp" />
     <ClCompile Include="Held-Karp-algorithm\main.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\TSP.cpp" />
     <ClCompile Include="Held-Karp-algorithm\HeldKarp.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\HeldKarp_DP.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\HeldKarp_GR.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\Righini.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{68D19670-7460-4074-88CC-E4FD36288FFE}</ProjectGuid>

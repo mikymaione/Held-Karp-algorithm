@@ -8,50 +8,48 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <vector>
 
-#include "HeldKarp.hpp"
+#include "TSP.hpp"
 
 using namespace std;
 
-class HeldKarp_GR : public HeldKarp
+class Christofides : public TSP
 {
-protected:
-	struct Node
+private:
+
+	template<class A, class B>
+	struct e2
 	{
-		uint_least8_t r, p;
+		A a;
+		B b;
 	};
 
-	struct Edge
-	{
-		uint_least8_t u, v, w;
+	vector<vector<uint_least8_t>> adjlist;
+	vector<uint_least8_t> circuit;
 
-		bool operator < (const Edge& e) const
-		{
-			return (w < e.w);
-		}
-	};
+private:
+	vector<uint_least8_t> findOdds();
 
-	struct Graph
-	{
-		vector<Node> node;
-		vector<Edge> edge;
-	};
+	//Find Hamiltonian path
+	uint_least16_t make_hamiltonian(vector<uint_least8_t> &path);
+	uint_least16_t findBestPath(uint_least8_t start);
+
+	//Find Euler tour
+	vector<uint_least8_t> euler_tour(uint_least8_t start);
+
+	//Find perfect matching
+	void perfectMatching();
+
+	// Prim's algorithm
+	void findMST();
+
+	uint_least8_t getMinIndex(vector<uint_least8_t> &key, vector<bool> &mst);
 
 protected:
 	string PrintPath(const uint_least32_t code, const uint_least8_t π);
 
 	void Solve(uint_least16_t &opt, string &path);
 
-private:
-	Graph graphFromDistanceMatrix(const uint_least8_t nodes);
-
-	// Kruskal
-	uint_least8_t findSet(vector<Node> &node, uint_least8_t x);
-	void makeSet(vector<Node> &node, size_t x);
-	void setUnion(vector<Node> &node, uint_least8_t x, uint_least8_t y);
-	vector<Edge*> Kruskal(vector<Node> &node, vector<Edge> &edge);
-	// Kruskal
-
 public:
-	HeldKarp_GR(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
+	Christofides(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
 
 };
