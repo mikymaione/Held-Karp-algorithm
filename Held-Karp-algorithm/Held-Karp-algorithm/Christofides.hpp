@@ -12,44 +12,47 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace std;
 
-class Christofides : public TSP
+namespace TSP
 {
-private:
-
-	template<class A, class B>
-	struct e2
+	class Christofides : public TSP
 	{
-		A a;
-		B b;
+	private:
+
+		template<class A, class B>
+		struct e2
+		{
+			A a;
+			B b;
+		};
+
+		vector<vector<uint_least8_t>> adjlist;
+		vector<uint_least8_t> circuit;
+
+	private:
+		vector<uint_least8_t> findOdds();
+
+		//Find Hamiltonian path
+		uint_least16_t make_hamiltonian(vector<uint_least8_t> &path);
+		uint_least16_t findBestPath(uint_least8_t start);
+
+		//Find Euler tour
+		vector<uint_least8_t> euler_tour(uint_least8_t start);
+
+		//Find perfect matching
+		void perfectMatching();
+
+		// Prim's algorithm
+		void findMST();
+
+		uint_least8_t getMinIndex(vector<uint_least8_t> &key, vector<bool> &mst);
+
+	protected:
+		string PrintPath(const uint_least32_t code, const uint_least8_t π);
+
+		void Solve(uint_least16_t &opt, string &path);
+
+	public:
+		Christofides(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
+
 	};
-
-	vector<vector<uint_least8_t>> adjlist;
-	vector<uint_least8_t> circuit;
-
-private:
-	vector<uint_least8_t> findOdds();
-
-	//Find Hamiltonian path
-	uint_least16_t make_hamiltonian(vector<uint_least8_t> &path);
-	uint_least16_t findBestPath(uint_least8_t start);
-
-	//Find Euler tour
-	vector<uint_least8_t> euler_tour(uint_least8_t start);
-
-	//Find perfect matching
-	void perfectMatching();
-
-	// Prim's algorithm
-	void findMST();
-
-	uint_least8_t getMinIndex(vector<uint_least8_t> &key, vector<bool> &mst);
-
-protected:
-	string PrintPath(const uint_least32_t code, const uint_least8_t π);
-
-	void Solve(uint_least16_t &opt, string &path);
-
-public:
-	Christofides(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
-
-};
+}

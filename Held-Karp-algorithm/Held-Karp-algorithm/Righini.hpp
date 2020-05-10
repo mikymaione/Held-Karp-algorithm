@@ -12,46 +12,49 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 using namespace std;
 
-class Righini : public TSP
+namespace TSP
 {
-protected:
-	struct Node
+	class Righini : public TSP
 	{
-		uint_least8_t r, p;
-	};
-
-	struct Edge
-	{
-		uint_least8_t u, v, w;
-
-		bool operator < (const Edge& e) const
+	protected:
+		struct Node
 		{
-			return (w < e.w);
-		}
+			uint_least8_t r, p;
+		};
+
+		struct Edge
+		{
+			uint_least8_t u, v, w;
+
+			bool operator < (const Edge& e) const
+			{
+				return (w < e.w);
+			}
+		};
+
+		struct Graph
+		{
+			vector<Node> node;
+			vector<Edge> edge;
+		};
+
+	protected:
+		string PrintPath(const uint_least32_t code, const uint_least8_t π);
+
+		void Solve(uint_least16_t &opt, string &path);
+
+	private:
+		Graph graphFromDistanceMatrix(const uint_least8_t nodes);
+
+		// Kruskal
+		uint_least8_t findSet(vector<Node> &node, uint_least8_t x);
+		void makeSet(vector<Node> &node, size_t x);
+		void setUnion(vector<Node> &node, uint_least8_t x, uint_least8_t y);
+		vector<Edge*> Kruskal(vector<Node> &node, vector<Edge> &edge);
+		// Kruskal
+
+	public:
+		Righini(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
+
 	};
-
-	struct Graph
-	{
-		vector<Node> node;
-		vector<Edge> edge;
-	};
-
-protected:
-	string PrintPath(const uint_least32_t code, const uint_least8_t π);
-
-	void Solve(uint_least16_t &opt, string &path);
-
-private:
-	Graph graphFromDistanceMatrix(const uint_least8_t nodes);
-
-	// Kruskal
-	uint_least8_t findSet(vector<Node> &node, uint_least8_t x);
-	void makeSet(vector<Node> &node, size_t x);
-	void setUnion(vector<Node> &node, uint_least8_t x, uint_least8_t y);
-	vector<Edge*> Kruskal(vector<Node> &node, vector<Edge> &edge);
-	// Kruskal
-
-public:
-	Righini(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
-
-};
+}

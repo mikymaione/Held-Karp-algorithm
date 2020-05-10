@@ -7,16 +7,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <iostream>
 #include "Christofides.hpp"
 
-void TSP(const vector<vector<uint_least8_t>> &DistanceMatrix2D)
+using namespace TSP;
+
+void Run(const vector<vector<uint_least8_t>> &DistanceMatrix2D)
 {
 	Christofides hk(DistanceMatrix2D);
 	hk.Run();
 }
 
-void TSP_RND(const uint_least8_t NumberOfNodes)
+void Run_Random(const uint_least8_t NumberOfNodes)
 {
 	const auto DistanceMatrix2D = Christofides::New_RND_Distances(NumberOfNodes);
-	TSP(DistanceMatrix2D);
+	Run(DistanceMatrix2D);
 }
 
 void StartElaboration(const string graphToSolve, const uint_least8_t NumberOfNodes)
@@ -161,33 +163,33 @@ void StartElaboration(const string graphToSolve, const uint_least8_t NumberOfNod
 
 	if (graphToSolve == "random")
 	{
-		TSP_RND(NumberOfNodes);
+		Run_Random(NumberOfNodes);
 	}
 	else
 	{
 		if (graphToSolve == "all" || graphToSolve == "3")
-			TSP(distance3);
+			Run(distance3);
 
 		if (graphToSolve == "all" || graphToSolve == "4")
-			TSP(distance4);
+			Run(distance4);
 
 		if (graphToSolve == "all" || graphToSolve == "5")
-			TSP(distance5);
+			Run(distance5);
 
 		if (graphToSolve == "all" || graphToSolve == "6")
-			TSP(distance6);
+			Run(distance6);
 
 		if (graphToSolve == "all" || graphToSolve == "15")
-			TSP(distance15);
+			Run(distance15);
 
 		if (graphToSolve == "all" || graphToSolve == "20")
-			TSP(distance20);
+			Run(distance20);
 
 		if (graphToSolve == "all" || graphToSolve == "25")
-			TSP(distance25);
+			Run(distance25);
 
 		if (graphToSolve == "all" || graphToSolve == "30")
-			TSP(distance30);
+			Run(distance30);
 	}
 }
 
