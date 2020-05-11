@@ -30,15 +30,13 @@ namespace TSP
 		vector<uint_least8_t> circuit;
 
 	private:
-		set<uint_least8_t> findOdds();
-
-		uint_least16_t make_hamiltonian(vector<uint_least8_t> &path);
+		uint_least16_t ToHamiltonianPath(vector<uint_least8_t> &path);
 		uint_least16_t findBestPath(uint_least8_t start);
 
-		vector<uint_least8_t> euler_tour(uint_least8_t start);
+		vector<uint_least8_t> FindEulerCircuit(uint_least8_t start);
 
-		void perfectMatching();
-		void findMST();
+		void WeightedPerfectMatching();
+		void MinimumSpanningTree_Prim();
 
 	protected:
 		string PrintPath(const uint_least32_t code, const uint_least8_t π);

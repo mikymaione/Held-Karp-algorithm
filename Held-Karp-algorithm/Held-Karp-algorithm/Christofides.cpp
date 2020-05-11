@@ -28,7 +28,7 @@ namespace TSP
 		return s;
 	}
 
-	void Christofides::findMST()
+	void Christofides::MinimumSpanningTree_Prim()
 	{
 		uint_least8_t i, u, v, opt;
 
@@ -71,45 +71,37 @@ namespace TSP
 		}
 	}
 
-	set<uint_least8_t> Christofides::findOdds()
+	void Christofides::WeightedPerfectMatching()
 	{
-		set<uint_least8_t> S;
+		uint_least8_t i, dist, closest = 0;
+		set<uint_least8_t> V_odd;
 
-		for (uint_least8_t i = 0; i < numberOfNodes; i++)
+		for (i = 0; i < numberOfNodes; i++)
 			if (Adj[i].size() % 2 != 0)
-				S.insert(i);
+				V_odd.insert(i);
 
-		return S;
-	}
-
-	void Christofides::perfectMatching()
-	{
-		uint_least8_t length, closest = 0;
-
-		auto odds = findOdds();
-
-		while (!odds.empty())
-			for (const auto v : odds)
+		while (!V_odd.empty())
+			for (const auto v : V_odd)
 			{
-				length = UINT_LEAST8_MAX;
-				odds.erase(v);
+				dist = UINT_LEAST8_MAX;
+				V_odd.erase(v);
 
-				for (const auto u : odds)
-					if (distance[u][v] < length)
+				for (const auto u : V_odd)
+					if (distance[u][v] < dist)
 					{
-						length = distance[u][v];
+						dist = distance[u][v];
 						closest = u;
 					}
 
 				Adj[v].push_back(closest);
 				Adj[closest].push_back(v);
 
-				odds.erase(closest);
-				break;
+				V_odd.erase(closest);
+				break; // next element
 			}
 	}
 
-	vector<uint_least8_t> Christofides::euler_tour(uint_least8_t start)
+	vector<uint_least8_t> Christofides::FindEulerCircuit(uint_least8_t start)
 	{
 		stack<uint_least8_t> S;
 		vector<uint_least8_t> path;
@@ -146,7 +138,7 @@ namespace TSP
 		return path;
 	}
 
-	uint_least16_t Christofides::make_hamiltonian(vector<uint_least8_t> &path)
+	uint_least16_t Christofides::ToHamiltonianPath(vector<uint_least8_t> &path)
 	{
 		vector<bool> visited(numberOfNodes, false);
 		uint_least16_t pathCost = 0;
@@ -178,8 +170,8 @@ namespace TSP
 
 	uint_least16_t Christofides::findBestPath(uint_least8_t start)
 	{
-		auto path = euler_tour(start);
-		auto len = make_hamiltonian(path);
+		auto path = FindEulerCircuit(start);
+		auto len = ToHamiltonianPath(path);
 
 		return len;
 	}
@@ -188,8 +180,8 @@ namespace TSP
 	{
 		uint_least8_t bestIndex;
 
-		findMST();
-		perfectMatching();
+		MinimumSpanningTree_Prim();
+		WeightedPerfectMatching();
 
 		{
 			vector<Christofides::e2<uint_least8_t, uint_least16_t>> path_vals(numberOfNodes);
@@ -208,8 +200,8 @@ namespace TSP
 			}
 		}
 
-		circuit = euler_tour(bestIndex);
-		opt = make_hamiltonian(circuit);
+		circuit = FindEulerCircuit(bestIndex);
+		opt = ToHamiltonianPath(circuit);
 
 		{
 			auto head = circuit.front();
