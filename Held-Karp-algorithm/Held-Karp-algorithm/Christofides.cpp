@@ -6,6 +6,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <stack>
 #include <string>
 
 #include "Christofides.hpp"
@@ -72,25 +73,25 @@ namespace TSP
 
 	set<uint_least8_t> Christofides::findOdds()
 	{
-		set<uint_least8_t> odds;
+		set<uint_least8_t> S;
 
 		for (uint_least8_t i = 0; i < numberOfNodes; i++)
 			if (Adj[i].size() % 2 != 0)
-				odds.insert(i);
+				S.insert(i);
 
-		return odds;
+		return S;
 	}
 
 	void Christofides::perfectMatching()
 	{
-		uint_least8_t closest = 0;
+		uint_least8_t length, closest = 0;
 
 		auto odds = findOdds();
 
 		while (!odds.empty())
 			for (const auto v : odds)
 			{
-				uint_least8_t length = UINT_LEAST8_MAX;
+				length = UINT_LEAST8_MAX;
 				odds.erase(v);
 
 				for (const auto u : odds)
@@ -110,7 +111,7 @@ namespace TSP
 
 	vector<uint_least8_t> Christofides::euler_tour(uint_least8_t start)
 	{
-		stack<uint_least8_t> stack;
+		stack<uint_least8_t> S;
 		vector<uint_least8_t> path;
 
 		path.push_back(start);
@@ -118,16 +119,16 @@ namespace TSP
 		auto pos = start;
 		auto tempList = Adj; // copy
 
-		while (!stack.empty() || tempList[pos].size() > 0)
+		while (!S.empty() || tempList[pos].size() > 0)
 			if (tempList[pos].empty())
 			{
 				path.push_back(pos);
-				pos = stack.top();
-				stack.pop();
+				pos = S.top();
+				S.pop();
 			}
 			else
 			{
-				stack.push(pos);
+				S.push(pos);
 
 				auto neighbor = tempList[pos].back();
 
