@@ -25,23 +25,18 @@ namespace TSP
 			B b;
 		};
 
-		vector<vector<uint_least8_t>> adjlist;
+		vector<vector<uint_least8_t>> Adj;
 		vector<uint_least8_t> circuit;
 
 	private:
 		vector<uint_least8_t> findOdds();
 
-		//Find Hamiltonian path
 		uint_least16_t make_hamiltonian(vector<uint_least8_t> &path);
 		uint_least16_t findBestPath(uint_least8_t start);
 
-		//Find Euler tour
 		vector<uint_least8_t> euler_tour(uint_least8_t start);
 
-		//Find perfect matching
 		void perfectMatching();
-
-		// Prim's algorithm
 		void findMST();
 
 		uint_least8_t getMinIndex(vector<uint_least8_t> &key, vector<bool> &mst);

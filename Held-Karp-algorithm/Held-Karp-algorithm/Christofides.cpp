@@ -14,7 +14,7 @@ namespace TSP
 {
 	Christofides::Christofides(const vector<vector<uint_least8_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
 	{
-		adjlist.resize(numberOfNodes);
+		Adj.resize(numberOfNodes);
 	}
 
 	string Christofides::PrintPath(const uint_least32_t code, const uint_least8_t π)
@@ -70,8 +70,8 @@ namespace TSP
 
 			if (j != UINT8_MAX)
 			{
-				adjlist[i].push_back(j);
-				adjlist[j].push_back(i);
+				Adj[i].push_back(j);
+				Adj[j].push_back(i);
 			}
 		}
 	}
@@ -81,7 +81,7 @@ namespace TSP
 		vector<uint_least8_t> odds;
 
 		for (uint_least8_t i = 0; i < numberOfNodes; i++)
-			if (adjlist[i].size() % 2 != 0)
+			if (Adj[i].size() % 2 != 0)
 				odds.push_back(i);
 
 		return odds;
@@ -110,8 +110,8 @@ namespace TSP
 					tmp = it;
 				}
 
-			adjlist[*first].push_back(closest);
-			adjlist[closest].push_back(*first);
+			Adj[*first].push_back(closest);
+			Adj[closest].push_back(*first);
 
 			odds.erase(tmp);
 			odds.erase(first);
@@ -126,7 +126,7 @@ namespace TSP
 		path.push_back(start);
 
 		auto pos = start;
-		auto tempList = adjlist; // copy
+		auto tempList = Adj; // copy
 
 		while (!stack.empty() || tempList[pos].size() > 0)
 			if (tempList[pos].empty())
