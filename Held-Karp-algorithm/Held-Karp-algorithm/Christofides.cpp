@@ -109,10 +109,10 @@ namespace TSP
 		path.push_back(start);
 
 		auto pos = start;
-		auto tempList = Adj; // copy
+		auto neighbours = Adj; // copy
 
-		while (!S.empty() || tempList[pos].size() > 0)
-			if (tempList[pos].empty())
+		while (!S.empty() || neighbours[pos].size() > 0)
+			if (neighbours[pos].empty())
 			{
 				path.push_back(pos);
 				pos = S.top();
@@ -122,13 +122,13 @@ namespace TSP
 			{
 				S.push(pos);
 
-				auto neighbor = tempList[pos].back();
+				auto neighbor = neighbours[pos].back();
 
-				tempList[pos].pop_back();
+				neighbours[pos].pop_back();
 
-				for (size_t i = 0; i < tempList[neighbor].size(); i++)
-					if (tempList[neighbor][i] == pos)
-						tempList[neighbor].erase(tempList[neighbor].begin() + i);
+				for (size_t i = 0; i < neighbours[neighbor].size(); i++)
+					if (neighbours[neighbor][i] == pos)
+						neighbours[neighbor].erase(neighbours[neighbor].begin() + i);
 
 				pos = neighbor;
 			}
