@@ -32,29 +32,29 @@ namespace TSP
 		uint_least8_t i, u, v, opt;
 
 		vector<uint_least8_t> parent(numberOfNodes, UINT_LEAST8_MAX);
-		vector<uint_least8_t> key(numberOfNodes, UINT_LEAST8_MAX);
+		vector<uint_least8_t> dist(numberOfNodes, UINT_LEAST8_MAX);
 		vector<bool> in_mst(numberOfNodes, false);
 
-		key[0] = 0;
+		dist[0] = 0;
 
 		for (i = 0; i < numberOfNodes - 1; i++)
 		{
 			opt = UINT_LEAST8_MAX;
 
 			for (u = 0; u < numberOfNodes; u++)
-				if (!in_mst[u] && key[u] < opt)
+				if (!in_mst[u] && dist[u] < opt)
 				{
-					opt = key[u];
+					opt = dist[u];
 					v = u;
 				}
 
 			in_mst[v] = true;
 
 			for (u = 0; u < numberOfNodes; u++)
-				if (distance[v][u] && !in_mst[u] && distance[v][u] < key[u])
+				if (!in_mst[u] && distance[v][u] < dist[u])
 				{
 					parent[u] = v;
-					key[u] = distance[v][u];
+					dist[u] = distance[v][u];
 				}
 		}
 
