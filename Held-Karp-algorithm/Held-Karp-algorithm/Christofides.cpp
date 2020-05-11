@@ -27,7 +27,7 @@ namespace TSP
 		return s;
 	}
 
-	uint_least8_t Christofides::getMinIndex(vector<uint_least8_t> &key, vector<bool> &mst)
+	uint_least8_t Christofides::minKey(vector<uint_least8_t> &key, vector<bool> &mst)
 	{
 		uint_least8_t i;
 		uint_least8_t opt = UINT8_MAX;
@@ -46,21 +46,21 @@ namespace TSP
 	{
 		vector<uint_least8_t> key(numberOfNodes, UINT8_MAX);
 		vector<uint_least8_t> parent(numberOfNodes, UINT8_MAX);
-		vector<bool> included(numberOfNodes, false);
+		vector<bool> in_mst(numberOfNodes, false);
 
 		key[0] = 0;
 
 		for (uint_least8_t i = 0; i < numberOfNodes - 1; i++)
 		{
-			auto k = getMinIndex(key, included);
+			auto v = minKey(key, in_mst);
 
-			included[k] = true;
+			in_mst[v] = true;
 
-			for (uint_least8_t j = 0; j < numberOfNodes; j++)
-				if (distance[k][j] && included[j] == false && distance[k][j] < key[j])
+			for (uint_least8_t u = 0; u < numberOfNodes; u++)
+				if (distance[v][u] && in_mst[u] == false && distance[v][u] < key[u])
 				{
-					parent[j] = k;
-					key[j] = distance[k][j];
+					parent[u] = v;
+					key[u] = distance[v][u];
 				}
 		}
 
