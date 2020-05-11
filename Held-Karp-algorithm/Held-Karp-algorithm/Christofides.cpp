@@ -30,7 +30,7 @@ namespace TSP
 	uint_least8_t Christofides::minKey(vector<uint_least8_t> &key, vector<bool> &mst)
 	{
 		uint_least8_t i;
-		uint_least8_t opt = UINT8_MAX;
+		uint_least8_t opt = UINT_LEAST8_MAX;
 
 		for (uint_least8_t x = 0; x < numberOfNodes; x++)
 			if (!mst[x] && key[x] < opt)
@@ -44,8 +44,8 @@ namespace TSP
 
 	void Christofides::findMST()
 	{
-		vector<uint_least8_t> key(numberOfNodes, UINT8_MAX);
-		vector<uint_least8_t> parent(numberOfNodes, UINT8_MAX);
+		vector<uint_least8_t> key(numberOfNodes, UINT_LEAST8_MAX);
+		vector<uint_least8_t> parent(numberOfNodes, UINT_LEAST8_MAX);
 		vector<bool> in_mst(numberOfNodes, false);
 
 		key[0] = 0;
@@ -68,7 +68,7 @@ namespace TSP
 		{
 			auto j = parent[i];
 
-			if (j != UINT8_MAX)
+			if (j != UINT_LEAST8_MAX)
 			{
 				Adj[i].push_back(j);
 				Adj[j].push_back(i);
@@ -76,13 +76,13 @@ namespace TSP
 		}
 	}
 
-	vector<uint_least8_t> Christofides::findOdds()
+	set<uint_least8_t> Christofides::findOdds()
 	{
-		vector<uint_least8_t> odds;
+		set<uint_least8_t> odds;
 
 		for (uint_least8_t i = 0; i < numberOfNodes; i++)
 			if (Adj[i].size() % 2 != 0)
-				odds.push_back(i);
+				odds.insert(i);
 
 		return odds;
 	}
@@ -94,28 +94,24 @@ namespace TSP
 		auto odds = findOdds();
 
 		while (!odds.empty())
-		{
-			auto first = odds.begin();
-			auto it = odds.begin() + 1;
-			auto tmp = it;
-			auto end = odds.end();
+			for (const auto v : odds)
+			{
+				uint_least8_t length = UINT_LEAST8_MAX;
+				odds.erase(v);
 
-			uint_least8_t length = UINT8_MAX;
+				for (const auto u : odds)
+					if (distance[u][v] < length)
+					{
+						length = distance[u][v];
+						closest = u;
+					}
 
-			for (; it != end; ++it)
-				if (distance[*first][*it] < length)
-				{
-					length = distance[*first][*it];
-					closest = *it;
-					tmp = it;
-				}
+				Adj[v].push_back(closest);
+				Adj[closest].push_back(v);
 
-			Adj[*first].push_back(closest);
-			Adj[closest].push_back(*first);
-
-			odds.erase(tmp);
-			odds.erase(first);
-		}
+				odds.erase(closest);
+				break;
+			}
 	}
 
 	vector<uint_least8_t> Christofides::euler_tour(uint_least8_t start)
@@ -202,7 +198,7 @@ namespace TSP
 
 		{
 			vector<Christofides::e2<uint_least8_t, uint_least16_t>> path_vals(numberOfNodes);
-			uint_least16_t min = UINT16_MAX;
+			uint_least16_t min = UINT_LEAST16_MAX;
 
 			for (uint_least8_t t = 0; t < numberOfNodes; t++)
 			{

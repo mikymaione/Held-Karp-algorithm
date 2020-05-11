@@ -6,6 +6,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <set>
 #include <vector>
 
 #include "TSP.hpp"
@@ -29,7 +30,7 @@ namespace TSP
 		vector<uint_least8_t> circuit;
 
 	private:
-		vector<uint_least8_t> findOdds();
+		set<uint_least8_t> findOdds();
 
 		uint_least16_t make_hamiltonian(vector<uint_least8_t> &path);
 		uint_least16_t findBestPath(uint_least8_t start);
