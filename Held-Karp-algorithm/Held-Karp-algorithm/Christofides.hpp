@@ -40,8 +40,6 @@ namespace TSP
 		void perfectMatching();
 		void findMST();
 
-		uint_least8_t minKey(vector<uint_least8_t> &key, vector<bool> &mst);
-
 	protected:
 		string PrintPath(const uint_least32_t code, const uint_least8_t π);
 

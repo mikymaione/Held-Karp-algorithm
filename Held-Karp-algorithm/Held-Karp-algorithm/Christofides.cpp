@@ -27,51 +27,45 @@ namespace TSP
 		return s;
 	}
 
-	uint_least8_t Christofides::minKey(vector<uint_least8_t> &key, vector<bool> &mst)
-	{
-		uint_least8_t i;
-		uint_least8_t opt = UINT_LEAST8_MAX;
-
-		for (uint_least8_t x = 0; x < numberOfNodes; x++)
-			if (!mst[x] && key[x] < opt)
-			{
-				opt = key[x];
-				i = x;
-			}
-
-		return i;
-	}
-
 	void Christofides::findMST()
 	{
-		vector<uint_least8_t> key(numberOfNodes, UINT_LEAST8_MAX);
+		uint_least8_t i, u, v, opt;
+
 		vector<uint_least8_t> parent(numberOfNodes, UINT_LEAST8_MAX);
+		vector<uint_least8_t> key(numberOfNodes, UINT_LEAST8_MAX);
 		vector<bool> in_mst(numberOfNodes, false);
 
 		key[0] = 0;
 
-		for (uint_least8_t i = 0; i < numberOfNodes - 1; i++)
+		for (i = 0; i < numberOfNodes - 1; i++)
 		{
-			auto v = minKey(key, in_mst);
+			opt = UINT_LEAST8_MAX;
+
+			for (u = 0; u < numberOfNodes; u++)
+				if (!in_mst[u] && key[u] < opt)
+				{
+					opt = key[u];
+					v = u;
+				}
 
 			in_mst[v] = true;
 
-			for (uint_least8_t u = 0; u < numberOfNodes; u++)
-				if (distance[v][u] && in_mst[u] == false && distance[v][u] < key[u])
+			for (u = 0; u < numberOfNodes; u++)
+				if (distance[v][u] && !in_mst[u] && distance[v][u] < key[u])
 				{
 					parent[u] = v;
 					key[u] = distance[v][u];
 				}
 		}
 
-		for (uint_least8_t i = 0; i < numberOfNodes; i++)
+		for (u = 0; u < numberOfNodes; u++)
 		{
-			auto j = parent[i];
+			v = parent[u];
 
-			if (j != UINT_LEAST8_MAX)
+			if (v != UINT_LEAST8_MAX)
 			{
-				Adj[i].push_back(j);
-				Adj[j].push_back(i);
+				Adj[u].push_back(v);
+				Adj[v].push_back(u);
 			}
 		}
 	}
