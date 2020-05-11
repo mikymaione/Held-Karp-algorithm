@@ -184,7 +184,13 @@ namespace TSP
 		WeightedPerfectMatching();
 
 		{
-			vector<Christofides::e2<uint_least8_t, uint_least16_t>> path_vals(numberOfNodes);
+			struct e2
+			{
+				uint_least8_t a;
+				uint_least16_t b;
+			};
+
+			vector<e2> path_vals(numberOfNodes);
 			uint_least16_t min = UINT_LEAST16_MAX;
 
 			for (uint_least8_t t = 0; t < numberOfNodes; t++)

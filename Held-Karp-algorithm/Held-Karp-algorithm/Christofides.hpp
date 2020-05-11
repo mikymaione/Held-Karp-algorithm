@@ -18,14 +18,6 @@ namespace TSP
 	class Christofides : public TSP
 	{
 	private:
-
-		template<class A, class B>
-		struct e2
-		{
-			A a;
-			B b;
-		};
-
 		vector<vector<uint_least8_t>> Adj;
 		vector<uint_least8_t> circuit;
 
