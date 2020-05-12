@@ -12,13 +12,13 @@ using namespace TSP;
 
 void Run(const vector<vector<uint_least8_t>> &DistanceMatrix2D)
 {
-	Christofides hk(DistanceMatrix2D);
+	HeldKarp hk(DistanceMatrix2D);
 	hk.Run();
 }
 
 void Run_Random(const uint_least8_t NumberOfNodes)
 {
-	const auto DistanceMatrix2D = Christofides::New_RND_Distances(NumberOfNodes);
+	const auto DistanceMatrix2D = HeldKarp::New_RND_Distances(NumberOfNodes);
 	Run(DistanceMatrix2D);
 }
 
@@ -395,7 +395,7 @@ int main(int argc, char **argv)
 			const string graphToSolve = argv[1];
 			const uint_least8_t NumberOfNodes = atoi(argv[2]);
 
-			StartElaboration_sTSP(graphToSolve, NumberOfNodes);
+			StartElaboration_aTSP(graphToSolve, NumberOfNodes);
 		}
 	}
 	catch (const exception &e)
