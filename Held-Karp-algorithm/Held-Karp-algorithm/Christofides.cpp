@@ -18,7 +18,7 @@ namespace TSP
 		Adj.resize(numberOfNodes);
 	}
 
-	string Christofides::PrintPath(const uint_least32_t code, const uint_least8_t π)
+	string Christofides::PrintPath()
 	{
 		string s;
 
@@ -143,27 +143,26 @@ namespace TSP
 		vector<bool> visited(numberOfNodes, false);
 		uint_least16_t pathCost = 0;
 
-		auto root = path.front();
 		auto cur = path.begin();
-		auto iter = path.begin() + 1;
+		auto next = path.begin() + 1;
 
-		visited[root] = 1;
+		visited[*cur] = 1;
 
-		while (iter != path.end())
-			if (visited[*iter])
+		while (next != path.end())
+			if (visited[*next])
 			{
-				iter = path.erase(iter);
+				next = path.erase(next);
 			}
 			else
 			{
-				pathCost += distance[*cur][*iter];
-				cur = iter;
+				pathCost += distance[*cur][*next];
+				cur = next;
 				visited[*cur] = 1;
-				iter = cur + 1;
+				next = cur + 1;
 			}
 
-		if (iter != path.end())
-			pathCost += distance[*cur][*iter];
+		if (next != path.end())
+			pathCost += distance[*cur][*next];
 
 		return pathCost;
 	}
@@ -186,8 +185,8 @@ namespace TSP
 		{
 			struct e2
 			{
-				uint_least8_t a;
-				uint_least16_t b;
+				uint_least8_t node;
+				uint_least16_t cost;
 			};
 
 			vector<e2> path_vals(numberOfNodes);
@@ -195,13 +194,13 @@ namespace TSP
 
 			for (uint_least8_t t = 0; t < numberOfNodes; t++)
 			{
-				path_vals[t].a = t;
-				path_vals[t].b = findBestPath(t);
+				path_vals[t].node = t;
+				path_vals[t].cost = findBestPath(t);
 
-				if (path_vals[t].b < min)
+				if (path_vals[t].cost < min)
 				{
-					bestIndex = path_vals[t].a;
-					min = path_vals[t].b;
+					bestIndex = path_vals[t].node;
+					min = path_vals[t].cost;
 				}
 			}
 		}
@@ -218,7 +217,7 @@ namespace TSP
 			opt += distance[tail][head];
 		}
 
-		path = PrintPath(0, 0);
+		path = PrintPath();
 
 		currentCardinality = numberOfNodes;
 	}

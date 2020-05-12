@@ -40,8 +40,6 @@ namespace TSP
 
 		uint_least32_t Powered2Code(const uint_least32_t code, const uint_least8_t exclude);
 
-		virtual string PrintPath(const uint_least32_t code, const uint_least8_t π) = 0;
-
 		void ETL();
 		void ETLw();
 

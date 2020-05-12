@@ -31,7 +31,7 @@ namespace TSP
 		void MinimumSpanningTree_Prim();
 
 	protected:
-		string PrintPath(const uint_least32_t code, const uint_least8_t π);
+		string PrintPath();
 
 		void Solve(uint_least16_t &opt, string &path);
 
