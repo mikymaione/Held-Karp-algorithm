@@ -127,7 +127,7 @@ namespace TSP
 						for (const auto m : S)
 							if (m != k)
 							{
-								tmp = tempC_k->at(m).cost + distance[k][m];
+								tmp = tempC_k->at(m).cost + distance[m][k];
 
 								if (tmp < opt)
 								{
@@ -184,7 +184,7 @@ namespace TSP
 
 			auto CF1 = &C.front();
 			for (uint_least8_t k = 1; k < numberOfNodes; k++)
-				(*CF1)[1 << k][k].cost = distance[k][0];
+				(*CF1)[1 << k][k].cost = distance[0][k];
 		}
 		// ALGO[01:02]
 
@@ -217,7 +217,7 @@ namespace TSP
 			for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]} ALGO[07]
 				if (C.front()[code][k].cost > 0)
 				{
-					tmp = C.front()[code][k].cost + distance[0][k];
+					tmp = C.front()[code][k].cost + distance[k][0];
 
 					if (tmp < opt)
 					{
