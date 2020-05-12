@@ -177,30 +177,21 @@ namespace TSP
 
 	void Christofides::Solve(uint_least16_t &opt, string &path)
 	{
-		uint_least8_t bestIndex;
-
 		MinimumSpanningTree_Prim();
 		WeightedPerfectMatching();
 
+		uint_least8_t bestIndex;
 		{
-			struct e2
-			{
-				uint_least8_t node;
-				uint_least16_t cost;
-			};
-
-			vector<e2> path_vals(numberOfNodes);
-			uint_least16_t min = UINT_LEAST16_MAX;
+			uint_least16_t cost, min = UINT_LEAST16_MAX;
 
 			for (uint_least8_t t = 0; t < numberOfNodes; t++)
 			{
-				path_vals[t].node = t;
-				path_vals[t].cost = findBestPath(t);
+				cost = findBestPath(t);
 
-				if (path_vals[t].cost < min)
+				if (cost < min)
 				{
-					bestIndex = path_vals[t].node;
-					min = path_vals[t].cost;
+					bestIndex = t;
+					min = cost;
 				}
 			}
 		}
