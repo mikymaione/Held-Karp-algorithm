@@ -209,7 +209,7 @@ namespace TSP
 
 			const auto code = Powered2Code(FullSet);
 
-			for (const auto k : FullSet) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]} ALGO[07]
+			for (uint_least8_t k = 1; k < numberOfNodes; k++) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]} ALGO[07]			
 				if (C.front()[code][k].cost > 0)
 				{
 					tmp = C.front()[code][k].cost + distance[k][0];
