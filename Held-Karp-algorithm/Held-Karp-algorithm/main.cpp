@@ -16,10 +16,10 @@ using namespace TSP;
 using namespace std;
 using namespace std::experimental;
 
-void Run(string tipo, const uint_least8_t NumberOfNodes)
+vector<vector<uint_least8_t>> ReadFile(string tipo, const uint_least8_t NumberOfNodes)
 {
-	string z, e;
 	auto delim = ',';
+	string z, e;
 	size_t current, previous;
 	uint_least8_t x, y;
 
@@ -49,7 +49,14 @@ void Run(string tipo, const uint_least8_t NumberOfNodes)
 		}
 	}
 
-	HeldKarp hk(DistanceMatrix2D);
+	return DistanceMatrix2D;
+}
+
+void Run(string tipo, const uint_least8_t NumberOfNodes)
+{
+	auto DistanceMatrix2D = ReadFile(tipo, NumberOfNodes);
+
+	Christofides hk(DistanceMatrix2D);
 	hk.Run();
 }
 
@@ -73,7 +80,6 @@ void StartElaboration_aTSP(const string graphToSolve)
 
 void StartElaboration_sTSP(const string graphToSolve)
 {
-
 	if (graphToSolve == "all" || graphToSolve == "4")
 		Run("sym", 4);
 
@@ -89,13 +95,17 @@ void StartElaboration_sTSP(const string graphToSolve)
 	if (graphToSolve == "all" || graphToSolve == "25")
 		Run("sym", 25);
 
-	if (graphToSolve == "all")
-	{
+	if (graphToSolve == "all" || graphToSolve == "100")
 		Run("sym", 100);
+
+	if (graphToSolve == "all" || graphToSolve == "500")
 		Run("sym", 500);
+
+	if (graphToSolve == "all" || graphToSolve == "1000")
 		Run("sym", 1000);
+
+	if (graphToSolve == "all" || graphToSolve == "5000")
 		Run("sym", 5000);
-	}
 }
 
 void WriteTitle()
@@ -104,7 +114,7 @@ void WriteTitle()
 		<< "Held-Karp algorithm to solve the Traveling Salesman Problem" << endl
 		<< endl
 		<< "Held-Karp-algorithm parameters: " << endl
-		<< " [graph to solve = {3, 4, 5, 6, 15, 20, 25, 30, all}]" << endl
+		<< " [graph to solve = {4, 10, 15, 20, 25, all}]" << endl
 		<< endl
 		<< endl
 		<< "Copyright 2020 (c) [MAIONE MIKY]. All rights reserved." << endl
@@ -123,7 +133,7 @@ int main(int argc, char **argv)
 		{
 			const string graphToSolve = argv[1];
 
-			StartElaboration_aTSP(graphToSolve);
+			StartElaboration_sTSP(graphToSolve);
 		}
 	}
 	catch (const exception &e)
