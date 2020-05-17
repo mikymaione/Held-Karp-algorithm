@@ -122,9 +122,9 @@ void WriteTitle()
 		<< "Held-Karp algorithm to solve the Asymmetric Traveling Salesman Problem" << endl
 		<< "Christofides algorithm to solve the Euclidean Traveling Salesman Problem" << endl
 		<< endl
-		<< "Program parameters: " << endl
-		<< " algorithm = {H, C}: " << endl
-		<< " type = {E, A}: " << endl
+		<< "Program parameters:" << endl
+		<< " algorithm = {H, C}" << endl
+		<< " type = {E, A}" << endl
 		<< " [graph to solve = {4, 10, 15, 20, 25, all}]" << endl
 		<< endl
 		<< endl
