@@ -164,8 +164,12 @@ namespace TSP
 				next = curr + 1;
 			}
 
-		if (next != path.end())
-			opt += distance[*curr][*next];
+		auto head = path.front();
+		auto tail = path.back();
+
+		path.push_back(head);
+
+		opt += distance[tail][head];
 
 		return opt;
 	}
@@ -229,15 +233,6 @@ namespace TSP
 
 		// 6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
 		opt = ToHamiltonianPath(circuit);
-		{
-			auto head = circuit.front();
-			auto tail = circuit.back();
-
-			circuit.push_back(head);
-
-			opt += distance[tail][head];
-		}
-
 		path = PrintPath(circuit);
 
 		currentCardinality = numberOfNodes;

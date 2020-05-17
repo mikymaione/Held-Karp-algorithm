@@ -31,3 +31,38 @@ Solving a graph of 6 nodes:
 -Cost: 151 time: 101ms, path: 0 4 2 1 5 3 0
 Solving a graph of 20 nodes:
 -Cost: 162 time: 7895ms, path: 0 3 6 8 16 19 7 12 13 14 9 1 18 17 2 15 4 5 10 11 0
+
+
+
+
+
+
+
+Intel Core2 Quad 2.33GHZ 4GB RAM, SSD
+Solving using Held-Karp algorithm on euclidean graph
+
+Solving a graph of 4 nodes:
+-Cost: 178 time: 102ms, path: 0 1 2 3 0
+Solving a graph of 10 nodes:
+-Cost: 215 time: 3ms, path: 0 6 1 7 2 3 9 4 5 8 0
+Solving a graph of 15 nodes:
+-Cost: 281 time: 134ms, path: 0 10 2 5 9 14 8 1 7 11 13 4 3 6 12 0
+Solving a graph of 20 nodes:
+-Cost: 365 time: 7182ms, path: 0 11 9 2 7 1 3 12 19 18 4 17 16 15 10 6 14 8 5 13 0
+
+
+Solving using Christofides algorithm on euclidean graph
+
+Solving a graph of 4 nodes:
+-Cost: 178 time: 1ms, path: 0 3 2 1 0
+Solving a graph of 10 nodes:
+-Cost: 237 time: 0ms, path: 0 3 9 4 2 5 8 7 1 6 0
+Solving a graph of 15 nodes:
+-Cost: 292 time: 0ms, path: 3 11 7 13 4 1 8 14 9 5 2 10 0 12 6 3
+Solving a graph of 20 nodes:
+-Cost: 449 time: 0ms, path: 0 5 13 6 14 8 10 15 3 1 12 19 18 16 17 4 2 9 11 7 0
+
+100%
+90.71%
+96.23%
+81.29%
