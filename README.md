@@ -48,7 +48,7 @@ The Christofides algorithm, 1976, is an algorithm for finding approximate soluti
 | Core2 Quad | 100 | 00'00"02 |
 | Core2 Quad | 500 | 00'00"08 |
 | Core2 Quad | 1000 | 00'00"35 |
-| Core2 Quad | 500 | 00'15"52 |
+| Core2 Quad | 5000 | 00'15"52 |
 
 ## IDE
 1. C++14
