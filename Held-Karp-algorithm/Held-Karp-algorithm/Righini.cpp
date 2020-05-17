@@ -12,9 +12,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	Righini::Righini(const vector<vector<uint_least8_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
+	Righini::Righini(const vector<vector<uint_least16_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	string Righini::PrintPath(const uint_least32_t code, const uint_least8_t π)
+	string Righini::PrintPath(const uint_least32_t code, const uint_least16_t π)
 	{
 		string s;
 
@@ -27,7 +27,7 @@ namespace TSP
 		node[x].p = x;
 	}
 
-	uint_least8_t Righini::findSet(vector<Node> &node, uint_least8_t x)
+	uint_least16_t Righini::findSet(vector<Node> &node, uint_least16_t x)
 	{
 		if (node[x].p != x)
 			node[x].p = findSet(node, node[x].p);
@@ -35,7 +35,7 @@ namespace TSP
 		return node[x].p;
 	}
 
-	void Righini::setUnion(vector<Node> &node, uint_least8_t x, uint_least8_t y)
+	void Righini::setUnion(vector<Node> &node, uint_least16_t x, uint_least16_t y)
 	{
 		if (node[x].r > node[y].r)
 		{
@@ -84,14 +84,14 @@ namespace TSP
 		return A;
 	}
 
-	Righini::Graph Righini::graphFromDistanceMatrix(const uint_least8_t nodes)
+	Righini::Graph Righini::graphFromDistanceMatrix(const uint_least16_t nodes)
 	{
 		vector<Node> node(nodes);
 		vector<Edge> edge(nodes * nodes);
 
 		size_t i = 0;
-		for (uint_least8_t x = 0; x < nodes; x++)
-			for (uint_least8_t y = 0; y < nodes; y++)
+		for (uint_least16_t x = 0; x < nodes; x++)
+			for (uint_least16_t y = 0; y < nodes; y++)
 			{
 				edge[i].u = x;
 				edge[i].v = y;
@@ -109,7 +109,7 @@ namespace TSP
 
 	void Righini::Solve(uint_least16_t &opt, string &path)
 	{
-		const uint_least8_t r = numberOfNodes - 1;
+		const uint_least16_t r = numberOfNodes - 1;
 
 		auto G_k = graphFromDistanceMatrix(r);
 		auto S = Kruskal(G_k.node, G_k.edge);

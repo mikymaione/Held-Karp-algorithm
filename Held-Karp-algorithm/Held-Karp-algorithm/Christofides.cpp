@@ -13,7 +13,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	Christofides::Christofides(const vector<vector<uint_least8_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
+	Christofides::Christofides(const vector<vector<uint_least16_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
 	{
 		Adj.resize(numberOfNodes);
 	}
@@ -30,10 +30,10 @@ namespace TSP
 
 	void Christofides::MinimumSpanningTree_Prim()
 	{
-		uint_least8_t i, u, v, opt;
+		uint_least16_t i, u, v, opt;
 
-		vector<uint_least8_t> parent(numberOfNodes, UINT_LEAST8_MAX);
-		vector<uint_least8_t> dist(numberOfNodes, UINT_LEAST8_MAX);
+		vector<uint_least16_t> parent(numberOfNodes, UINT_LEAST8_MAX);
+		vector<uint_least16_t> dist(numberOfNodes, UINT_LEAST8_MAX);
 		vector<bool> in_mst(numberOfNodes, false);
 
 		dist[0] = 0;
@@ -73,8 +73,8 @@ namespace TSP
 
 	void Christofides::WeightedPerfectMatching()
 	{
-		uint_least8_t i, dist, closest = 0;
-		set<uint_least8_t> V_odd;
+		uint_least16_t i, dist, closest = 0;
+		set<uint_least16_t> V_odd;
 
 		for (i = 0; i < numberOfNodes; i++)
 			if (Adj[i].size() % 2 != 0)
@@ -101,10 +101,10 @@ namespace TSP
 			}
 	}
 
-	vector<uint_least8_t> Christofides::FindEulerCircuit(uint_least8_t start)
+	vector<uint_least16_t> Christofides::FindEulerCircuit(uint_least16_t start)
 	{
-		stack<uint_least8_t> S;
-		vector<uint_least8_t> path;
+		stack<uint_least16_t> S;
+		vector<uint_least16_t> path;
 
 		path.push_back(start);
 
@@ -138,7 +138,7 @@ namespace TSP
 		return path;
 	}
 
-	uint_least16_t Christofides::ToHamiltonianPath(vector<uint_least8_t> &path)
+	uint_least16_t Christofides::ToHamiltonianPath(vector<uint_least16_t> &path)
 	{
 		vector<bool> visited(numberOfNodes, false);
 		uint_least16_t pathCost = 0;
@@ -167,7 +167,7 @@ namespace TSP
 		return pathCost;
 	}
 
-	uint_least16_t Christofides::findBestPath(uint_least8_t start)
+	uint_least16_t Christofides::findBestPath(uint_least16_t start)
 	{
 		auto path = FindEulerCircuit(start);
 		auto len = ToHamiltonianPath(path);
@@ -180,11 +180,11 @@ namespace TSP
 		MinimumSpanningTree_Prim();
 		WeightedPerfectMatching();
 
-		uint_least8_t bestIndex;
+		uint_least16_t bestIndex;
 		{
 			uint_least16_t cost, min = UINT_LEAST16_MAX;
 
-			for (uint_least8_t t = 0; t < numberOfNodes; t++)
+			for (uint_least16_t t = 0; t < numberOfNodes; t++)
 			{
 				cost = findBestPath(t);
 

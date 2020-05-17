@@ -16,14 +16,14 @@ using namespace TSP;
 using namespace std;
 using namespace std::experimental;
 
-vector<vector<uint_least8_t>> ReadFile(string tipo, const uint_least8_t NumberOfNodes)
+vector<vector<uint_least16_t>> ReadFile(string tipo, const uint_least16_t NumberOfNodes)
 {
 	auto delim = ',';
 	string z, e;
 	size_t current, previous;
-	uint_least8_t x, y;
+	uint_least16_t x, y;
 
-	vector<vector<uint_least8_t>> DistanceMatrix2D(NumberOfNodes, vector<uint_least8_t>(NumberOfNodes, 0));
+	vector<vector<uint_least16_t>> DistanceMatrix2D(NumberOfNodes, vector<uint_least16_t>(NumberOfNodes, 0));
 
 	auto curP = filesystem::current_path();
 	curP.append("TSP_Instances\\" + tipo + to_string(NumberOfNodes) + ".txt");
@@ -52,68 +52,79 @@ vector<vector<uint_least8_t>> ReadFile(string tipo, const uint_least8_t NumberOf
 	return DistanceMatrix2D;
 }
 
-void Run(string tipo, const uint_least8_t NumberOfNodes)
+void Run(string algo, string tipo, const uint_least16_t NumberOfNodes)
 {
 	auto DistanceMatrix2D = ReadFile(tipo, NumberOfNodes);
 
-	Christofides hk(DistanceMatrix2D);
-	hk.Run();
+	if (algo == "H")
+	{
+		HeldKarp A(DistanceMatrix2D);
+		A.Run();
+	}
+	else
+	{
+		Christofides A(DistanceMatrix2D);
+		A.Run();
+	}
 }
 
 void StartElaboration_aTSP(const string graphToSolve)
 {
 	if (graphToSolve == "all" || graphToSolve == "4")
-		Run("asym", 4);
+		Run("H", "asym", 4);
 
 	if (graphToSolve == "all" || graphToSolve == "10")
-		Run("asym", 10);
+		Run("H", "asym", 10);
 
 	if (graphToSolve == "all" || graphToSolve == "15")
-		Run("asym", 15);
+		Run("H", "asym", 15);
 
 	if (graphToSolve == "all" || graphToSolve == "20")
-		Run("asym", 20);
+		Run("H", "asym", 20);
 
 	if (graphToSolve == "all" || graphToSolve == "25")
-		Run("asym", 25);
+		Run("H", "asym", 25);
 }
 
-void StartElaboration_sTSP(const string graphToSolve)
+void StartElaboration_eTSP(string algo, const string graphToSolve)
 {
 	if (graphToSolve == "all" || graphToSolve == "4")
-		Run("sym", 4);
+		Run(algo, "sym", 4);
 
 	if (graphToSolve == "all" || graphToSolve == "10")
-		Run("sym", 10);
+		Run(algo, "sym", 10);
 
 	if (graphToSolve == "all" || graphToSolve == "15")
-		Run("sym", 15);
+		Run(algo, "sym", 15);
 
 	if (graphToSolve == "all" || graphToSolve == "20")
-		Run("sym", 20);
+		Run(algo, "sym", 20);
 
 	if (graphToSolve == "all" || graphToSolve == "25")
-		Run("sym", 25);
+		Run(algo, "sym", 25);
 
 	if (graphToSolve == "all" || graphToSolve == "100")
-		Run("sym", 100);
+		Run(algo, "sym", 100);
 
 	if (graphToSolve == "all" || graphToSolve == "500")
-		Run("sym", 500);
+		Run(algo, "sym", 500);
 
 	if (graphToSolve == "all" || graphToSolve == "1000")
-		Run("sym", 1000);
+		Run(algo, "sym", 1000);
 
 	if (graphToSolve == "all" || graphToSolve == "5000")
-		Run("sym", 5000);
+		Run(algo, "sym", 5000);
 }
 
 void WriteTitle()
 {
 	cout
-		<< "Held-Karp algorithm to solve the Traveling Salesman Problem" << endl
+		<< "Held-Karp algorithm to solve the Asymmetric Traveling Salesman Problem" << endl
+		<< "Christofides algorithm to solve the Euclidean Traveling Salesman Problem" << endl
 		<< endl
-		<< "Held-Karp-algorithm parameters: " << endl
+		<< "Program parameters: " << endl
+		<< " algorithm = {H, C}: " << endl
+		<< " type = {E, A}: " << endl
 		<< " [graph to solve = {4, 10, 15, 20, 25, all}]" << endl
 		<< endl
 		<< endl
@@ -129,11 +140,30 @@ int main(int argc, char **argv)
 
 	try
 	{
-		if (argc > 1)
+		if (argc > 3)
 		{
-			const string graphToSolve = argv[1];
+			const string algo = argv[1];
+			const string type = argv[2];
+			const string graphToSolve = argv[3];
 
-			StartElaboration_sTSP(graphToSolve);
+			cout << "Solving using ";
+
+			if (algo == "H")
+				cout << "Held-Karp algorithm on ";
+			else
+				cout << "Christofides algorithm on ";
+
+			if (type == "E")
+				cout << "euclidean graph";
+			else
+				cout << "asymmetric graph";
+
+			cout << endl << endl;
+
+			if (type == "E")
+				StartElaboration_eTSP(algo, graphToSolve);
+			else
+				StartElaboration_aTSP(graphToSolve);
 		}
 	}
 	catch (const exception &e)

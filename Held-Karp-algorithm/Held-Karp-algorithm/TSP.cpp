@@ -15,16 +15,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	TSP::TSP(const vector<vector<uint_least8_t>> &DistanceMatrix2D) :
+	TSP::TSP(const vector<vector<uint_least16_t>> &DistanceMatrix2D) :
 		numberOfNodes(DistanceMatrix2D.size()),
 		distance(DistanceMatrix2D) {}
 
-	uint_least32_t TSP::Powered2Code(const vector<uint_least8_t> &S)
+	uint_least32_t TSP::Powered2Code(const vector<uint_least16_t> &S)
 	{
 		return Powered2Code(S, UCHAR_MAX);
 	}
 
-	uint_least32_t TSP::Powered2Code(const vector<uint_least8_t> &S, const uint_least8_t exclude)
+	uint_least32_t TSP::Powered2Code(const vector<uint_least16_t> &S, const uint_least16_t exclude)
 	{
 		uint_least32_t code = 0;
 
@@ -35,7 +35,7 @@ namespace TSP
 		return code;
 	}
 
-	uint_least32_t TSP::Powered2Code(const uint_least32_t code, const uint_least8_t exclude)
+	uint_least32_t TSP::Powered2Code(const uint_least32_t code, const uint_least16_t exclude)
 	{
 		return code - POWER2[exclude];
 		//return code - (1 << exclude);
@@ -86,9 +86,9 @@ namespace TSP
 		}
 	}
 
-	vector<vector<uint_least8_t>> TSP::New_RND_Distances(const uint_least8_t Size_of_RandomDistanceCosts)
+	vector<vector<uint_least16_t>> TSP::New_RND_Distances(const uint_least16_t Size_of_RandomDistanceCosts)
 	{
-		vector<vector<uint_least8_t>> A(Size_of_RandomDistanceCosts, vector<uint_least8_t>(Size_of_RandomDistanceCosts, 0));
+		vector<vector<uint_least16_t>> A(Size_of_RandomDistanceCosts, vector<uint_least16_t>(Size_of_RandomDistanceCosts, 0));
 
 		for (auto x = 0; x < Size_of_RandomDistanceCosts; x++)
 			for (auto y = 0; y < Size_of_RandomDistanceCosts; y++)

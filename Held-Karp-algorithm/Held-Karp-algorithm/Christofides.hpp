@@ -18,14 +18,14 @@ namespace TSP
 	class Christofides : public TSP
 	{
 	private:
-		vector<vector<uint_least8_t>> Adj;
-		vector<uint_least8_t> circuit;
+		vector<vector<uint_least16_t>> Adj;
+		vector<uint_least16_t> circuit;
 
 	private:
-		uint_least16_t ToHamiltonianPath(vector<uint_least8_t> &path);
-		uint_least16_t findBestPath(uint_least8_t start);
+		uint_least16_t ToHamiltonianPath(vector<uint_least16_t> &path);
+		uint_least16_t findBestPath(uint_least16_t start);
 
-		vector<uint_least8_t> FindEulerCircuit(uint_least8_t start);
+		vector<uint_least16_t> FindEulerCircuit(uint_least16_t start);
 
 		void WeightedPerfectMatching();
 		void MinimumSpanningTree_Prim();
@@ -36,7 +36,7 @@ namespace TSP
 		void Solve(uint_least16_t &opt, string &path);
 
 	public:
-		Christofides(const vector<vector<uint_least8_t>> &DistanceMatrix2D);
+		Christofides(const vector<vector<uint_least16_t>> &DistanceMatrix2D);
 
 	};
 }
