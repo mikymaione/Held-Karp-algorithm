@@ -4,16 +4,9 @@ TSP is an extension of the Hamiltonian circuit problem. The problem can be descr
 2. return to the starting point
 3. be of minimum distance.
 
-## Held–Karp algorithm
-The Held–Karp algorithm, is a dynamic programming algorithm proposed in 1962 independently by Bellman and by Held and Karp to solve the Traveling Salesman Problem (TSP).
+## Benchmarks
 
-### Complexity
-* T(n) = O(2ⁿn²)
-* S(n) = O(2ⁿ√n)
-
-### Benchmarks
-
-#### PCs
+### PCs
 | CPU | CPU GHz | RAM | HD | OS | 
 | --- | ---------: | -- | -- | -- |
 | AMD Ryzen5 2500U | 2.00 | 8GB DDR4 | SSD | Windows 10 |
@@ -21,7 +14,15 @@ The Held–Karp algorithm, is a dynamic programming algorithm proposed in 1962 i
 | Intel Core2 Quad Q6600 | 2.40 | 4GB DDR2 | SSD | Windows 10 |
 | Intel Core2 Duo E6550 | 2.33 | 4GB DDR2 | SSD | Windows 10 |
 
-#### Results
+
+## Held–Karp algorithm
+The Held–Karp algorithm, is a dynamic programming algorithm proposed in 1962 independently by Bellman and by Held and Karp to solve the Traveling Salesman Problem (TSP).
+
+### Complexity
+* T(n) = O(2ⁿn²)
+* S(n) = O(2ⁿ√n)
+
+### Results
 | PC | Nodes  | Time | 
 | -- | -----: | ---: |
 | Core2 Quad | 20 | 00'07"27 |
@@ -39,9 +40,7 @@ The Christofides algorithm, 1976, is an algorithm for finding approximate soluti
 ### Complexity
 * T(n) = O(n⁴)
 
-### Benchmarks
-
-#### Results
+### Results
 | PC | Nodes  | Time | 
 | -- | -----: | ---: |
 | Core2 Quad | 20 | 00'00"01 |
