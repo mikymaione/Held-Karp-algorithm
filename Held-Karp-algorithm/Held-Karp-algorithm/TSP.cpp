@@ -6,11 +6,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <thread>
-
 #include "TSP.hpp"
 
 namespace TSP

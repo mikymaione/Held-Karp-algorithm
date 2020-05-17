@@ -6,13 +6,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <atomic>
-
-#include <chrono>
-
+#include <cstdint>
+#include <map>
 #include <queue>
 #include <stack>
-#include <map>
+#include <string>
 #include <vector>
 
 #include "TSP.hpp"

@@ -6,7 +6,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <cstdint>
 #include <set>
+#include <stack>
+#include <string>
 #include <vector>
 
 #include "TSP.hpp"
@@ -19,7 +22,6 @@ namespace TSP
 	{
 	private:
 		vector<vector<uint_least16_t>> Adj;
-		vector<uint_least16_t> circuit;
 
 	private:
 		uint_least16_t ToHamiltonianPath(vector<uint_least16_t> &path);
@@ -31,7 +33,7 @@ namespace TSP
 		void MinimumSpanningTree_Prim();
 
 	protected:
-		string PrintPath();
+		string PrintPath(vector<uint_least16_t> circuit);
 
 		void Solve(uint_least16_t &opt, string &path);
 

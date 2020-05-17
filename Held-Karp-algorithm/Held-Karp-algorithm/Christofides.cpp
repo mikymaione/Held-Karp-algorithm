@@ -6,9 +6,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <stack>
-#include <string>
-
 #include "Christofides.hpp"
 
 namespace TSP
@@ -18,7 +15,7 @@ namespace TSP
 		Adj.resize(numberOfNodes);
 	}
 
-	string Christofides::PrintPath()
+	string Christofides::PrintPath(vector<uint_least16_t> circuit)
 	{
 		string s;
 
@@ -76,6 +73,7 @@ namespace TSP
 		uint_least16_t i, dist, closest = 0;
 		set<uint_least16_t> V_odd;
 
+		// 2. Let O be the set of vertices with odd degree in T.
 		for (i = 0; i < numberOfNodes; i++)
 			if (Adj[i].size() % 2 != 0)
 				V_odd.insert(i);
@@ -103,12 +101,15 @@ namespace TSP
 
 	vector<uint_least16_t> Christofides::FindEulerCircuit(uint_least16_t start)
 	{
+		size_t i;
+		uint_least16_t neighbor, pos;
+
 		stack<uint_least16_t> S;
 		vector<uint_least16_t> path;
 
 		path.push_back(start);
 
-		auto pos = start;
+		pos = start;
 		auto neighbours = Adj; // copy
 
 		while (!S.empty() || neighbours[pos].size() > 0)
@@ -122,11 +123,11 @@ namespace TSP
 			{
 				S.push(pos);
 
-				auto neighbor = neighbours[pos].back();
+				neighbor = neighbours[pos].back();
 
 				neighbours[pos].pop_back();
 
-				for (size_t i = 0; i < neighbours[neighbor].size(); i++)
+				for (i = 0; i < neighbours[neighbor].size(); i++)
 					if (neighbours[neighbor][i] == pos)
 						neighbours[neighbor].erase(neighbours[neighbor].begin() + i);
 
@@ -141,12 +142,12 @@ namespace TSP
 	uint_least16_t Christofides::ToHamiltonianPath(vector<uint_least16_t> &path)
 	{
 		vector<bool> visited(numberOfNodes, false);
-		uint_least16_t pathCost = 0;
+		uint_least16_t opt = 0;
 
-		auto cur = path.begin();
+		auto curr = path.begin();
 		auto next = path.begin() + 1;
 
-		visited[*cur] = 1;
+		visited[*curr] = true;
 
 		while (next != path.end())
 			if (visited[*next])
@@ -155,31 +156,58 @@ namespace TSP
 			}
 			else
 			{
-				pathCost += distance[*cur][*next];
-				cur = next;
-				visited[*cur] = 1;
-				next = cur + 1;
+				opt += distance[*curr][*next];
+				curr = next;
+
+				visited[*curr] = true;
+
+				next = curr + 1;
 			}
 
 		if (next != path.end())
-			pathCost += distance[*cur][*next];
+			opt += distance[*curr][*next];
 
-		return pathCost;
+		return opt;
 	}
 
 	uint_least16_t Christofides::findBestPath(uint_least16_t start)
 	{
-		auto path = FindEulerCircuit(start);
-		auto len = ToHamiltonianPath(path);
+		auto circuit = FindEulerCircuit(start);
+		auto opt = ToHamiltonianPath(circuit);
 
-		return len;
+		return opt;
 	}
 
+	/*
+	Christofides algorithm
+	The Christofides algorithm, 1976, is an algorithm for finding approximate solutions to the euclidean travelling salesman problem. It is an approximation algorithm that guarantees that its solutions will be within a factor of 3/2 of the optimal solution length.
+
+	T(n) = O(n⁴)
+
+	TSP is an extension of the Hamiltonian circuit problem.
+	The problem can be described as: find a tour of N cities in a country (assuming all cities to be visited are reachable), the tour should:
+	1. visit every city just once
+	2. return to the starting point
+	3. be of minimum distance.
+
+	ALGO:
+	1. Create a minimum spanning tree T of G.
+	2. Let O be the set of vertices with odd degree in T. By the handshaking lemma, O has an even number of vertices.
+	3. Find a minimum-weight perfect matching M in the induced subgraph given by the vertices from O.
+	4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
+	5. Form an Eulerian circuit in H.
+	6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
+	*/
 	void Christofides::Solve(uint_least16_t &opt, string &path)
 	{
+		// 1. Create a minimum spanning tree T of G.
 		MinimumSpanningTree_Prim();
+
+		// 2. Let O be the set of vertices with odd degree in T.
+		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.
 		WeightedPerfectMatching();
 
+		// 4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
 		uint_least16_t bestIndex;
 		{
 			uint_least16_t cost, min = UINT_LEAST16_MAX;
@@ -196,9 +224,11 @@ namespace TSP
 			}
 		}
 
-		circuit = FindEulerCircuit(bestIndex);
-		opt = ToHamiltonianPath(circuit);
+		// 5. Form an Eulerian circuit in H.
+		auto circuit = FindEulerCircuit(bestIndex);
 
+		// 6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
+		opt = ToHamiltonianPath(circuit);
 		{
 			auto head = circuit.front();
 			auto tail = circuit.back();
@@ -208,7 +238,7 @@ namespace TSP
 			opt += distance[tail][head];
 		}
 
-		path = PrintPath();
+		path = PrintPath(circuit);
 
 		currentCardinality = numberOfNodes;
 	}
