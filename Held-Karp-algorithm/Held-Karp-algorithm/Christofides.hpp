@@ -21,7 +21,7 @@ namespace TSP
 	class Christofides : public TSP
 	{
 	private:
-		vector<vector<uint_least16_t>> Adj;
+		vector<vector<uint_least16_t>> out_star;
 
 	private:
 		uint_least16_t ToHamiltonianPath(vector<uint_least16_t> &path);

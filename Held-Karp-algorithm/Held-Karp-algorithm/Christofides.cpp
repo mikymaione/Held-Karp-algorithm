@@ -12,7 +12,7 @@ namespace TSP
 {
 	Christofides::Christofides(const vector<vector<uint_least16_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) // O(V)
 	{
-		Adj.resize(numberOfNodes);
+		out_star.resize(numberOfNodes);
 	}
 
 	string Christofides::PrintPath(vector<uint_least16_t> circuit) // O(V)
@@ -37,6 +37,7 @@ namespace TSP
 
 		for (i = 0; i < numberOfNodes - 1; i++)
 		{
+			// trova il nodo più vicino che non è nel MST
 			opt = UINT_LEAST16_MAX;
 
 			for (u = 0; u < numberOfNodes; u++)
@@ -45,9 +46,12 @@ namespace TSP
 					opt = dist[u];
 					v = u;
 				}
+			// trova il nodo più economico che non è nel MST
 
+			// lo mette nel MST
 			in_mst[v] = true;
 
+			// nodo non in MST e con distanza minore di quella precedente
 			for (u = 0; u < numberOfNodes; u++)
 				if (!in_mst[u] && distance[v][u] < dist[u])
 				{
@@ -56,14 +60,15 @@ namespace TSP
 				}
 		}
 
+		// crea out-star
 		for (u = 0; u < numberOfNodes; u++)
 		{
 			v = parent[u];
 
 			if (v != UINT_LEAST16_MAX)
 			{
-				Adj[u].push_back(v);
-				Adj[v].push_back(u);
+				out_star[u].push_back(v);
+				out_star[v].push_back(u);
 			}
 		}
 	}
@@ -73,9 +78,8 @@ namespace TSP
 		uint_least16_t i, dist, closest = 0;
 		set<uint_least16_t> V_odd;
 
-		// 2. Let O be the set of vertices with odd degree in T.
 		for (i = 0; i < numberOfNodes; i++) // O(V)
-			if (Adj[i].size() % 2 != 0)
+			if (out_star[i].size() % 2 != 0)
 				V_odd.insert(i);
 
 		while (!V_odd.empty())
@@ -91,8 +95,8 @@ namespace TSP
 						closest = u;
 					}
 
-				Adj[v].push_back(closest);
-				Adj[closest].push_back(v);
+				out_star[v].push_back(closest);
+				out_star[closest].push_back(v);
 
 				V_odd.erase(closest);
 				break; // next element
@@ -110,7 +114,7 @@ namespace TSP
 		path.push_back(start);
 
 		pos = start;
-		auto neighbours = Adj; // copy
+		auto neighbours = out_star; // copy
 
 		while (!S.empty() || neighbours[pos].size() > 0)
 			if (neighbours[pos].empty())
@@ -210,9 +214,9 @@ namespace TSP
 
 		// 2. Let O be the set of vertices with odd degree in T.
 		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.
+		// 4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
 		WeightedPerfectMatching(); // O(V⁴)
 
-		// 4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
 		uint_least16_t bestIndex; // O(V² + VE²)
 		{
 			uint_least16_t cost, min = UINT_LEAST16_MAX;
