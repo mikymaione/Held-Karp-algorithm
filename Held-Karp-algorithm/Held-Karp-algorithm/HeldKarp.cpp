@@ -155,7 +155,8 @@ namespace TSP
 	2. return to the starting point
 	3. be of minimum distance.
 
-	ALGO:
+	Algo. from: https://en.wikipedia.org/wiki/Held%E2%80%93Karp_algorithm
+	Algo.:
 	00	function algorithm TSP (G, n) is
 	01		for k := 2 to n
 	02			C({k}, k) := d1,k

@@ -10,12 +10,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	Christofides::Christofides(const vector<vector<uint_least16_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
+	Christofides::Christofides(const vector<vector<uint_least16_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) // O(V)
 	{
 		Adj.resize(numberOfNodes);
 	}
 
-	string Christofides::PrintPath(vector<uint_least16_t> circuit)
+	string Christofides::PrintPath(vector<uint_least16_t> circuit) // O(V)
 	{
 		string s;
 
@@ -25,7 +25,7 @@ namespace TSP
 		return s;
 	}
 
-	void Christofides::MinimumSpanningTree_Prim()
+	void Christofides::MinimumSpanningTree_Prim() // O(E + V ㏒ V)
 	{
 		uint_least16_t i, u, v, opt;
 
@@ -68,13 +68,13 @@ namespace TSP
 		}
 	}
 
-	void Christofides::WeightedPerfectMatching()
+	void Christofides::WeightedPerfectMatching() // O(V⁴)
 	{
 		uint_least16_t i, dist, closest = 0;
 		set<uint_least16_t> V_odd;
 
 		// 2. Let O be the set of vertices with odd degree in T.
-		for (i = 0; i < numberOfNodes; i++)
+		for (i = 0; i < numberOfNodes; i++) // O(V)
 			if (Adj[i].size() % 2 != 0)
 				V_odd.insert(i);
 
@@ -99,7 +99,7 @@ namespace TSP
 			}
 	}
 
-	vector<uint_least16_t> Christofides::FindEulerCircuit(uint_least16_t start)
+	vector<uint_least16_t> Christofides::FindEulerCircuit(uint_least16_t start) // O((V + E)²)
 	{
 		size_t i;
 		uint_least16_t neighbor, pos;
@@ -139,7 +139,7 @@ namespace TSP
 		return path;
 	}
 
-	uint_least16_t Christofides::ToHamiltonianPath(vector<uint_least16_t> &path)
+	uint_least16_t Christofides::ToHamiltonianPath(vector<uint_least16_t> &path) // O(V)
 	{
 		vector<bool> visited(numberOfNodes, false);
 		uint_least16_t opt = 0;
@@ -174,10 +174,10 @@ namespace TSP
 		return opt;
 	}
 
-	uint_least16_t Christofides::findBestPath(uint_least16_t start)
+	uint_least16_t Christofides::findBestPath(uint_least16_t start) // O((V+E)²)
 	{
-		auto circuit = FindEulerCircuit(start);
-		auto opt = ToHamiltonianPath(circuit);
+		auto circuit = FindEulerCircuit(start); // O((V+E)²)
+		auto opt = ToHamiltonianPath(circuit); // O(V)
 
 		return opt;
 	}
@@ -194,7 +194,8 @@ namespace TSP
 	2. return to the starting point
 	3. be of minimum distance.
 
-	ALGO:
+	Algo. from https://en.wikipedia.org/wiki/Christofides_algorithm
+	Algo.:
 	1. Create a minimum spanning tree T of G.
 	2. Let O be the set of vertices with odd degree in T. By the handshaking lemma, O has an even number of vertices.
 	3. Find a minimum-weight perfect matching M in the induced subgraph given by the vertices from O.
@@ -202,23 +203,23 @@ namespace TSP
 	5. Form an Eulerian circuit in H.
 	6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
 	*/
-	void Christofides::Solve(uint_least16_t &opt, string &path)
+	void Christofides::Solve(uint_least16_t &opt, string &path) // O(V⁴)
 	{
 		// 1. Create a minimum spanning tree T of G.
-		MinimumSpanningTree_Prim();
+		MinimumSpanningTree_Prim(); // O(E + V ㏒ V)
 
 		// 2. Let O be the set of vertices with odd degree in T.
 		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.
-		WeightedPerfectMatching();
+		WeightedPerfectMatching(); // O(V⁴)
 
 		// 4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
-		uint_least16_t bestIndex;
+		uint_least16_t bestIndex; // O(V² + VE²)
 		{
 			uint_least16_t cost, min = UINT_LEAST16_MAX;
 
 			for (uint_least16_t t = 0; t < numberOfNodes; t++)
 			{
-				cost = findBestPath(t);
+				cost = findBestPath(t); // O(V + E²)
 
 				if (cost < min)
 				{
@@ -229,11 +230,11 @@ namespace TSP
 		}
 
 		// 5. Form an Eulerian circuit in H.
-		auto circuit = FindEulerCircuit(bestIndex);
+		auto circuit = FindEulerCircuit(bestIndex); // O((V + E)²)
 
 		// 6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
-		opt = ToHamiltonianPath(circuit);
-		path = PrintPath(circuit);
+		opt = ToHamiltonianPath(circuit); // O(V)
+		path = PrintPath(circuit); // O(V)
 
 		currentCardinality = numberOfNodes;
 	}
