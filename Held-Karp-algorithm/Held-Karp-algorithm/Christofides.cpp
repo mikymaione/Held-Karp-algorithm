@@ -29,15 +29,15 @@ namespace TSP
 	{
 		uint_least16_t i, u, v, opt;
 
-		vector<uint_least16_t> parent(numberOfNodes, UINT_LEAST8_MAX);
-		vector<uint_least16_t> dist(numberOfNodes, UINT_LEAST8_MAX);
+		vector<uint_least16_t> parent(numberOfNodes, UINT_LEAST16_MAX);
+		vector<uint_least16_t> dist(numberOfNodes, UINT_LEAST16_MAX);
 		vector<bool> in_mst(numberOfNodes, false);
 
 		dist[0] = 0;
 
 		for (i = 0; i < numberOfNodes - 1; i++)
 		{
-			opt = UINT_LEAST8_MAX;
+			opt = UINT_LEAST16_MAX;
 
 			for (u = 0; u < numberOfNodes; u++)
 				if (!in_mst[u] && dist[u] < opt)
@@ -60,7 +60,7 @@ namespace TSP
 		{
 			v = parent[u];
 
-			if (v != UINT_LEAST8_MAX)
+			if (v != UINT_LEAST16_MAX)
 			{
 				Adj[u].push_back(v);
 				Adj[v].push_back(u);
@@ -81,7 +81,7 @@ namespace TSP
 		while (!V_odd.empty())
 			for (const auto v : V_odd)
 			{
-				dist = UINT_LEAST8_MAX;
+				dist = UINT_LEAST16_MAX;
 				V_odd.erase(v);
 
 				for (const auto u : V_odd)

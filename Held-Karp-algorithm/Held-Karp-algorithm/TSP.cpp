@@ -16,7 +16,7 @@ namespace TSP
 
 	uint_least32_t TSP::Powered2Code(const vector<uint_least16_t> &S)
 	{
-		return Powered2Code(S, UCHAR_MAX);
+		return Powered2Code(S, UINT_LEAST16_MAX);
 	}
 
 	uint_least32_t TSP::Powered2Code(const vector<uint_least16_t> &S, const uint_least16_t exclude)
@@ -87,7 +87,7 @@ namespace TSP
 
 		for (auto x = 0; x < Size_of_RandomDistanceCosts; x++)
 			for (auto y = 0; y < Size_of_RandomDistanceCosts; y++)
-				A[x][y] = (x == y ? 0 : generateRandomNumber(1, 25, UCHAR_MAX));
+				A[x][y] = (x == y ? 0 : generateRandomNumber<uint_least16_t>(1, 100, UINT_LEAST16_MAX));
 
 		return A;
 	}

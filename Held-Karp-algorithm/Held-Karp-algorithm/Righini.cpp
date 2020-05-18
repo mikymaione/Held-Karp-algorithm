@@ -21,7 +21,7 @@ namespace TSP
 		return "0 " + s + "0";
 	}
 
-	void Righini::makeSet(vector<Node> &node, size_t x)
+	void Righini::makeSet(vector<Node> &node, uint_least16_t x)
 	{
 		node[x].r = 0;
 		node[x].p = x;
@@ -53,8 +53,7 @@ namespace TSP
 	vector<Righini::Edge*> Righini::Kruskal(vector<Node> &node, vector<Edge> &edge)
 	{
 		vector<Edge*> A;
-		uint_least16_t min = UINT16_MAX;
-		size_t i;
+		uint_least16_t i, min = UINT_LEAST16_MAX;
 
 		for (i = 0; i < node.size(); i++)
 			makeSet(node, i);

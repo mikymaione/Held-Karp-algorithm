@@ -111,7 +111,7 @@ namespace TSP
 						// ALGO[06]
 						// min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 						π = 0;
-						opt = USHRT_MAX;
+						opt = UINT_LEAST16_MAX;
 
 						code_k = Powered2Code(code, k);
 						tempC_k = &tempC->at(code_k);
@@ -153,7 +153,7 @@ namespace TSP
 	The problem can be described as: find a tour of N cities in a country (assuming all cities to be visited are reachable), the tour should:
 	1. visit every city just once
 	2. return to the starting point
-	3. be of minimum distance.	
+	3. be of minimum distance.
 
 	ALGO:
 	00	function algorithm TSP (G, n) is
@@ -198,7 +198,7 @@ namespace TSP
 		{
 			uint_least16_t π = 0;
 			uint_least16_t tmp;
-			opt = USHRT_MAX;
+			opt = UINT_LEAST16_MAX;
 
 			vector<uint_least16_t> FullSet;
 			for (uint_least16_t z = 1; z < numberOfNodes; z++)

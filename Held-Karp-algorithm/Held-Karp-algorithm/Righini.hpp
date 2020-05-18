@@ -48,7 +48,7 @@ namespace TSP
 
 		// Kruskal
 		uint_least16_t findSet(vector<Node> &node, uint_least16_t x);
-		void makeSet(vector<Node> &node, size_t x);
+		void makeSet(vector<Node> &node, uint_least16_t x);
 		void setUnion(vector<Node> &node, uint_least16_t x, uint_least16_t y);
 		vector<Edge*> Kruskal(vector<Node> &node, vector<Edge> &edge);
 		// Kruskal
