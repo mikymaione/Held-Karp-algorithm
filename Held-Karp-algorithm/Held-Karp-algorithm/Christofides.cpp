@@ -145,7 +145,11 @@ namespace TSP
 		return path;
 	}
 
+<<<<<<< HEAD
 	float Christofides::ToHamiltonianPath(vector<unsigned short> &path) // O(V)
+=======
+	unsigned short Christofides::ToHamiltonianPath(vector<unsigned short> &path) // O(V)
+>>>>>>> 0932d920e28ca0de3277e8a7b4fdee6cf85fd2bd
 	{
 		vector<bool> visited(numberOfNodes, false);
 		float opt = 0;
@@ -180,7 +184,11 @@ namespace TSP
 		return opt;
 	}
 
+<<<<<<< HEAD
 	float Christofides::findBestPath(unsigned short start) // O((V+E)²)
+=======
+	unsigned short Christofides::findBestPath(unsigned short start) // O((V+E)²)
+>>>>>>> 0932d920e28ca0de3277e8a7b4fdee6cf85fd2bd
 	{
 		auto circuit = FindEulerCircuit(start); // O((V+E)²)
 		auto opt = ToHamiltonianPath(circuit); // O(V)
