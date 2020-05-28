@@ -10,9 +10,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	HeldKarp::HeldKarp(const vector<vector<uint_least16_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
+	HeldKarp::HeldKarp(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	string HeldKarp::PrintPath(const uint_least32_t code, const uint_least16_t π)
+	string HeldKarp::PrintPath(const unsigned int code, const unsigned short π)
 	{
 		string s;
 
@@ -24,15 +24,15 @@ namespace TSP
 
 	void HeldKarp::AddNewToQueue()
 	{
-		map<uint_least32_t, map<uint_least16_t, sInfo>> new_map;
+		map<unsigned int, map<unsigned short, sInfo>> new_map;
 		C.push(new_map);
 	}
 
-	void HeldKarp::Combinations_FreeMem(stack<uint_least16_t> &Q, vector<uint_least16_t> &S, const uint_least16_t K, const uint_least16_t N, const uint_least16_t sCur)
+	void HeldKarp::Combinations_FreeMem(stack<unsigned short> &Q, vector<unsigned short> &S, const unsigned short K, const unsigned short N, const unsigned short sCur)
 	{
 		size_t i;
-		uint_least16_t s;
-		uint_least32_t code;
+		unsigned short s;
+		unsigned int code;
 		auto tempC = &C.front();
 
 		Q.push(sCur - 1);
@@ -65,23 +65,23 @@ namespace TSP
 		}
 	}
 
-	void HeldKarp::Combinations(const uint_least16_t K, const uint_least16_t N)
+	void HeldKarp::Combinations(const unsigned short K, const unsigned short N)
 	{
 		size_t i;
-		uint_least16_t π, s;
-		uint_least16_t opt, tmp;
-		uint_least32_t code, code_k;
+		unsigned short π, s;
+		float opt, tmp;
+		unsigned int code, code_k;
 
-		vector<uint_least16_t> S(K);
-		stack<uint_least16_t> Q;
+		vector<unsigned short> S(K);
+		stack<unsigned short> Q;
 		Q.push(0);
 
 		// mem opt	
-		vector<uint_least16_t> S_freeMem(K - 1);
-		stack<uint_least16_t> Q_freeMem;
+		vector<unsigned short> S_freeMem(K - 1);
+		stack<unsigned short> Q_freeMem;
 
 		const auto tempC = &C.front();
-		map<uint_least16_t, sInfo> *tempC_k, *tempCBack;
+		map<unsigned short, sInfo> *tempC_k, *tempCBack;
 		sInfo *info;
 		// mem opt
 
@@ -111,7 +111,7 @@ namespace TSP
 						// ALGO[06]
 						// min(m≠k, m∈S) {C(S\{k}, m) + d[m,k]}
 						π = 0;
-						opt = UINT_LEAST16_MAX;
+						opt = FLT_MAX;
 
 						code_k = Powered2Code(code, k);
 						tempC_k = &tempC->at(code_k);
@@ -168,7 +168,7 @@ namespace TSP
 	08		return (opt)
 	09	end function
 	*/
-	void HeldKarp::Solve(uint_least16_t &opt, string &path)
+	void HeldKarp::Solve(float &opt, string &path)
 	{
 		// TSP ================================================================================================================================
 		// ALGO[01:02]
@@ -176,7 +176,7 @@ namespace TSP
 			AddNewToQueue();
 
 			auto CF1 = &C.front();
-			for (uint_least16_t k = 1; k < numberOfNodes; k++)
+			for (unsigned short k = 1; k < numberOfNodes; k++)
 				(*CF1)[1 << k][k].cost = distance[0][k];
 		}
 		// ALGO[01:02]
@@ -197,17 +197,17 @@ namespace TSP
 		// PATH ===============================================================================================================================
 		// ALGO[07:08]
 		{
-			uint_least16_t π = 0;
-			uint_least16_t tmp;
-			opt = UINT_LEAST16_MAX;
+			unsigned short π = 0;
+			float tmp;
+			opt = FLT_MAX;
 
-			vector<uint_least16_t> FullSet;
-			for (uint_least16_t z = 1; z < numberOfNodes; z++)
+			vector<unsigned short> FullSet;
+			for (unsigned short z = 1; z < numberOfNodes; z++)
 				FullSet.push_back(z);
 
 			const auto code = Powered2Code(FullSet);
 
-			for (uint_least16_t k = 1; k < numberOfNodes; k++) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]} ALGO[07]			
+			for (unsigned short k = 1; k < numberOfNodes; k++) // min(k≠0) {C({1, ..., n-1}, k) + d[k,0]} ALGO[07]			
 				if (C.front()[code][k].cost > 0)
 				{
 					tmp = C.front()[code][k].cost + distance[k][0];

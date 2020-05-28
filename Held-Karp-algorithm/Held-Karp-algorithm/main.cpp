@@ -11,19 +11,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include "HeldKarp.hpp"
 #include "Christofides.hpp"
+#include "Righini.hpp"
 
 using namespace TSP;
 using namespace std;
 using namespace std::experimental;
 
-vector<vector<uint_least16_t>> ReadFile(string tipo, const uint_least16_t NumberOfNodes)
+vector<vector<float>> ReadFile(string tipo, const unsigned short NumberOfNodes)
 {
-	auto delim = ',';
+	auto delim = '|';
 	string z, e;
 	size_t current, previous;
-	uint_least16_t x, y;
+	unsigned short x, y;
 
-	vector<vector<uint_least16_t>> DistanceMatrix2D(NumberOfNodes, vector<uint_least16_t>(NumberOfNodes, 0));
+	vector<vector<float>> DistanceMatrix2D(NumberOfNodes, vector<float>(NumberOfNodes, 0));
 
 	auto curP = filesystem::current_path();
 	curP.append("TSP_Instances\\" + tipo + to_string(NumberOfNodes) + ".txt");
@@ -44,7 +45,7 @@ vector<vector<uint_least16_t>> ReadFile(string tipo, const uint_least16_t Number
 			previous = current + 1;
 			current = z.find(delim, previous);
 
-			DistanceMatrix2D[x][y] = stoi(e);
+			DistanceMatrix2D[x][y] = stof(e);
 			x++;
 		}
 	}
@@ -52,13 +53,18 @@ vector<vector<uint_least16_t>> ReadFile(string tipo, const uint_least16_t Number
 	return DistanceMatrix2D;
 }
 
-void Run(string algo, string tipo, const uint_least16_t NumberOfNodes)
+void Run(string algo, string tipo, const unsigned short NumberOfNodes)
 {
 	auto DistanceMatrix2D = ReadFile(tipo, NumberOfNodes);
 
 	if (algo == "H")
 	{
 		HeldKarp A(DistanceMatrix2D);
+		A.Run();
+	}
+	else if (algo == "R")
+	{
+		Righini A(DistanceMatrix2D);
 		A.Run();
 	}
 	else
@@ -91,6 +97,9 @@ void StartElaboration_eTSP(string algo, const string graphToSolve)
 	if (graphToSolve == "all" || graphToSolve == "4")
 		Run(algo, "sym", 4);
 
+	if (graphToSolve == "all" || graphToSolve == "6")
+		Run(algo, "sym", 6);
+
 	if (graphToSolve == "all" || graphToSolve == "10")
 		Run(algo, "sym", 10);
 
@@ -111,9 +120,6 @@ void StartElaboration_eTSP(string algo, const string graphToSolve)
 
 	if (graphToSolve == "all" || graphToSolve == "1000")
 		Run(algo, "sym", 1000);
-
-	if (graphToSolve == "all" || graphToSolve == "5000")
-		Run(algo, "sym", 5000);
 }
 
 void WriteTitle()
@@ -150,6 +156,8 @@ int main(int argc, char **argv)
 
 			if (algo == "H")
 				cout << "Held-Karp algorithm on ";
+			else if (algo == "R")
+				cout << "Righini algorithm on ";
 			else
 				cout << "Christofides algorithm on ";
 

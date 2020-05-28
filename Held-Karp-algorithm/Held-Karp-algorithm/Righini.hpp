@@ -19,12 +19,13 @@ namespace TSP
 	protected:
 		struct Node
 		{
-			uint_least16_t r, p;
+			unsigned short rank, p;
 		};
 
 		struct Edge
 		{
-			uint_least16_t u, v, w;
+			unsigned short u, v;
+			float w;
 
 			bool operator < (const Edge& e) const
 			{
@@ -39,22 +40,23 @@ namespace TSP
 		};
 
 	protected:
-		string PrintPath(const uint_least32_t code, const uint_least16_t π);
+		string PrintPath(const unsigned int code, const unsigned short π);
 
-		void Solve(uint_least16_t &opt, string &path);
+		void Solve(float &opt, string &path);
 
 	private:
-		Graph graphFromDistanceMatrix(const uint_least16_t nodes);
+		Graph graphFromDistanceMatrix(const unsigned short nodes);
 
 		// Kruskal
-		uint_least16_t findSet(vector<Node> &node, uint_least16_t x);
-		void makeSet(vector<Node> &node, uint_least16_t x);
-		void setUnion(vector<Node> &node, uint_least16_t x, uint_least16_t y);
-		vector<Edge*> Kruskal(vector<Node> &node, vector<Edge> &edge);
+		unsigned short FindSet(Graph &G, unsigned short x);
+		void MakeSet(Graph &G, unsigned short x);
+		void Link(Graph &G, unsigned short x, unsigned short y);
+		void Union(Graph &G, unsigned short x, unsigned short y);
+		vector<Edge*> Kruskal(Graph &G);
 		// Kruskal
 
 	public:
-		Righini(const vector<vector<uint_least16_t>> &DistanceMatrix2D);
+		Righini(const vector<vector<float>> &DistanceMatrix2D);
 
 	};
 }
