@@ -6,7 +6,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <cstdint>
+
 #include <set>
 #include <stack>
 #include <string>
@@ -21,24 +21,24 @@ namespace TSP
 	class Christofides : public TSP
 	{
 	private:
-		vector<vector<uint_least16_t>> out_star;
+		vector<vector<unsigned short>> out_star;
 
 	private:
-		uint_least16_t ToHamiltonianPath(vector<uint_least16_t> &path);
-		uint_least16_t findBestPath(uint_least16_t start);
+		unsigned short ToHamiltonianPath(vector<unsigned short> &path);
+		unsigned short findBestPath(unsigned short start);
 
-		vector<uint_least16_t> FindEulerCircuit(uint_least16_t start);
+		vector<unsigned short> FindEulerCircuit(unsigned short start);
 
 		void WeightedPerfectMatching();
 		void MinimumSpanningTree_Prim();
 
 	protected:
-		string PrintPath(vector<uint_least16_t> circuit);
+		string PrintPath(vector<unsigned short> circuit);
 
-		void Solve(uint_least16_t &opt, string &path);
+		void Solve(float &opt, string &path);
 
 	public:
-		Christofides(const vector<vector<uint_least16_t>> &DistanceMatrix2D);
+		Christofides(const vector<vector<float>> &DistanceMatrix2D);
 
 	};
 }

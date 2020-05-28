@@ -17,14 +17,14 @@ using namespace TSP;
 using namespace std;
 using namespace std::experimental;
 
-vector<vector<uint_least16_t>> ReadFile(string tipo, const uint_least16_t NumberOfNodes)
+vector<vector<float>> ReadFile(string tipo, const unsigned short NumberOfNodes)
 {
 	auto delim = ',';
 	string z, e;
 	size_t current, previous;
-	uint_least16_t x, y;
+	unsigned short x, y;
 
-	vector<vector<uint_least16_t>> DistanceMatrix2D(NumberOfNodes, vector<uint_least16_t>(NumberOfNodes, 0));
+	vector<vector<float>> DistanceMatrix2D(NumberOfNodes, vector<float>(NumberOfNodes, 0));
 
 	auto curP = filesystem::current_path();
 	curP.append("TSP_Instances\\" + tipo + to_string(NumberOfNodes) + ".txt");
@@ -45,7 +45,7 @@ vector<vector<uint_least16_t>> ReadFile(string tipo, const uint_least16_t Number
 			previous = current + 1;
 			current = z.find(delim, previous);
 
-			DistanceMatrix2D[x][y] = stoi(e);
+			DistanceMatrix2D[x][y] = stof(e);
 			x++;
 		}
 	}
@@ -53,7 +53,7 @@ vector<vector<uint_least16_t>> ReadFile(string tipo, const uint_least16_t Number
 	return DistanceMatrix2D;
 }
 
-void Run(string algo, string tipo, const uint_least16_t NumberOfNodes)
+void Run(string algo, string tipo, const unsigned short NumberOfNodes)
 {
 	auto DistanceMatrix2D = ReadFile(tipo, NumberOfNodes);
 

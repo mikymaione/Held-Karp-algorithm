@@ -10,18 +10,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	TSP::TSP(const vector<vector<uint_least16_t>> &DistanceMatrix2D) :
+	TSP::TSP(const vector<vector<float>> &DistanceMatrix2D) :
 		numberOfNodes(DistanceMatrix2D.size()),
 		distance(DistanceMatrix2D) {}
 
-	uint_least32_t TSP::Powered2Code(const vector<uint_least16_t> &S)
+	unsigned int TSP::Powered2Code(const vector<unsigned short> &S)
 	{
-		return Powered2Code(S, UINT_LEAST16_MAX);
+		return Powered2Code(S, UINT16_MAX);
 	}
 
-	uint_least32_t TSP::Powered2Code(const vector<uint_least16_t> &S, const uint_least16_t exclude)
+	unsigned int TSP::Powered2Code(const vector<unsigned short> &S, const unsigned short exclude)
 	{
-		uint_least32_t code = 0;
+		unsigned int code = 0;
 
 		for (const auto e : S)
 			if (e != exclude)
@@ -30,7 +30,7 @@ namespace TSP
 		return code;
 	}
 
-	uint_least32_t TSP::Powered2Code(const uint_least32_t code, const uint_least16_t exclude)
+	unsigned int TSP::Powered2Code(const unsigned int code, const unsigned short exclude)
 	{
 		return code - POWER2[exclude];
 		//return code - (1 << exclude);
@@ -81,13 +81,13 @@ namespace TSP
 		}
 	}
 
-	vector<vector<uint_least16_t>> TSP::New_RND_Distances(const uint_least16_t Size_of_RandomDistanceCosts)
+	vector<vector<float>> TSP::New_RND_Distances(const unsigned short Size_of_RandomDistanceCosts)
 	{
-		vector<vector<uint_least16_t>> A(Size_of_RandomDistanceCosts, vector<uint_least16_t>(Size_of_RandomDistanceCosts, 0));
+		vector<vector<float>> A(Size_of_RandomDistanceCosts, vector<float>(Size_of_RandomDistanceCosts, 0));
 
 		for (auto x = 0; x < Size_of_RandomDistanceCosts; x++)
 			for (auto y = 0; y < Size_of_RandomDistanceCosts; y++)
-				A[x][y] = (x == y ? 0 : generateRandomNumber<uint_least16_t>(1, 100, UINT_LEAST16_MAX));
+				A[x][y] = (x == y ? 0 : generateRandomNumber<unsigned char>(1, 100, UCHAR_MAX));
 
 		return A;
 	}
@@ -105,7 +105,7 @@ namespace TSP
 
 		try
 		{
-			uint_least16_t opt;
+			float opt;
 			string path;
 
 			Solve(opt, path);

@@ -12,22 +12,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	Righini::Righini(const vector<vector<uint_least16_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
+	Righini::Righini(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	string Righini::PrintPath(const uint_least32_t code, const uint_least16_t π)
+	string Righini::PrintPath(const unsigned int code, const unsigned short π)
 	{
 		string s;
 
 		return "0 " + s + "0";
 	}
 
-	void Righini::MakeSet(Graph &G, uint_least16_t x)
+	void Righini::MakeSet(Graph &G, unsigned short x)
 	{
 		G.node[x].p = x;
 		G.node[x].rank = 0;
 	}
 
-	uint_least16_t Righini::FindSet(Graph &G, uint_least16_t x)
+	unsigned short Righini::FindSet(Graph &G, unsigned short x)
 	{
 		if (G.node[x].p != x)
 			G.node[x].p = FindSet(G, G.node[x].p);
@@ -35,7 +35,7 @@ namespace TSP
 		return G.node[x].p;
 	}
 
-	void Righini::Link(Graph &G, uint_least16_t x, uint_least16_t y)
+	void Righini::Link(Graph &G, unsigned short x, unsigned short y)
 	{
 		if (G.node[x].rank > G.node[y].rank)
 		{
@@ -50,7 +50,7 @@ namespace TSP
 		}
 	}
 
-	void Righini::Union(Graph &G, uint_least16_t x, uint_least16_t y)
+	void Righini::Union(Graph &G, unsigned short x, unsigned short y)
 	{
 		auto u = FindSet(G, x);
 		auto v = FindSet(G, y);
@@ -61,7 +61,7 @@ namespace TSP
 	vector<Righini::Edge*> Righini::Kruskal(Graph &G) // O(E ㏒ V)
 	{
 		vector<Edge*> A;
-		uint_least16_t u, v, i;
+		unsigned short u, v, i;
 
 		for (v = 0; v < G.node.size(); v++)
 			MakeSet(G, v);
@@ -83,19 +83,19 @@ namespace TSP
 		return A;
 	}
 
-	Righini::Graph Righini::graphFromDistanceMatrix(const uint_least16_t nodes)
+	Righini::Graph Righini::graphFromDistanceMatrix(const unsigned short nodes)
 	{
 		Graph G;
 		G.node.resize(nodes);
 		G.edge.resize(nodes * nodes);
 
 		size_t i = 0;
-		for (uint_least16_t x = 0; x < nodes; x++)
-			for (uint_least16_t y = 0; y < nodes; y++)
+		for (unsigned short x = 0; x < nodes; x++)
+			for (unsigned short y = 0; y < nodes; y++)
 			{
 				G.edge[i].u = x;
 				G.edge[i].v = y;
-				G.edge[i].w = (x == y ? UINT_LEAST16_MAX : distance[x][y]);
+				G.edge[i].w = (x == y ? FLT_MAX : distance[x][y]);
 
 				i++;
 			}
@@ -103,9 +103,9 @@ namespace TSP
 		return G;
 	}
 
-	void Righini::Solve(uint_least16_t &opt, string &path)
+	void Righini::Solve(float &opt, string &path)
 	{
-		const uint_least16_t r = numberOfNodes - 1;
+		const unsigned short r = numberOfNodes - 1;
 
 		auto G = graphFromDistanceMatrix(numberOfNodes);
 		auto G_k = graphFromDistanceMatrix(r);
@@ -129,7 +129,7 @@ namespace TSP
 		}
 
 		{	// reduce cost G_k to 0
-			uint_least16_t min = UINT_LEAST16_MAX;
+			float min = FLT_MAX;
 
 			for (size_t i = 0; i < G_k.edge.size(); i++)
 				if (G_k.edge[i].w < min)

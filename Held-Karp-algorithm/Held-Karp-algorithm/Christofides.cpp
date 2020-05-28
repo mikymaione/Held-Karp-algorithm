@@ -10,12 +10,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	Christofides::Christofides(const vector<vector<uint_least16_t>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) // O(V)
+	Christofides::Christofides(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) // O(V)
 	{
 		out_star.resize(numberOfNodes);
 	}
 
-	string Christofides::PrintPath(vector<uint_least16_t> circuit) // O(V)
+	string Christofides::PrintPath(vector<unsigned short> circuit) // O(V)
 	{
 		string s;
 
@@ -27,10 +27,11 @@ namespace TSP
 
 	void Christofides::MinimumSpanningTree_Prim() // O(E + V ㏒ V)
 	{
-		uint_least16_t i, u, v, opt;
+		float opt;
+		unsigned short i, u, v;
 
-		vector<uint_least16_t> parent(numberOfNodes, UINT_LEAST16_MAX);
-		vector<uint_least16_t> dist(numberOfNodes, UINT_LEAST16_MAX);
+		vector<unsigned short> parent(numberOfNodes, UINT16_MAX);
+		vector<float> dist(numberOfNodes, FLT_MAX);
 		vector<bool> in_mst(numberOfNodes, false);
 
 		dist[0] = 0;
@@ -38,7 +39,7 @@ namespace TSP
 		for (i = 0; i < numberOfNodes - 1; i++)
 		{
 			// trova il nodo più vicino che non è nel MST
-			opt = UINT_LEAST16_MAX;
+			opt = FLT_MAX;
 
 			for (u = 0; u < numberOfNodes; u++)
 				if (!in_mst[u] && dist[u] < opt)
@@ -65,7 +66,7 @@ namespace TSP
 		{
 			v = parent[u];
 
-			if (v != UINT_LEAST16_MAX)
+			if (v != UINT16_MAX)
 			{
 				out_star[u].push_back(v);
 				out_star[v].push_back(u);
@@ -75,8 +76,9 @@ namespace TSP
 
 	void Christofides::WeightedPerfectMatching() // O(V⁴)
 	{
-		uint_least16_t i, dist, closest = 0;
-		set<uint_least16_t> V_odd;
+		float dist;
+		unsigned short i, closest = 0;
+		set<unsigned short> V_odd;
 
 		for (i = 0; i < numberOfNodes; i++) // O(V)
 			if (out_star[i].size() % 2 != 0)
@@ -85,7 +87,7 @@ namespace TSP
 		while (!V_odd.empty())
 			for (const auto v : V_odd)
 			{
-				dist = UINT_LEAST16_MAX;
+				dist = FLT_MAX;
 				V_odd.erase(v);
 
 				for (const auto u : V_odd)
@@ -103,13 +105,13 @@ namespace TSP
 			}
 	}
 
-	vector<uint_least16_t> Christofides::FindEulerCircuit(uint_least16_t start) // O((V + E)²)
+	vector<unsigned short> Christofides::FindEulerCircuit(unsigned short start) // O((V + E)²)
 	{
 		size_t i;
-		uint_least16_t neighbor, pos;
+		unsigned short neighbor, pos;
 
-		stack<uint_least16_t> S;
-		vector<uint_least16_t> path;
+		stack<unsigned short> S;
+		vector<unsigned short> path;
 
 		path.push_back(start);
 
@@ -143,10 +145,10 @@ namespace TSP
 		return path;
 	}
 
-	uint_least16_t Christofides::ToHamiltonianPath(vector<uint_least16_t> &path) // O(V)
+	unsigned short Christofides::ToHamiltonianPath(vector<unsigned short> &path) // O(V)
 	{
 		vector<bool> visited(numberOfNodes, false);
-		uint_least16_t opt = 0;
+		float opt = 0;
 
 		auto curr = path.begin();
 		auto next = path.begin() + 1;
@@ -178,7 +180,7 @@ namespace TSP
 		return opt;
 	}
 
-	uint_least16_t Christofides::findBestPath(uint_least16_t start) // O((V+E)²)
+	unsigned short Christofides::findBestPath(unsigned short start) // O((V+E)²)
 	{
 		auto circuit = FindEulerCircuit(start); // O((V+E)²)
 		auto opt = ToHamiltonianPath(circuit); // O(V)
@@ -207,7 +209,7 @@ namespace TSP
 	5. Form an Eulerian circuit in H.
 	6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
 	*/
-	void Christofides::Solve(uint_least16_t &opt, string &path) // O(V⁴)
+	void Christofides::Solve(float &opt, string &path) // O(V⁴)
 	{
 		// 1. Create a minimum spanning tree T of G.
 		MinimumSpanningTree_Prim(); // O(E + V ㏒ V)
@@ -217,11 +219,11 @@ namespace TSP
 		// 4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
 		WeightedPerfectMatching(); // O(V⁴)
 
-		uint_least16_t bestIndex; // O(V² + VE²)
+		unsigned short bestIndex; // O(V² + VE²)
 		{
-			uint_least16_t cost, min = UINT_LEAST16_MAX;
+			float cost, min = FLT_MAX;
 
-			for (uint_least16_t t = 0; t < numberOfNodes; t++)
+			for (unsigned short t = 0; t < numberOfNodes; t++)
 			{
 				cost = findBestPath(t); // O(V + E²)
 

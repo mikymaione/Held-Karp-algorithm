@@ -6,7 +6,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <cstdint>
+
 #include <map>
 #include <queue>
 #include <stack>
@@ -24,25 +24,25 @@ namespace TSP
 	protected:
 		struct sInfo
 		{
-			uint_least16_t cost;
-			vector<uint_least16_t> path;
+			float cost;
+			vector<unsigned short> path;
 		};
 
 		// <Code, <Node, Data>>
-		queue<map<uint_least32_t, map<uint_least16_t, sInfo>>> C;
+		queue<map<unsigned int, map<unsigned short, sInfo>>> C;
 
 	protected:
 		void AddNewToQueue();
 
-		string PrintPath(const uint_least32_t code, const uint_least16_t π);
+		string PrintPath(const unsigned int code, const unsigned short π);
 
-		void Combinations(const uint_least16_t K, const uint_least16_t N);
-		void Combinations_FreeMem(stack<uint_least16_t> &Q, vector<uint_least16_t> &S, const uint_least16_t K, const uint_least16_t N, const uint_least16_t sCur);
+		void Combinations(const unsigned short K, const unsigned short N);
+		void Combinations_FreeMem(stack<unsigned short> &Q, vector<unsigned short> &S, const unsigned short K, const unsigned short N, const unsigned short sCur);
 
-		void Solve(uint_least16_t &opt, string &path);
+		void Solve(float &opt, string &path);
 
 	public:
-		HeldKarp(const vector<vector<uint_least16_t>> &DistanceMatrix2D);
+		HeldKarp(const vector<vector<float>> &DistanceMatrix2D);
 
 	};
 }
