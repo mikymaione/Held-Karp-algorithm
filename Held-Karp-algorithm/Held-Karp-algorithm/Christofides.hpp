@@ -24,13 +24,8 @@ namespace TSP
 		vector<vector<unsigned short>> out_star;
 
 	private:
-<<<<<<< HEAD
 		float ToHamiltonianPath(vector<unsigned short> &path);
 		float findBestPath(unsigned short start);
-=======
-		unsigned short ToHamiltonianPath(vector<unsigned short> &path);
-		unsigned short findBestPath(unsigned short start);
->>>>>>> 0932d920e28ca0de3277e8a7b4fdee6cf85fd2bd
 
 		vector<unsigned short> FindEulerCircuit(unsigned short start);
 
