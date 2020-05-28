@@ -74,7 +74,7 @@ namespace TSP
 		}
 	}
 
-	void Christofides::WeightedPerfectMatching() // O(V²)
+	void Christofides::GreedyWeightedPerfectMatching() // O(V²)
 	{
 		float dist;
 		unsigned short i, closest = 0;
@@ -217,7 +217,7 @@ namespace TSP
 		// 2. Let O be the set of vertices with odd degree in T.
 		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.
 		// 4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
-		WeightedPerfectMatching(); // O(V²)
+		GreedyWeightedPerfectMatching(); // O(V²)
 
 		unsigned short bestIndex;
 		{

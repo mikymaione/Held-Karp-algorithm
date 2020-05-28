@@ -29,7 +29,7 @@ namespace TSP
 
 		vector<unsigned short> FindEulerCircuit(unsigned short start);
 
-		void WeightedPerfectMatching();
+		void GreedyWeightedPerfectMatching();
 		void MinimumSpanningTree_Prim();
 
 	protected:

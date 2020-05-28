@@ -5,6 +5,8 @@
 Bibliography/
 Held-Karp-algorithm/*.sqlite
 
+.~lock*
+
 ### C++ ###
 # Prerequisites
 *.d
