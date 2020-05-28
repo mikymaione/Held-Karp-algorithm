@@ -19,7 +19,7 @@ namespace TSP
 	protected:
 		struct Node
 		{
-			uint_least16_t r, p;
+			uint_least16_t rank, p;
 		};
 
 		struct Edge
@@ -47,10 +47,11 @@ namespace TSP
 		Graph graphFromDistanceMatrix(const uint_least16_t nodes);
 
 		// Kruskal
-		uint_least16_t findSet(vector<Node> &node, uint_least16_t x);
-		void makeSet(vector<Node> &node, uint_least16_t x);
-		void setUnion(vector<Node> &node, uint_least16_t x, uint_least16_t y);
-		vector<Edge*> Kruskal(vector<Node> &node, vector<Edge> &edge);
+		uint_least16_t FindSet(Graph &G, uint_least16_t x);
+		void MakeSet(Graph &G, uint_least16_t x);
+		void Link(Graph &G, uint_least16_t x, uint_least16_t y);
+		void Union(Graph &G, uint_least16_t x, uint_least16_t y);
+		vector<Edge*> Kruskal(Graph &G);
 		// Kruskal
 
 	public:

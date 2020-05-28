@@ -21,87 +21,84 @@ namespace TSP
 		return "0 " + s + "0";
 	}
 
-	void Righini::makeSet(vector<Node> &node, uint_least16_t x)
+	void Righini::MakeSet(Graph &G, uint_least16_t x)
 	{
-		node[x].r = 0;
-		node[x].p = x;
+		G.node[x].p = x;
+		G.node[x].rank = 0;
 	}
 
-	uint_least16_t Righini::findSet(vector<Node> &node, uint_least16_t x)
+	uint_least16_t Righini::FindSet(Graph &G, uint_least16_t x)
 	{
-		if (node[x].p != x)
-			node[x].p = findSet(node, node[x].p);
+		if (G.node[x].p != x)
+			G.node[x].p = FindSet(G, G.node[x].p);
 
-		return node[x].p;
+		return G.node[x].p;
 	}
 
-	void Righini::setUnion(vector<Node> &node, uint_least16_t x, uint_least16_t y)
+	void Righini::Link(Graph &G, uint_least16_t x, uint_least16_t y)
 	{
-		if (node[x].r > node[y].r)
+		if (G.node[x].rank > G.node[y].rank)
 		{
-			node[y].p = x;
+			G.node[y].p = x;
 		}
 		else
 		{
-			node[x].p = y;
+			G.node[x].p = y;
 
-			if (node[x].r == node[y].r)
-				node[y].r++;
+			if (G.node[x].rank == G.node[y].rank)
+				G.node[y].rank++;
 		}
 	}
 
-	vector<Righini::Edge*> Righini::Kruskal(vector<Node> &node, vector<Edge> &edge)
+	void Righini::Union(Graph &G, uint_least16_t x, uint_least16_t y)
+	{
+		auto u = FindSet(G, x);
+		auto v = FindSet(G, y);
+
+		Link(G, u, v);
+	}
+
+	vector<Righini::Edge*> Righini::Kruskal(Graph &G) // O(E ㏒ V)
 	{
 		vector<Edge*> A;
-		uint_least16_t i, min = UINT_LEAST16_MAX;
+		uint_least16_t u, v, i;
 
-		for (i = 0; i < node.size(); i++)
-			makeSet(node, i);
+		for (v = 0; v < G.node.size(); v++)
+			MakeSet(G, v);
 
-		sort(edge.begin(), edge.end());
+		sort(G.edge.begin(), G.edge.end());
 
-		for (i = 0; i < edge.size(); i++)
+		for (i = 0; i < G.edge.size(); i++)
 		{
-			auto x = edge[i].u;
-			auto y = edge[i].v;
-			auto x_parent = findSet(node, x);
-			auto y_parent = findSet(node, y);
+			u = G.edge[i].u;
+			v = G.edge[i].v;
 
-			if (x_parent != y_parent)
+			if (FindSet(G, u) != FindSet(G, v))
 			{
-				if (edge[i].w < min)
-					min = edge[i].w;
-
-				A.push_back(&edge[i]);
-				setUnion(node, x_parent, y_parent);
+				A.push_back(&G.edge[i]);
+				Union(G, u, v);
 			}
 		}
-
-		for (i = 0; i < A.size(); i++)
-			A[i]->w -= min;
 
 		return A;
 	}
 
 	Righini::Graph Righini::graphFromDistanceMatrix(const uint_least16_t nodes)
 	{
-		vector<Node> node(nodes);
-		vector<Edge> edge(nodes * nodes);
+		Graph G;
+		G.node.resize(nodes);
+		G.edge.resize(nodes * nodes);
 
 		size_t i = 0;
 		for (uint_least16_t x = 0; x < nodes; x++)
 			for (uint_least16_t y = 0; y < nodes; y++)
 			{
-				edge[i].u = x;
-				edge[i].v = y;
-				edge[i].w = distance[x][y];
+				G.edge[i].u = x;
+				G.edge[i].v = y;
+				G.edge[i].w = (x == y ? UINT_LEAST16_MAX : distance[x][y]);
 
 				i++;
 			}
-
-		Graph G;
-		G.edge = edge;
-		G.node = node;
 
 		return G;
 	}
@@ -110,26 +107,37 @@ namespace TSP
 	{
 		const uint_least16_t r = numberOfNodes - 1;
 
+		auto G = graphFromDistanceMatrix(numberOfNodes);
 		auto G_k = graphFromDistanceMatrix(r);
-		auto S = Kruskal(G_k.node, G_k.edge);
 
-		vector<Edge> D(2);
+		auto S = Kruskal(G_k);
+
+		vector<Edge*> D(2); // min cost edge incident to r
 		{
-			// calculate D
-			vector<Edge> toSort;
-			auto G = graphFromDistanceMatrix(numberOfNodes);
+			vector<Edge*> toSort;
 
-			for (const auto e : G.edge)
-				if (e.v == r && e.v != e.u)
-					toSort.push_back(e);
+			for (size_t i = 0; i < G.edge.size(); i++)
+				if (G.edge[i].v == r && G.edge[i].v != G.edge[i].u)
+					toSort.push_back(&G.edge[i]);
 
-			sort(toSort.begin(), toSort.end());
+			sort(toSort.begin(), toSort.end(), [](Edge* x, Edge* y) {
+				return x->w < y->w;
+			});
 
 			for (size_t x = 0; x < 2; x++)
 				D[x] = toSort[x];
 		}
 
+		{	// reduce cost G_k to 0
+			uint_least16_t min = UINT_LEAST16_MAX;
 
+			for (size_t i = 0; i < G_k.edge.size(); i++)
+				if (G_k.edge[i].w < min)
+					min = G_k.edge[i].w;
+
+			for (size_t i = 0; i < G_k.edge.size(); i++)
+				G_k.edge[i].w -= min;
+		}
 
 		currentCardinality = numberOfNodes;
 	}

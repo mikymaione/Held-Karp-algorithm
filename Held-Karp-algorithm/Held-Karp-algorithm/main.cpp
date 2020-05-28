@@ -11,6 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include "HeldKarp.hpp"
 #include "Christofides.hpp"
+#include "Righini.hpp"
 
 using namespace TSP;
 using namespace std;
@@ -59,6 +60,11 @@ void Run(string algo, string tipo, const uint_least16_t NumberOfNodes)
 	if (algo == "H")
 	{
 		HeldKarp A(DistanceMatrix2D);
+		A.Run();
+	}
+	else if (algo == "R")
+	{
+		Righini A(DistanceMatrix2D);
 		A.Run();
 	}
 	else
@@ -150,6 +156,8 @@ int main(int argc, char **argv)
 
 			if (algo == "H")
 				cout << "Held-Karp algorithm on ";
+			else if (algo == "R")
+				cout << "Righini algorithm on ";
 			else
 				cout << "Christofides algorithm on ";
 
