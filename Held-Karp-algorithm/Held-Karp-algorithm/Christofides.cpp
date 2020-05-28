@@ -74,13 +74,13 @@ namespace TSP
 		}
 	}
 
-	void Christofides::WeightedPerfectMatching() // O(V⁴)
+	void Christofides::WeightedPerfectMatching() // O(V²)
 	{
 		float dist;
 		unsigned short i, closest = 0;
 		set<unsigned short> V_odd;
 
-		for (i = 0; i < numberOfNodes; i++) // O(V)
+		for (i = 0; i < numberOfNodes; i++)
 			if (out_star[i].size() % 2 != 0)
 				V_odd.insert(i);
 
@@ -180,9 +180,9 @@ namespace TSP
 		return opt;
 	}
 
-	float Christofides::findBestPath(unsigned short start) // O((V+E)²)
+	float Christofides::findBestPath(unsigned short start) // O((V + E)²)
 	{
-		auto circuit = FindEulerCircuit(start); // O((V+E)²)
+		auto circuit = FindEulerCircuit(start); // O((V + E)²)
 		auto opt = ToHamiltonianPath(circuit); // O(V)
 
 		return opt;
@@ -217,15 +217,15 @@ namespace TSP
 		// 2. Let O be the set of vertices with odd degree in T.
 		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.
 		// 4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
-		WeightedPerfectMatching(); // O(V⁴)
+		WeightedPerfectMatching(); // O(V²)
 
-		unsigned short bestIndex; // O(V² + VE²)
+		unsigned short bestIndex;
 		{
 			float cost, min = FLT_MAX;
 
 			for (unsigned short t = 0; t < numberOfNodes; t++)
 			{
-				cost = findBestPath(t); // O(V + E²)
+				cost = findBestPath(t); // O((V + E)²)
 
 				if (cost < min)
 				{
