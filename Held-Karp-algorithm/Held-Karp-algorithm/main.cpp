@@ -9,8 +9,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <iostream>
 #include <string>
 
-#include "HeldKarp.hpp"
+#include "ApproxTSP.hpp"
 #include "Christofides.hpp"
+#include "HeldKarp.hpp"
 #include "Righini.hpp"
 
 using namespace TSP;
@@ -55,11 +56,17 @@ vector<vector<float>> ReadFile(string tipo, const unsigned short NumberOfNodes)
 
 void Run(string algo, string tipo, const unsigned short NumberOfNodes)
 {
-	auto DistanceMatrix2D = ReadFile(tipo, NumberOfNodes);
+	auto type = (tipo == "E" ? "sym" : "asym");
+	auto DistanceMatrix2D = ReadFile(type, NumberOfNodes);
 
 	if (algo == "H")
 	{
 		HeldKarp A(DistanceMatrix2D);
+		A.Run();
+	}
+	else if (algo == "A")
+	{
+		ApproxTSP A(DistanceMatrix2D);
 		A.Run();
 	}
 	else if (algo == "R")
@@ -74,52 +81,34 @@ void Run(string algo, string tipo, const unsigned short NumberOfNodes)
 	}
 }
 
-void StartElaboration_aTSP(const string graphToSolve)
+void StartElaboration_TSP(string algo, string tipo, const string graphToSolve)
 {
 	if (graphToSolve == "all" || graphToSolve == "4")
-		Run("H", "asym", 4);
-
-	if (graphToSolve == "all" || graphToSolve == "10")
-		Run("H", "asym", 10);
-
-	if (graphToSolve == "all" || graphToSolve == "15")
-		Run("H", "asym", 15);
-
-	if (graphToSolve == "all" || graphToSolve == "20")
-		Run("H", "asym", 20);
-
-	if (graphToSolve == "all" || graphToSolve == "25")
-		Run("H", "asym", 25);
-}
-
-void StartElaboration_eTSP(string algo, const string graphToSolve)
-{
-	if (graphToSolve == "all" || graphToSolve == "4")
-		Run(algo, "sym", 4);
+		Run(algo, tipo, 4);
 
 	if (graphToSolve == "all" || graphToSolve == "6")
-		Run(algo, "sym", 6);
+		Run(algo, tipo, 6);
 
 	if (graphToSolve == "all" || graphToSolve == "10")
-		Run(algo, "sym", 10);
+		Run(algo, tipo, 10);
 
 	if (graphToSolve == "all" || graphToSolve == "15")
-		Run(algo, "sym", 15);
+		Run(algo, tipo, 15);
 
 	if (graphToSolve == "all" || graphToSolve == "20")
-		Run(algo, "sym", 20);
+		Run(algo, tipo, 20);
 
 	if (graphToSolve == "all" || graphToSolve == "25")
-		Run(algo, "sym", 25);
+		Run(algo, tipo, 25);
 
 	if (graphToSolve == "all" || graphToSolve == "100")
-		Run(algo, "sym", 100);
+		Run(algo, tipo, 100);
 
 	if (graphToSolve == "all" || graphToSolve == "500")
-		Run(algo, "sym", 500);
+		Run(algo, tipo, 500);
 
 	if (graphToSolve == "all" || graphToSolve == "1000")
-		Run(algo, "sym", 1000);
+		Run(algo, tipo, 1000);
 }
 
 void WriteTitle()
@@ -156,6 +145,8 @@ int main(int argc, char **argv)
 
 			if (algo == "H")
 				cout << "Held-Karp algorithm on ";
+			else if (algo == "A")
+				cout << "Approx-TSP algorithm on ";
 			else if (algo == "R")
 				cout << "Righini algorithm on ";
 			else
@@ -168,10 +159,7 @@ int main(int argc, char **argv)
 
 			cout << endl << endl;
 
-			if (type == "E")
-				StartElaboration_eTSP(algo, graphToSolve);
-			else
-				StartElaboration_aTSP(graphToSolve);
+			StartElaboration_TSP(algo, type, graphToSolve);
 		}
 	}
 	catch (const exception &e)
