@@ -117,10 +117,10 @@ void WriteTitle()
 {
 	cout
 		<< "Held-Karp algorithm to solve the Asymmetric Traveling Salesman Problem" << endl
-		<< "Christofides algorithm to solve the Euclidean Traveling Salesman Problem" << endl
+		<< "Christofides algorithm & 2-approximation algorithm to solve the Euclidean Traveling Salesman Problem" << endl
 		<< endl
 		<< "Program parameters:" << endl
-		<< " algorithm = {H, C}" << endl
+		<< " algorithm = {H, C, A}" << endl
 		<< " type = {E, A}" << endl
 		<< " [graph to solve = {4, 10, 15, 20, 25, all}]" << endl
 		<< endl

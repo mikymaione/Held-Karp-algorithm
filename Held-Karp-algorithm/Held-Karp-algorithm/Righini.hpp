@@ -27,9 +27,9 @@ namespace TSP
 			unsigned short u, v;
 			float w;
 
-			bool operator < (const Edge& e) const
+			bool operator < (const Edge &e) const
 			{
-				return (w < e.w);
+				return w < e.w;
 			}
 		};
 

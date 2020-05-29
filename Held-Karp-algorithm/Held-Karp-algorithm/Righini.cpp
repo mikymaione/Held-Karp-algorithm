@@ -120,7 +120,8 @@ namespace TSP
 				if (G.edge[i].v == r && G.edge[i].v != G.edge[i].u)
 					toSort.push_back(&G.edge[i]);
 
-			sort(toSort.begin(), toSort.end(), [](Edge* x, Edge* y) {
+			sort(toSort.begin(), toSort.end(), [](Edge* x, Edge* y)
+			{
 				return x->w < y->w;
 			});
 
@@ -129,7 +130,7 @@ namespace TSP
 		}
 
 		{	// reduce cost G_k to 0
-			float min = FLT_MAX;
+			auto min = FLT_MAX;
 
 			for (size_t i = 0; i < G_k.edge.size(); i++)
 				if (G_k.edge[i].w < min)
