@@ -23,10 +23,14 @@ namespace TSP
 		{
 			unsigned short id, π;
 			float key;
+
+			bool operator < (const Node &n) const
+			{
+				return (key < n.key);
+			}
 		};
 
 		vector<Node> V;
-		vector<list<unsigned short>> Adj;
 
 	protected:
 		void Solve(float &opt, string &path);

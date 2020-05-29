@@ -6,6 +6,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <queue>
 #include <set>
 
 #include "ApproxTSP.hpp"
@@ -14,7 +15,6 @@ namespace TSP
 {
 	ApproxTSP::ApproxTSP(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
 	{
-		Adj.resize(numberOfNodes);
 		V.resize(numberOfNodes);
 
 		for (unsigned short i = 0; i < numberOfNodes; i++)
@@ -23,39 +23,35 @@ namespace TSP
 
 	void ApproxTSP::MST_Prim() // O(E ㏒ V)
 	{
-		set<unsigned short> Q;
+		priority_queue<Node*, vector<Node*>, less<Node*>> Q; // sorted min queue
+		set<size_t> S; // elements available
 
 		for (size_t u = 0; u < V.size(); u++)
 		{
 			V[u].key = FLT_MAX;
-			V[u].π = USHRT_MAX;
+			V[u].π = UINT16_MAX;
 
-			Q.insert(V[u].id);
+			S.insert(u);
 		}
 
 		auto r = &V[0];
 		r->key = 0;
+		Q.push(r);
 
 		while (!Q.empty())
 		{
-			auto min = FLT_MAX;
-			unsigned short u = 0;
+			auto u = Q.top()->id; // min
+			Q.pop();
+			S.erase(u);
 
-			for (auto e : Q)
-				if (V[e].key < min)
-				{
-					u = V[e].id;
-					min = V[e].key;
-				}
-
-			Q.erase(u);
-
-			for (unsigned short v = 0; v < V.size(); v++)
+			for (size_t v = 0; v < V.size(); v++)
 				if (u != v)
-					if (Q.count(v) && distance[u][v] < V[v].key)
+					if (S.count(v) && distance[u][v] < V[v].key)
 					{
 						V[v].π = u;
 						V[v].key = distance[u][v];
+
+						Q.push(&V[v]);
 					}
 		}
 	}

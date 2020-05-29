@@ -6,6 +6,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <queue>
+
 #include "Christofides.hpp"
 
 namespace TSP
@@ -27,44 +29,55 @@ namespace TSP
 
 	void Christofides::MinimumSpanningTree_Prim() // O(E ㏒ V)
 	{
-		float opt;
-		unsigned short i, u, v;
-
-		vector<unsigned short> parent(numberOfNodes, UINT16_MAX);
-		vector<float> dist(numberOfNodes, FLT_MAX);
-		vector<bool> in_mst(numberOfNodes, false);
-
-		dist[0] = 0;
-
-		for (i = 0; i < numberOfNodes - 1; i++)
+		struct Node
 		{
-			// trova il nodo più vicino che non è nel MST
-			opt = FLT_MAX;
+			unsigned short id, π;
+			float key;
 
-			for (u = 0; u < numberOfNodes; u++)
-				if (!in_mst[u] && dist[u] < opt)
-				{
-					opt = dist[u];
-					v = u;
-				}
-			// trova il nodo più economico che non è nel MST
+			bool operator < (const Node &n) const
+			{
+				return (key < n.key);
+			}
+		};
 
-			// lo mette nel MST
-			in_mst[v] = true;
+		priority_queue<Node*, vector<Node*>, less<Node*>> Q; // sorted min queue
+		set<size_t> S; // elements available
+		vector<Node> V(numberOfNodes);
 
-			// nodo non in MST e con distanza minore di quella precedente
-			for (u = 0; u < numberOfNodes; u++)
-				if (!in_mst[u] && distance[v][u] < dist[u])
-				{
-					parent[u] = v;
-					dist[u] = distance[v][u];
-				}
+		for (size_t u = 0; u < numberOfNodes; u++)
+		{
+			V[u].id = u;
+			V[u].key = FLT_MAX;
+			V[u].π = UINT16_MAX;
+
+			S.insert(u);
+		}
+
+		auto r = &V[0];
+		r->key = 0;
+		Q.push(r);
+
+		while (!Q.empty())
+		{
+			auto u = Q.top()->id; // min
+			Q.pop();
+			S.erase(u);
+
+			for (size_t v = 0; v < V.size(); v++)
+				if (u != v)
+					if (S.count(v) && distance[u][v] < V[v].key)
+					{
+						V[v].π = u;
+						V[v].key = distance[u][v];
+
+						Q.push(&V[v]);
+					}
 		}
 
 		// crea out-star
-		for (u = 0; u < numberOfNodes; u++)
+		for (unsigned short u = 0; u < numberOfNodes; u++)
 		{
-			v = parent[u];
+			auto v = V[u].π;
 
 			if (v != UINT16_MAX)
 			{
