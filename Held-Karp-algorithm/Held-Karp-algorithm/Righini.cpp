@@ -110,7 +110,7 @@ namespace TSP
 		auto G = graphFromDistanceMatrix(numberOfNodes);
 		auto G_k = graphFromDistanceMatrix(r);
 
-		auto S = Kruskal(G_k);
+		auto S_k = Kruskal(G_k);
 
 		vector<Edge*> D(2); // min cost edge incident to r
 		{
