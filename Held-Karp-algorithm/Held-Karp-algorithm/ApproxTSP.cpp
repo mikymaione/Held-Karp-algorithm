@@ -12,9 +12,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	ApproxTSP::ApproxTSP(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
+	ApproxTSP::ApproxTSP(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
+	{
+		Adj.resize(numberOfNodes);
+		V.resize(numberOfNodes);
 
-	void ApproxTSP::MST_Prim()
+		for (unsigned short i = 0; i < numberOfNodes; i++)
+			V[i].id = i;
+	}
+
+	void ApproxTSP::MST_Prim() // O(E ㏒ V)
 	{
 		set<unsigned short> Q;
 
@@ -53,14 +60,13 @@ namespace TSP
 		}
 	}
 
-	void ApproxTSP::PreVisit(stack<unsigned short> &R, unsigned short r)
+	void ApproxTSP::PreVisit(stack<size_t> &R, size_t r) // O(V)
 	{
-		for (unsigned short v = 0; v < V.size(); v++)
+		R.push(r);
+
+		for (size_t v = 0; v < V.size(); v++)
 			if (V[v].π == r)
-			{
-				R.push(v);
 				PreVisit(R, v);
-			}
 	}
 
 	/*
@@ -86,24 +92,16 @@ namespace TSP
 	*/
 	void ApproxTSP::Solve(float &opt, string &path) // Θ(V²)
 	{
-		V.resize(numberOfNodes);
-		Adj.resize(numberOfNodes);
+		MST_Prim(); // O(E ㏒ V)
 
-		for (unsigned short i = 0; i < numberOfNodes; i++)
-			V[i].id = i;
-
-		MST_Prim();
-
-		stack<unsigned short> H;
-		H.push(0);
-		PreVisit(H);
+		stack<size_t> H;
+		PreVisit(H, 0); // O(V)
 
 		opt = 0;
 		path = "0 ";
 
-		unsigned short u = 0;
-
-		while (!H.empty())
+		size_t u = 0;
+		while (!H.empty()) // O(V)
 		{
 			auto v = H.top();
 			H.pop();

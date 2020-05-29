@@ -32,7 +32,7 @@ namespace TSP
 		void Solve(float &opt, string &path);
 
 		void MST_Prim();
-		void PreVisit(stack<unsigned short> &R, unsigned short r = 0);
+		void PreVisit(stack<size_t> &R, size_t r);
 
 	public:
 		ApproxTSP(const vector<vector<float>> &DistanceMatrix2D);

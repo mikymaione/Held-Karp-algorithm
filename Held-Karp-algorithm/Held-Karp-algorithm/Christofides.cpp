@@ -25,7 +25,7 @@ namespace TSP
 		return s;
 	}
 
-	void Christofides::MinimumSpanningTree_Prim() // O(E + V ㏒ V)
+	void Christofides::MinimumSpanningTree_Prim() // O(E ㏒ V)
 	{
 		float opt;
 		unsigned short i, u, v;
@@ -212,7 +212,7 @@ namespace TSP
 	void Christofides::Solve(float &opt, string &path) // O(V⁴)
 	{
 		// 1. Create a minimum spanning tree T of G.
-		MinimumSpanningTree_Prim(); // O(E + V ㏒ V)
+		MinimumSpanningTree_Prim(); // O(E ㏒ V)
 
 		// 2. Let O be the set of vertices with odd degree in T.
 		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.
