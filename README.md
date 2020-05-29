@@ -1,4 +1,4 @@
-# Spatial optimization of the Held-Karp algorithm for the resolution of the TSP and comparison with the Christofides algorithm
+# Spatial optimization of the Held-Karp algorithm for the resolution of the TSP and comparison with approximated algorithms
 TSP is an extension of the Hamiltonian circuit problem. The problem can be described as: find a tour of N cities in a country (assuming all cities to be visited are reachable), the tour should:
 1. visit every city just once
 2. return to the starting point

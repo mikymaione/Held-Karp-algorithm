@@ -95,6 +95,7 @@ namespace TSP
 		MST_Prim();
 
 		stack<unsigned short> H;
+		H.push(0);
 		PreVisit(H);
 
 		opt = 0;
@@ -112,8 +113,6 @@ namespace TSP
 
 			u = v;
 		}
-
-		path += "0";
 
 		currentCardinality = numberOfNodes;
 	}
