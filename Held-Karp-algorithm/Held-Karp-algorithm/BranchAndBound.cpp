@@ -133,7 +133,7 @@ namespace TSP
 			auto e2 = MatrixMultiplication(e, 2);
 
 			auto gradient = MatrixSub(e2, MatrixSum(X));
-			Langrangian -= lambda * gradient;
+			//Langrangian -= lambda * gradient;
 
 			//accumulate(v.begin(), v.end(), 0);
 		}
