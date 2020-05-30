@@ -61,8 +61,6 @@ namespace TSP
 
 	void BranchAndBound::Elaborate(float problem_upper_bound, float W, unsigned short L)
 	{
-		//currentCardinality = L;
-
 		if (L == numberOfNodes)
 		{
 			if (distance[current_path[L - 1]][current_path[0]] != 0)
