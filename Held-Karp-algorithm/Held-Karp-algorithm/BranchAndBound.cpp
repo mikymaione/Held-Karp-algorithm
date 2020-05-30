@@ -11,7 +11,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <numeric>
 #include <queue>
 
-#include <Eigen/Core>
 
 #include "BranchAndBound.hpp"
 
@@ -131,7 +130,10 @@ namespace TSP
 			auto MXM = MatrixMultiplication(distance, X);
 			auto M2 = MatrixSum(MXM);
 			auto Langrangian = MatrixSum(M2) / 2;
-			//Langrangian -= lambda* (e * 2 - MatrixSum(X));
+			auto e2 = MatrixMultiplication(e, 2);
+
+			auto gradient = MatrixSub(e2, MatrixSum(X));
+			Langrangian -= lambda * gradient;
 
 			//accumulate(v.begin(), v.end(), 0);
 		}
@@ -156,6 +158,28 @@ namespace TSP
 		for (auto x = 0; x < A.size(); x++)
 			for (auto y = 0; y < A[x].size(); y++)
 				R[x] += A[x][y];
+
+		return R;
+	}
+
+	template<class T, class Z>
+	T BranchAndBound::MatrixSub(const vector<T> &A, const vector<Z> &B)
+	{
+		T R;
+
+		for (auto x = 0; x < A.size(); x++)
+			R[x] = A[x] - B[x];
+
+		return R;
+	}
+
+	template<class T, class Z>
+	vector<T> BranchAndBound::MatrixMultiplication(const vector<T> &A, const Z v)
+	{
+		vector<T> R(A.size(), 0);
+
+		for (auto x = 0; x < A.size(); x++)
+			R[x] *= v;
 
 		return R;
 	}

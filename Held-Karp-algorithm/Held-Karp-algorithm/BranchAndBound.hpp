@@ -33,11 +33,18 @@ namespace TSP
 		template<class T, class Z>
 		vector<vector<T>> MatrixMultiplication(const vector<vector<T>> &Mat1, const  vector<vector<Z>> &Mat2);
 
+		template<class T, class Z>
+		vector<T> MatrixMultiplication(const vector<T> &A, const Z v);
+
 		template<class T>
 		vector<T> MatrixSum(const vector<vector<T>> &A);
 
 		template<class T>
 		T MatrixSum(const vector<T> &A);
+
+		template<class T, class Z>
+		T MatrixSub(const vector<T> &A, const vector<Z> &B);
+
 
 		void MST_Prim(list<Edge> &adjacency_list, vector<vector<bool>> &adjacency);
 		void Subgradient(unsigned short alpha, unsigned short initial_step, unsigned short max_iter);
