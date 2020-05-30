@@ -29,7 +29,7 @@ namespace TSP
 		const unsigned short numberOfNodes;
 
 		time_point<system_clock> begin;
-		atomic<unsigned short> currentCardinality = 2;
+		atomic<unsigned short> currentCardinality = 0;
 		atomic<bool> writingBuffer = false;
 
 	protected:

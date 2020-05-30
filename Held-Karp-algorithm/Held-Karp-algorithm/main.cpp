@@ -93,10 +93,12 @@ void StartElaboration_TSP(string algo, string tipo, const string graphToSolve)
 {
 	if (graphToSolve == "all")
 	{
-		const unsigned short nodes[] = { 4, 6, 10, 15, 20, 25, 100, 500, 1000 };
-
-		for (const auto n : nodes)
-			Run(algo, tipo, n);
+		if (tipo == "E")
+			for (const auto n : { 4, 6, 10, 15, 20, 25, 100, 500, 1000 })
+				Run(algo, tipo, n);
+		else
+			for (const auto n : { 4, 10, 15, 20, 25 })
+				Run(algo, tipo, n);
 	}
 	else
 	{

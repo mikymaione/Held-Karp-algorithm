@@ -12,8 +12,8 @@ namespace TSP
 {
 	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
 	{
-		curr_path.resize(numberOfNodes + 1, UINT16_MAX);
-		visited.resize(numberOfNodes, false);
+		current_path.resize(numberOfNodes + 1, UINT16_MAX);
+		candidate_queue.resize(numberOfNodes, false);
 	}
 
 	string BranchAndBound::PrintPath()
@@ -21,7 +21,7 @@ namespace TSP
 		string s;
 
 		for (unsigned short i = 0; i <= numberOfNodes; i++)
-			s += to_string(curr_path[i]) + " ";
+			s += to_string(current_path[i]) + " ";
 
 		return s;
 	}
@@ -59,66 +59,68 @@ namespace TSP
 		return second;
 	}
 
-	void BranchAndBound::TSPRec(float curr_bound, float curr_weight, unsigned short level)
+	void BranchAndBound::Elaborate(float problem_upper_bound, float W, unsigned short L)
 	{
-		if (level == numberOfNodes)
-		{
-			if (distance[curr_path[level - 1]][curr_path[0]] != 0)
-			{
-				auto curr_res = curr_weight + distance[curr_path[level - 1]][curr_path[0]];
+		//currentCardinality = L;
 
-				if (curr_res < final_res)
-					final_res = curr_res;
+		if (L == numberOfNodes)
+		{
+			if (distance[current_path[L - 1]][current_path[0]] != 0)
+			{
+				auto min = W + distance[current_path[L - 1]][current_path[0]];
+
+				if (min < current_optimum)
+					current_optimum = min;
 			}
 
 			return;
 		}
 
 		for (unsigned short i = 0; i < numberOfNodes; i++)
-			if (distance[curr_path[level - 1]][i] != 0 && visited[i] == false)
+			if (distance[current_path[L - 1]][i] != 0 && candidate_queue[i] == false)
 			{
-				auto temp = curr_bound;
-				curr_weight += distance[curr_path[level - 1]][i];
+				auto temp = problem_upper_bound;
+				W += distance[current_path[L - 1]][i];
 
-				if (level == 1)
-					curr_bound -= ((firstMin(curr_path[level - 1]) + firstMin(i)) / 2);
+				if (L == 1)
+					problem_upper_bound -= ((firstMin(current_path[L - 1]) + firstMin(i)) / 2);
 				else
-					curr_bound -= ((secondMin(curr_path[level - 1]) + firstMin(i)) / 2);
+					problem_upper_bound -= ((secondMin(current_path[L - 1]) + firstMin(i)) / 2);
 
-				if (curr_bound + curr_weight < final_res)
+				if (problem_upper_bound + W < current_optimum)
 				{
-					curr_path[level] = i;
-					visited[i] = true;
+					current_path[L] = i;
+					candidate_queue[i] = true;
 
-					TSPRec(curr_bound, curr_weight, level + 1);
+					Elaborate(problem_upper_bound, W, L + 1);
 				}
 
-				curr_weight -= distance[curr_path[level - 1]][i];
-				curr_bound = temp;
+				W -= distance[current_path[L - 1]][i];
+				problem_upper_bound = temp;
 
-				visited.assign(visited.size(), false);
+				candidate_queue.assign(candidate_queue.size(), false);
 
-				for (auto j = 0; j <= level - 1; j++)
-					visited[curr_path[j]] = true;
+				for (auto j = 0; j <= L - 1; j++)
+					candidate_queue[current_path[j]] = true;
 			}
 	}
 
 	void BranchAndBound::Solve(float &opt, string &path)
 	{
-		float curr_bound = 0;
+		float problem_upper_bound = 0;
 
 		for (unsigned short i = 0; i < numberOfNodes; i++)
-			curr_bound += (firstMin(i) + secondMin(i));
+			problem_upper_bound += (firstMin(i) + secondMin(i));
 
-		curr_bound /= 2;
+		problem_upper_bound /= 2;
 
-		visited[0] = true;
-		curr_path[0] = 0;
+		candidate_queue[0] = true;
+		current_path[0] = 0;
 
-		TSPRec(curr_bound, 0, 1);
-		curr_path[numberOfNodes] = 0;
+		Elaborate(problem_upper_bound, 0, 1);
+		current_path[numberOfNodes] = 0;
 
-		opt = final_res;
+		opt = current_optimum;
 		path = PrintPath();
 
 		currentCardinality = numberOfNodes;

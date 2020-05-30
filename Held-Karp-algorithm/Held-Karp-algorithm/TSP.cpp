@@ -56,18 +56,21 @@ namespace TSP
 		const auto T = duration_cast<seconds>(system_clock::now() - begin).count();
 		const auto s = currentCardinality._My_val;
 
-		stringstream ss;
-		ss
-			<< " "
-			<< 100 * s / numberOfNodes
-			<< "% - ET: "
-			<< T
-			<< "s ETL: "
-			<< (numberOfNodes - s) * T / s
-			<< "s\r";
+		if (s > 0)
+		{
+			stringstream ss;
+			ss
+				<< " "
+				<< 100 * s / numberOfNodes
+				<< "% - ET: "
+				<< T
+				<< "s ETL: "
+				<< (numberOfNodes - s) * T / s
+				<< "s\r";
 
-		cout << ss.str();
-		fflush(stdin);
+			cout << ss.str();
+			fflush(stdin);
+		}
 
 		writingBuffer = false;
 	}

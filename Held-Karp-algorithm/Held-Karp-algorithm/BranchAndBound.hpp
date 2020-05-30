@@ -17,13 +17,13 @@ namespace TSP
 	class BranchAndBound : public TSP
 	{
 	private:
-		float final_res = FLT_MAX;
+		float current_optimum = FLT_MAX;
 
-		vector<unsigned short> curr_path;
-		vector<bool> visited;
+		vector<unsigned short> current_path;
+		vector<bool> candidate_queue;
 
 	private:
-		void TSPRec(float curr_bound, float curr_weight, unsigned short level);
+		void Elaborate(float curr_bound, float curr_weight, unsigned short level);
 
 		float secondMin(unsigned short i);
 		float firstMin(unsigned short i);
