@@ -23,7 +23,6 @@ vector<vector<float>> ReadFile(string tipo, const unsigned short NumberOfNodes)
 {
 	auto delim = '|';
 	string z, e;
-	float f;
 	size_t current, previous;
 	unsigned short x, y;
 
@@ -48,8 +47,7 @@ vector<vector<float>> ReadFile(string tipo, const unsigned short NumberOfNodes)
 			previous = current + 1;
 			current = z.find(delim, previous);
 
-			f = stof(e);
-			DistanceMatrix2D[x][y] = f;
+			DistanceMatrix2D[x][y] = (x == y ? FLT_MAX : stof(e));
 			x++;
 		}
 	}

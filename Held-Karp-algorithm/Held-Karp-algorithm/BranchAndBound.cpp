@@ -6,119 +6,180 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <algorithm>
+#include <iterator>
+#include <numeric>
+#include <queue>
+
+#include <Eigen/Core>
+
 #include "BranchAndBound.hpp"
 
 namespace TSP
 {
 	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
 	{
-		current_path.resize(numberOfNodes + 1, UINT16_MAX);
-		candidate_queue.resize(numberOfNodes, false);
+
 	}
 
 	string BranchAndBound::PrintPath()
 	{
 		string s;
 
-		for (unsigned short i = 0; i <= numberOfNodes; i++)
-			s += to_string(current_path[i]) + " ";
-
 		return s;
 	}
 
-
-	float BranchAndBound::firstMin(unsigned short i)
+	void BranchAndBound::MST_Prim(list<Edge> &adjacency_list, vector<vector<bool>> &adjacency)
 	{
-		auto min = FLT_MAX;
+		auto n = numberOfNodes;
+		auto N = numberOfNodes - 1;
+		vector<unsigned short> T(1, 0);
 
-		for (unsigned short k = 0; k < numberOfNodes; k++)
-			if (i != k)
-				if (distance[i][k] < min)
-					min = distance[i][k];
+		vector<unsigned short> S(numberOfNodes);
+		iota(S.begin(), S.end(), 1);
 
-		return min;
-	}
+		vector<vector<float>> cost(N, vector<float>(N, 0));
 
-	float BranchAndBound::secondMin(unsigned short i)
-	{
-		auto first = FLT_MAX;
-		auto second = FLT_MAX;
+		for (auto x = 0; x < N; x++)
+			for (auto y = 0; y < N; y++)
+				cost[x][y] = distance[x + 1][y + 1];
 
-		for (unsigned short j = 0; j < numberOfNodes; j++)
-			if (i != j)
-				if (distance[i][j] <= first)
-				{
-					second = first;
-					first = distance[i][j];
-				}
-				else if (distance[i][j] <= second && distance[i][j] != first)
-				{
-					second = distance[i][j];
-				}
+		for (auto i = 0; i < N; i++)
+			cost[i][i] = FLT_MAX;
 
-		return second;
-	}
+		auto DISTANCE = distance; // clone		
 
-	void BranchAndBound::Elaborate(float problem_upper_bound, float W, unsigned short L)
-	{
-		if (L == numberOfNodes)
+		adjacency_list.clear();
+
+		while (T.size() < N)
 		{
-			if (distance[current_path[L - 1]][current_path[0]] != 0)
-			{
-				auto min = W + distance[current_path[L - 1]][current_path[0]];
+			vector<float> list_distance;
+			vector<Edge> list_position;
 
-				if (min < current_optimum)
-					current_optimum = min;
+			auto t = 0;
+
+			for (const auto i : T)
+			{
+				auto j_it = find(cost[i].begin(), cost[i].end(), *min_element(cost[i].begin(), cost[i].end()));
+				auto j = std::distance(cost[i].begin(), j_it);
+
+				list_distance.push_back(cost[i][j]);
+				list_position.push_back(Edge(i, j));
+
+				t++;
 			}
 
-			return;
+			auto smallest_distance_it = find(list_distance.begin(), list_distance.end(), *min_element(list_distance.begin(), list_distance.end()));
+			auto smallest_distance = std::distance(list_distance.begin(), smallest_distance_it);
+
+			auto edge = list_position[smallest_distance];
+
+			DISTANCE[edge.u][edge.v] = FLT_MAX;
+			DISTANCE[edge.v][edge.u] = FLT_MAX;
+
+			for (const auto i : T)
+			{
+				cost[i][edge.v] = FLT_MAX;
+				cost[edge.v][i] = FLT_MAX;
+			}
+
+			adjacency_list.push_back(Edge(edge.u + 1, edge.v + 1));
+
+			adjacency[edge.u + 1][edge.v + 1] = 0;
+			adjacency[edge.v + 1][edge.u + 1] = 0;
+
+			T.push_back(edge.v);
 		}
 
-		for (unsigned short i = 0; i < numberOfNodes; i++)
-			if (distance[current_path[L - 1]][i] != 0 && candidate_queue[i] == false)
-			{
-				auto temp = problem_upper_bound;
-				W += distance[current_path[L - 1]][i];
+		auto j0_it = find(DISTANCE[0].begin(), DISTANCE[0].end(), *min_element(DISTANCE[0].begin(), DISTANCE[0].end()));
+		auto j0 = std::distance(DISTANCE[0].begin(), j0_it);
+		DISTANCE[0][j0] = FLT_MAX;
 
-				if (L == 1)
-					problem_upper_bound -= ((firstMin(current_path[L - 1]) + firstMin(i)) / 2);
-				else
-					problem_upper_bound -= ((secondMin(current_path[L - 1]) + firstMin(i)) / 2);
+		auto j1_it = find(DISTANCE[0].begin(), DISTANCE[0].end(), *min_element(DISTANCE[0].begin(), DISTANCE[0].end()));
+		auto j1 = std::distance(DISTANCE[0].begin(), j1_it);
 
-				if (problem_upper_bound + W < current_optimum)
-				{
-					current_path[L] = i;
-					candidate_queue[i] = true;
+		adjacency_list.push_back(Edge(0, j0));
+		adjacency_list.push_back(Edge(0, j1));
 
-					Elaborate(problem_upper_bound, W, L + 1);
-				}
+		adjacency[0][j0] = 0;
+		adjacency[j0][0] = 0;
+		adjacency[0][j1] = 0;
+		adjacency[j1][0] = 0;
+	}
 
-				W -= distance[current_path[L - 1]][i];
-				problem_upper_bound = temp;
+	void BranchAndBound::Subgradient(unsigned short alpha, unsigned short initial_step, unsigned short max_iter)
+	{
+		vector<unsigned short> lambda(numberOfNodes, 0);
+		vector<unsigned short> e(numberOfNodes, 1);
 
-				candidate_queue.assign(candidate_queue.size(), false);
+		auto iteration = 0;
+		auto max = max_iter;
+		auto step = initial_step;
+		alpha = 0.9;
 
-				for (auto j = 0; j <= L - 1; j++)
-					candidate_queue[current_path[j]] = true;
-			}
+		auto NewCosts = distance; // clone
+
+		while (iteration < max)
+		{
+			iteration++;
+
+			vector<vector<bool>> X(numberOfNodes, vector<bool>(numberOfNodes, 0));
+			list<Edge> adjacency_list;
+
+			MST_Prim(adjacency_list, X);
+
+			auto MXM = MatrixMultiplication(distance, X);
+			auto M2 = MatrixSum(MXM);
+			auto Langrangian = MatrixSum(M2) / 2;
+			//Langrangian -= lambda* (e * 2 - MatrixSum(X));
+
+			//accumulate(v.begin(), v.end(), 0);
+		}
+	}
+
+	template<class T>
+	T BranchAndBound::MatrixSum(const vector<T> &A)
+	{
+		T R;
+
+		for (auto x = 0; x < A.size(); x++)
+			R += A[x];
+
+		return R;
+	}
+
+	template<class T>
+	vector<T> BranchAndBound::MatrixSum(const vector<vector<T>> &A)
+	{
+		vector<T> R(A.size(), 0);
+
+		for (auto x = 0; x < A.size(); x++)
+			for (auto y = 0; y < A[x].size(); y++)
+				R[x] += A[x][y];
+
+		return R;
+	}
+
+	template<class T, class Z>
+	vector<vector<T>> BranchAndBound::MatrixMultiplication(const vector<vector<T>> &Mat1, const vector<vector<Z>> &Mat2)
+	{
+		auto a = Mat1.size();
+		auto b = Mat1[0].size();
+		auto c = Mat2.size();
+		auto d = Mat2[0].size();
+
+		vector<vector<T>> Mat3(a, vector<T>(d, 0));
+
+		for (auto i = 0; i < a; i++)
+			for (auto j = 0; j < d; j++)
+				for (auto k = 0; k < c; k++)
+					Mat3[i][j] += Mat1[i][k] * Mat2[k][j];
 	}
 
 	void BranchAndBound::Solve(float &opt, string &path)
 	{
-		float problem_upper_bound = 0;
 
-		for (unsigned short i = 0; i < numberOfNodes; i++)
-			problem_upper_bound += (firstMin(i) + secondMin(i));
-
-		problem_upper_bound /= 2;
-
-		candidate_queue[0] = true;
-		current_path[0] = 0;
-
-		Elaborate(problem_upper_bound, 0, 1);
-		current_path[numberOfNodes] = 0;
-
-		opt = current_optimum;
+		opt = 0;
 		path = PrintPath();
 
 		currentCardinality = numberOfNodes;
