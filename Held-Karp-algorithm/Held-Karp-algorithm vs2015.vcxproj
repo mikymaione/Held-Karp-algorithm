@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Held-Karp-algorithm\ApproxTSP.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\BranchAndBound.hpp" />
     <ClInclude Include="Held-Karp-algorithm\TSP.hpp" />
     <ClInclude Include="Held-Karp-algorithm\HeldKarp.hpp" />
     <ClInclude Include="Held-Karp-algorithm\Righini.hpp" />
@@ -27,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Held-Karp-algorithm\ApproxTSP.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\BranchAndBound.cpp" />
     <ClCompile Include="Held-Karp-algorithm\Christofides.cpp" />
     <ClCompile Include="Held-Karp-algorithm\main.cpp" />
     <ClCompile Include="Held-Karp-algorithm\TSP.cpp" />

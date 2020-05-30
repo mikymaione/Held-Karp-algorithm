@@ -10,6 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <string>
 
 #include "ApproxTSP.hpp"
+#include "BranchAndBound.hpp"
 #include "Christofides.hpp"
 #include "HeldKarp.hpp"
 #include "Righini.hpp"
@@ -71,6 +72,11 @@ void Run(string algo, string tipo, const unsigned short NumberOfNodes)
 		ApproxTSP A(DistanceMatrix2D);
 		A.Run();
 	}
+	else if (algo == "B")
+	{
+		BranchAndBound A(DistanceMatrix2D);
+		A.Run();
+	}
 	else if (algo == "R")
 	{
 		Righini A(DistanceMatrix2D);
@@ -85,32 +91,18 @@ void Run(string algo, string tipo, const unsigned short NumberOfNodes)
 
 void StartElaboration_TSP(string algo, string tipo, const string graphToSolve)
 {
-	if (graphToSolve == "all" || graphToSolve == "4")
-		Run(algo, tipo, 4);
+	if (graphToSolve == "all")
+	{
+		const unsigned short nodes[] = { 4, 6, 10, 15, 20, 25, 100, 500, 1000 };
 
-	if (graphToSolve == "all" || graphToSolve == "6")
-		Run(algo, tipo, 6);
-
-	if (graphToSolve == "all" || graphToSolve == "10")
-		Run(algo, tipo, 10);
-
-	if (graphToSolve == "all" || graphToSolve == "15")
-		Run(algo, tipo, 15);
-
-	if (graphToSolve == "all" || graphToSolve == "20")
-		Run(algo, tipo, 20);
-
-	if (graphToSolve == "all" || graphToSolve == "25")
-		Run(algo, tipo, 25);
-
-	if (graphToSolve == "all" || graphToSolve == "100")
-		Run(algo, tipo, 100);
-
-	if (graphToSolve == "all" || graphToSolve == "500")
-		Run(algo, tipo, 500);
-
-	if (graphToSolve == "all" || graphToSolve == "1000")
-		Run(algo, tipo, 1000);
+		for (const auto n : nodes)
+			Run(algo, tipo, n);
+	}
+	else
+	{
+		const auto nodes = stoul(graphToSolve);
+		Run(algo, tipo, nodes);
+	}
 }
 
 void WriteTitle()
@@ -120,7 +112,7 @@ void WriteTitle()
 		<< "Christofides algorithm & 2-approximation algorithm to solve the Euclidean Traveling Salesman Problem" << endl
 		<< endl
 		<< "Program parameters:" << endl
-		<< " algorithm = {H, C, A}" << endl
+		<< " algorithm = {H, C, A, B}" << endl
 		<< " type = {E, A}" << endl
 		<< " [graph to solve = {4, 10, 15, 20, 25, all}]" << endl
 		<< endl
@@ -149,6 +141,8 @@ int main(int argc, char **argv)
 				cout << "Held-Karp algorithm on ";
 			else if (algo == "A")
 				cout << "Approx-TSP algorithm on ";
+			else if (algo == "B")
+				cout << "Branch & Bound algorithm on ";
 			else if (algo == "R")
 				cout << "Righini algorithm on ";
 			else
