@@ -8,6 +8,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <queue>
 #include <set>
+#include <stack>
 
 #include "BranchAndBound.hpp"
 #include "Kruskal.hpp"
@@ -19,7 +20,7 @@ namespace TSP
 		distance_P = make_shared<vector<vector<float>>>(distance);
 	}
 
-	Node *BranchAndBound::OneTree(Graph &G)
+	vector<shared_ptr<Edge>> BranchAndBound::OneTree(Graph &G)
 	{
 		MST::Kruskal kruskal;
 
@@ -47,12 +48,43 @@ namespace TSP
 		for (unsigned short h = 0; h < numberOfNodes; h++)
 			if (result.size() < numberOfNodes - 1)
 				result.push_back(result1[h]);
+			else
+				break;
 
-		float min = 0;
-		for (auto e : result)
-			min += e->Cost();
+		return result;
+	}
 
-		return NULL;
+	void BranchAndBound::Branch(Graph &G, vector<shared_ptr<Edge>> busca)
+	{
+		bool flagTitular = false;
+
+		shared_ptr<Node> titular;
+
+		stack<shared_ptr<Node>> fronteira;
+		fronteira.push(busca[0]->from);
+
+		while (fronteira.size() > 0)
+		{
+			auto aux = fronteira.top();
+			fronteira.pop();
+
+			if (!flagTitular)
+			{
+				if (G.Adj[aux].size() == 2)
+				{
+					titular = aux;
+					flagTitular = true;
+				}
+				else
+				{
+					auto verticeAux = G.verificaGrau();
+					list<shared_ptr<Edge>> titular;
+					
+					G.SortEdgeByWeight();
+
+				}
+			}
+		}
 	}
 
 	string BranchAndBound::PrintPath()
@@ -68,6 +100,7 @@ namespace TSP
 		G.MakeConnected();
 
 		auto busca = OneTree(G);
+		Branch();
 
 		opt = 0;
 		path = PrintPath();

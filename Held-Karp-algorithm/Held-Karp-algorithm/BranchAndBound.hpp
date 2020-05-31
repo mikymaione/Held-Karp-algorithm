@@ -23,7 +23,8 @@ namespace TSP
 		shared_ptr<vector<vector<float>>> distance_P;
 
 	private:
-		Node *OneTree(Graph &G);
+		vector<shared_ptr<Edge>> OneTree(Graph &G);
+		void Branch(Graph &G, vector<shared_ptr<Edge>> busca);
 
 	protected:
 		string PrintPath();
