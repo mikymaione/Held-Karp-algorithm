@@ -15,24 +15,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
-	{
-		distance_P = make_shared<vector<vector<float>>>(distance);
-	}
+	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	vector<shared_ptr<Edge>> BranchAndBound::OneTree(Graph &G)
+	Graph BranchAndBound::OneTree(Graph &G)
 	{
 		MST::Kruskal kruskal;
 
-		Graph guard(distance_P, numberOfNodes, 0, numberOfNodes - 1);
-		Graph onetree(distance_P, numberOfNodes - 1, 1, numberOfNodes - 1);
+		Graph guard(numberOfNodes, 0, numberOfNodes - 1);
+		Graph onetree(numberOfNodes - 1, 1, numberOfNodes - 1);
 
 		for (auto v0 : guard.V)
 			if (v0->id == 0)
 			{
 				for (auto a : guard.V)
 					if (a->id != 0)
-						guard.AddEdge(v0, a);
+						guard.AddEdge(distance[v0->id][a->id], v0, a);
 
 				break;
 			}
@@ -40,28 +37,28 @@ namespace TSP
 		for (auto d : onetree.V)
 			for (auto a : onetree.V)
 				if (a->id != d->id)
-					onetree.AddEdge(d, a);
+					onetree.AddEdge(distance[d->id][a->id], d, a);
 
 		auto result = kruskal.Solve(onetree);
 		auto result1 = kruskal.Solve(guard);
 
 		for (unsigned short h = 0; h < numberOfNodes; h++)
-			if (result.size() < numberOfNodes - 1)
-				result.push_back(result1[h]);
+			if (result.E.size() < numberOfNodes - 1)
+				result.AddEdge(*result1.E[h]);
 			else
 				break;
 
 		return result;
 	}
 
-	void BranchAndBound::Branch(Graph &G, vector<shared_ptr<Edge>> busca)
+	void BranchAndBound::Branch(Graph &busca)
 	{
 		bool flagTitular = false;
 
 		shared_ptr<Node> titular;
 
 		stack<shared_ptr<Node>> fronteira;
-		fronteira.push(busca[0]->from);
+		fronteira.push(busca.GetANode());
 
 		while (fronteira.size() > 0)
 		{
@@ -70,17 +67,18 @@ namespace TSP
 
 			if (!flagTitular)
 			{
-				if (G.Adj[aux].size() == 2)
+				if (busca.Adj[aux].size() == 2)
 				{
 					titular = aux;
 					flagTitular = true;
 				}
 				else
 				{
-					auto verticeAux = G.verificaGrau();
+					auto verticeAux = busca.verificaGrau();
 					list<shared_ptr<Edge>> titular;
-					
-					G.SortEdgeByWeight();
+
+					busca.SortEdgeByWeight();
+
 
 				}
 			}
@@ -96,11 +94,11 @@ namespace TSP
 
 	void BranchAndBound::Solve(float &opt, string &path)
 	{
-		Graph G(distance_P, numberOfNodes, 0, numberOfNodes - 1);
-		G.MakeConnected();
+		Graph G(numberOfNodes, 0, numberOfNodes - 1);
+		G.MakeConnected(distance);
 
 		auto busca = OneTree(G);
-		Branch();
+		Branch(busca);
 
 		opt = 0;
 		path = PrintPath();

@@ -24,7 +24,7 @@ namespace MST
 		void Union(shared_ptr<Node> x, shared_ptr<Node> y);
 
 	public:
-		vector<shared_ptr<Edge>> Solve(Graph &G);
+		Graph Solve(Graph G);
 
 	};
 }

@@ -31,24 +31,16 @@ namespace ADS
 	struct Edge
 	{
 		shared_ptr<Node> from, to;
-		shared_ptr<vector<vector<float>>> distance;
+		float cost;
 
-		Edge(shared_ptr<vector<vector<float>>> distance_, shared_ptr<Node> from_, shared_ptr<Node> to_) :
-			distance(distance_),
+		Edge(float cost_, shared_ptr<Node> from_, shared_ptr<Node> to_) :
+			cost(cost_),
 			from(from_),
 			to(to_) {}
 
-		float Cost()
-		{
-			return distance->at(from->id).at(to->id);
-		}
-
 		bool operator < (const Edge &e) const
 		{
-			auto w1 = distance->at(from->id).at(to->id);
-			auto w2 = distance->at(e.from->id).at(e.to->id);
-
-			return w1 < w2;
+			return cost < e.cost;
 		}
 	};
 
@@ -58,9 +50,22 @@ namespace ADS
 		vector<shared_ptr<Edge>> E; // sortable
 		map<shared_ptr<Node>, list<shared_ptr<Node>>> Adj;
 
-		shared_ptr<vector<vector<float>>> distance;
+		unsigned short NumberOfNodes;
 
-		Graph(shared_ptr<vector<vector<float>>> distance_, unsigned short N, unsigned short from, unsigned to) : distance(distance_)
+		Graph(list<shared_ptr<Node>> V_)
+		{
+			NumberOfNodes = V_.size();
+
+			for (auto v : V_)
+			{
+				Node n;
+				n.id = v->id;
+
+				V.push_back(make_shared<Node>(n));
+			}
+		}
+
+		Graph(unsigned short NumberOfNodes_, unsigned short from, unsigned to) : NumberOfNodes(NumberOfNodes_)
 		{
 			for (unsigned short d = from; d <= to; d++)
 			{
@@ -90,12 +95,17 @@ namespace ADS
 			return nullptr;
 		}
 
-		void AddEdge(shared_ptr<Node> from, shared_ptr<Node> to)
+		void AddEdge(float cost, shared_ptr<Node> from, shared_ptr<Node> to)
 		{
-			Edge e(distance, from, to);
+			Edge e(cost, from, to);
 
+			AddEdge(e);
+		}
+
+		void AddEdge(Edge &e)
+		{
 			E.push_back(make_shared<Edge>(e));
-			Adj[from].push_back(to);
+			Adj[e.from].push_back(e.to);
 		}
 
 		void SortEdgeByWeight()
@@ -103,12 +113,12 @@ namespace ADS
 			sort(E.begin(), E.end());
 		}
 
-		void MakeConnected()
+		void MakeConnected(const vector<vector<float>> &DistanceMatrix2D)
 		{
 			for (auto d : V)
 				for (auto a : V)
 					if (d->id != a->id)
-						AddEdge(d, a);
+						AddEdge(DistanceMatrix2D[d->id][a->id], d, a);
 		}
 
 		shared_ptr<Node> NodeById(unsigned short id)
@@ -116,6 +126,12 @@ namespace ADS
 			for (auto v : V)
 				if (v->id == id)
 					return v;
+		}
+
+		shared_ptr<Node> GetANode()
+		{
+			for (auto v : V)
+				return v;
 		}
 	};
 }

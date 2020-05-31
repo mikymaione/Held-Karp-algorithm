@@ -20,11 +20,8 @@ namespace TSP
 	class BranchAndBound : public TSP
 	{
 	private:
-		shared_ptr<vector<vector<float>>> distance_P;
-
-	private:
-		vector<shared_ptr<Edge>> OneTree(Graph &G);
-		void Branch(Graph &G, vector<shared_ptr<Edge>> busca);
+		Graph OneTree(Graph &G);
+		void Branch(Graph &busca);
 
 	protected:
 		string PrintPath();
