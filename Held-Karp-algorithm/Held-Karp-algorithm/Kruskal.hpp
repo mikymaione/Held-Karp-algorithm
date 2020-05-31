@@ -6,68 +6,47 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <list>
-#include <map>
 #include <vector>
-
-#include "TSP.hpp"
 
 using namespace std;
 
-namespace TSP
+namespace MST
 {
-	class BranchAndBound : public TSP
+	class Kruskal
 	{
-	private:
+	protected:
 		struct Node
 		{
-			unsigned short id;
-			float key;
-			Node *π;
+			unsigned short rank, p;
+		};
 
-			bool operator < (const Node &n) const
+		struct Edge
+		{
+			unsigned short u, v;
+			float w;
+
+			bool operator < (const Edge &e) const
 			{
-				return (key < n.key);
+				return w < e.w;
 			}
 		};
 
 		struct Graph
 		{
-			list<Node> V;
-			map<Node *, list<Node *>> Adj;
-
-			Graph(unsigned short N, unsigned short from, unsigned to)
-			{
-				for (unsigned short d = from; d <= to; d++)
-				{
-					Node n;
-					n.id = d;
-					n.key = FLT_MAX;
-					n.π = NULL;
-
-					V.push_back(n);
-				}
-			}
-
-			Node *NodeById(unsigned short id)
-			{
-				for (auto v : V)
-					if (v.id == id)
-						return &v;
-			}
+			vector<Node> node;
+			vector<Edge> edge;
 		};
 
 	private:
-		Node *OneTree(Graph &G);
-		list<Node> MST_Prim(Graph &G, Node *r);
+		Graph graphFromDistanceMatrix(const vector<vector<float>> &DistanceMatrix2D);
 
-	protected:
-		string PrintPath();
-
-		void Solve(float &opt, string &path);
+		unsigned short FindSet(Graph &G, unsigned short x);
+		void MakeSet(Graph &G, unsigned short x);
+		void Link(Graph &G, unsigned short x, unsigned short y);
+		void Union(Graph &G, unsigned short x, unsigned short y);
 
 	public:
-		BranchAndBound(const vector<vector<float>> &DistanceMatrix2D);
+		vector<Edge*> Solve(const vector<vector<float>> &DistanceMatrix2D);
 
 	};
 }

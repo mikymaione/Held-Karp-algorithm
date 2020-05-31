@@ -6,19 +6,76 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <algorithm>
-#include <iterator>
-#include <numeric>
 #include <queue>
-
+#include <set>
 
 #include "BranchAndBound.hpp"
+#include "Kruskal.hpp"
 
 namespace TSP
 {
-	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
-	{
+	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
+	list<BranchAndBound::Node> BranchAndBound::MST_Prim(Graph &G, Node *r) // O(E ㏒ V)
+	{
+		priority_queue<Node*, vector<Node*>, less<Node*>> Q; // sorted min queue
+		set<size_t> S; // elements available		
+
+		list<Node> R;
+
+		for (auto u : G.V)
+		{
+			u.key = FLT_MAX;
+			u.π = NULL;
+
+			S.insert(u.id);
+		}
+
+		r->key = 0;
+		Q.push(r);
+
+		while (!Q.empty())
+		{
+			auto u = Q.top(); // min
+			Q.pop();
+			S.erase(u->id);
+
+			for (auto v : G.Adj[u])
+				if (u != v)
+					if (S.count(v->id) > 0 && distance[u->id][v->id] < v->key)
+					{
+						v->π = u;
+						v->key = distance[u->id][v->id];
+
+						Q.push(v);
+					}
+		}
+
+		return R;
+	}
+
+	BranchAndBound::Node *BranchAndBound::OneTree(Graph &G)
+	{
+		Graph guard(numberOfNodes, 0, numberOfNodes - 1);
+		Graph onetree(numberOfNodes - 1, 1, numberOfNodes - 1);
+
+		{
+			auto v0 = guard.NodeById(0);
+
+			for (auto a : guard.V)
+				if (a.id != 0)
+					guard.Adj[v0].push_back(&a);
+		}
+
+		for (auto d : onetree.V)
+			for (auto a : onetree.V)
+				if (a.id != d.id)
+					onetree.Adj[&d].push_back(&a);
+
+		auto result = MST_Prim(onetree, onetree.NodeById(1));
+		auto result1 = MST_Prim(guard, guard.NodeById(0));
+
+		return NULL;
 	}
 
 	string BranchAndBound::PrintPath()
@@ -28,180 +85,16 @@ namespace TSP
 		return s;
 	}
 
-	void BranchAndBound::MST_Prim(list<Edge> &adjacency_list, vector<vector<bool>> &adjacency)
-	{
-		auto n = numberOfNodes;
-		auto N = numberOfNodes - 1;
-		vector<unsigned short> T(1, 0);
-
-		vector<unsigned short> S(numberOfNodes);
-		iota(S.begin(), S.end(), 1);
-
-		vector<vector<float>> cost(N, vector<float>(N, 0));
-
-		for (auto x = 0; x < N; x++)
-			for (auto y = 0; y < N; y++)
-				cost[x][y] = distance[x + 1][y + 1];
-
-		for (auto i = 0; i < N; i++)
-			cost[i][i] = FLT_MAX;
-
-		auto DISTANCE = distance; // clone		
-
-		adjacency_list.clear();
-
-		while (T.size() < N)
-		{
-			vector<float> list_distance;
-			vector<Edge> list_position;
-
-			auto t = 0;
-
-			for (const auto i : T)
-			{
-				auto j_it = find(cost[i].begin(), cost[i].end(), *min_element(cost[i].begin(), cost[i].end()));
-				auto j = std::distance(cost[i].begin(), j_it);
-
-				list_distance.push_back(cost[i][j]);
-				list_position.push_back(Edge(i, j));
-
-				t++;
-			}
-
-			auto smallest_distance_it = find(list_distance.begin(), list_distance.end(), *min_element(list_distance.begin(), list_distance.end()));
-			auto smallest_distance = std::distance(list_distance.begin(), smallest_distance_it);
-
-			auto edge = list_position[smallest_distance];
-
-			DISTANCE[edge.u][edge.v] = FLT_MAX;
-			DISTANCE[edge.v][edge.u] = FLT_MAX;
-
-			for (const auto i : T)
-			{
-				cost[i][edge.v] = FLT_MAX;
-				cost[edge.v][i] = FLT_MAX;
-			}
-
-			adjacency_list.push_back(Edge(edge.u + 1, edge.v + 1));
-
-			adjacency[edge.u + 1][edge.v + 1] = 0;
-			adjacency[edge.v + 1][edge.u + 1] = 0;
-
-			T.push_back(edge.v);
-		}
-
-		auto j0_it = find(DISTANCE[0].begin(), DISTANCE[0].end(), *min_element(DISTANCE[0].begin(), DISTANCE[0].end()));
-		auto j0 = std::distance(DISTANCE[0].begin(), j0_it);
-		DISTANCE[0][j0] = FLT_MAX;
-
-		auto j1_it = find(DISTANCE[0].begin(), DISTANCE[0].end(), *min_element(DISTANCE[0].begin(), DISTANCE[0].end()));
-		auto j1 = std::distance(DISTANCE[0].begin(), j1_it);
-
-		adjacency_list.push_back(Edge(0, j0));
-		adjacency_list.push_back(Edge(0, j1));
-
-		adjacency[0][j0] = 0;
-		adjacency[j0][0] = 0;
-		adjacency[0][j1] = 0;
-		adjacency[j1][0] = 0;
-	}
-
-	void BranchAndBound::Subgradient(unsigned short alpha, unsigned short initial_step, unsigned short max_iter)
-	{
-		vector<unsigned short> lambda(numberOfNodes, 0);
-		vector<unsigned short> e(numberOfNodes, 1);
-
-		auto iteration = 0;
-		auto max = max_iter;
-		auto step = initial_step;
-		alpha = 0.9;
-
-		auto NewCosts = distance; // clone
-
-		while (iteration < max)
-		{
-			iteration++;
-
-			vector<vector<bool>> X(numberOfNodes, vector<bool>(numberOfNodes, 0));
-			list<Edge> adjacency_list;
-
-			MST_Prim(adjacency_list, X);
-
-			auto MXM = MatrixMultiplication(distance, X);
-			auto M2 = MatrixSum(MXM);
-			auto Langrangian = MatrixSum(M2) / 2;
-			auto e2 = MatrixMultiplication(e, 2);
-
-			auto gradient = MatrixSub(e2, MatrixSum(X));
-			//Langrangian -= lambda * gradient;
-
-			//accumulate(v.begin(), v.end(), 0);
-		}
-	}
-
-	template<class T>
-	T BranchAndBound::MatrixSum(const vector<T> &A)
-	{
-		T R;
-
-		for (auto x = 0; x < A.size(); x++)
-			R += A[x];
-
-		return R;
-	}
-
-	template<class T>
-	vector<T> BranchAndBound::MatrixSum(const vector<vector<T>> &A)
-	{
-		vector<T> R(A.size(), 0);
-
-		for (auto x = 0; x < A.size(); x++)
-			for (auto y = 0; y < A[x].size(); y++)
-				R[x] += A[x][y];
-
-		return R;
-	}
-
-	template<class T, class Z>
-	T BranchAndBound::MatrixSub(const vector<T> &A, const vector<Z> &B)
-	{
-		T R;
-
-		for (auto x = 0; x < A.size(); x++)
-			R[x] = A[x] - B[x];
-
-		return R;
-	}
-
-	template<class T, class Z>
-	vector<T> BranchAndBound::MatrixMultiplication(const vector<T> &A, const Z v)
-	{
-		vector<T> R(A.size(), 0);
-
-		for (auto x = 0; x < A.size(); x++)
-			R[x] *= v;
-
-		return R;
-	}
-
-	template<class T, class Z>
-	vector<vector<T>> BranchAndBound::MatrixMultiplication(const vector<vector<T>> &Mat1, const vector<vector<Z>> &Mat2)
-	{
-		auto a = Mat1.size();
-		auto b = Mat1[0].size();
-		auto c = Mat2.size();
-		auto d = Mat2[0].size();
-
-		vector<vector<T>> Mat3(a, vector<T>(d, 0));
-
-		for (auto i = 0; i < a; i++)
-			for (auto j = 0; j < d; j++)
-				for (auto k = 0; k < c; k++)
-					Mat3[i][j] += Mat1[i][k] * Mat2[k][j];
-	}
-
 	void BranchAndBound::Solve(float &opt, string &path)
 	{
+		Graph G(numberOfNodes, 0, numberOfNodes - 1);
+
+		for (auto d : G.V)
+			for (auto a : G.V)
+				if (a.id != d.id)
+					G.Adj[&d].push_back(&a);
+
+		auto busca = OneTree(G);
 
 		opt = 0;
 		path = PrintPath();
