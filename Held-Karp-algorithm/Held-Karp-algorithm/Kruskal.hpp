@@ -6,7 +6,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "Graph.hpp"
@@ -19,13 +18,13 @@ namespace MST
 	class Kruskal
 	{
 	private:
-		Node *FindSet(Node *x);
-		void MakeSet(Node *x);
-		void Link(Node *x, Node *y);
-		void Union(Node *x, Node *y);
+		shared_ptr<Node> FindSet(shared_ptr<Node> x);
+		void MakeSet(shared_ptr<Node> x);
+		void Link(shared_ptr<Node> x, shared_ptr<Node> y);
+		void Union(shared_ptr<Node> x, shared_ptr<Node> y);
 
 	public:
-		vector<Edge *> Solve(Graph *G);
+		vector<shared_ptr<Edge>> Solve(Graph &G);
 
 	};
 }

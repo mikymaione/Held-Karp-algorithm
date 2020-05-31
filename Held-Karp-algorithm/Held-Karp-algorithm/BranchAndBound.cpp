@@ -14,32 +14,35 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 namespace TSP
 {
-	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
+	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
+	{
+		distance_P = make_shared<vector<vector<float>>>(distance);
+	}
 
 	Node *BranchAndBound::OneTree(Graph &G)
 	{
 		MST::Kruskal kruskal;
 
-		Graph guard(&distance, numberOfNodes, 0, numberOfNodes - 1);
-		Graph onetree(&distance, numberOfNodes - 1, 1, numberOfNodes - 1);
+		Graph guard(distance_P, numberOfNodes, 0, numberOfNodes - 1);
+		Graph onetree(distance_P, numberOfNodes - 1, 1, numberOfNodes - 1);
 
 		for (auto v0 : guard.V)
-			if (v0.id == 0)
+			if (v0->id == 0)
 			{
 				for (auto a : guard.V)
-					if (a.id != 0)
-						guard.AddEdge(&v0, &a);
+					if (a->id != 0)
+						guard.AddEdge(v0, a);
 
 				break;
 			}
 
 		for (auto d : onetree.V)
 			for (auto a : onetree.V)
-				if (a.id != d.id)
-					onetree.AddEdge(&d, &a);
+				if (a->id != d->id)
+					onetree.AddEdge(d, a);
 
-		auto result = kruskal.Solve(&onetree);
-		auto result1 = kruskal.Solve(&guard);
+		auto result = kruskal.Solve(onetree);
+		auto result1 = kruskal.Solve(guard);
 
 		return NULL;
 	}
@@ -53,7 +56,7 @@ namespace TSP
 
 	void BranchAndBound::Solve(float &opt, string &path)
 	{
-		Graph G(&distance, numberOfNodes, 0, numberOfNodes - 1);
+		Graph G(distance_P, numberOfNodes, 0, numberOfNodes - 1);
 		G.MakeConnected();
 
 		auto busca = OneTree(G);

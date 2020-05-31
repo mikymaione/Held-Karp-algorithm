@@ -11,13 +11,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 namespace MST
 {
 
-	void Kruskal::MakeSet(Node *x)
+	void Kruskal::MakeSet(shared_ptr<Node> x)
 	{
 		x->π = x;
 		x->rank = 0;
 	}
 
-	Node *Kruskal::FindSet(Node *x)
+	shared_ptr<Node> Kruskal::FindSet(shared_ptr<Node> x)
 	{
 		if (x->π->id != x->id)
 			x->π = FindSet(x->π);
@@ -25,7 +25,7 @@ namespace MST
 		return x->π;
 	}
 
-	void Kruskal::Link(Node *x, Node *y)
+	void Kruskal::Link(shared_ptr<Node> x, shared_ptr<Node> y)
 	{
 		if (x->rank > y->rank)
 		{
@@ -40,7 +40,7 @@ namespace MST
 		}
 	}
 
-	void Kruskal::Union(Node *x, Node *y)
+	void Kruskal::Union(shared_ptr<Node> x, shared_ptr<Node> y)
 	{
 		auto u = FindSet(x);
 		auto v = FindSet(y);
@@ -48,23 +48,23 @@ namespace MST
 		Link(u, v);
 	}
 
-	vector<Edge *> Kruskal::Solve(Graph *G) // O(E ㏒ V)
+	vector<shared_ptr<Edge>> Kruskal::Solve(Graph &G) // O(E ㏒ V)
 	{
-		vector<Edge *> A;
+		vector<shared_ptr<Edge>> A;
 
-		for (auto v : G->V)
-			MakeSet(&v);
+		for (auto v : G.V)
+			MakeSet(v);
 
-		G->SortEdgeByWeight();
+		G.SortEdgeByWeight();
 
-		for (auto e : G->E)
+		for (auto e : G.E)
 		{
-			auto u = e.from;
-			auto v = e.to;
+			auto u = e->from;
+			auto v = e->to;
 
 			if (FindSet(u) != FindSet(v))
 			{
-				A.push_back(&e);
+				A.push_back(e);
 				Union(u, v);
 			}
 		}

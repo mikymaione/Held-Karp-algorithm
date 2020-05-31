@@ -6,6 +6,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "Graph.hpp"
@@ -18,6 +19,9 @@ namespace TSP
 {
 	class BranchAndBound : public TSP
 	{
+	private:
+		shared_ptr<vector<vector<float>>> distance_P;
+
 	private:
 		Node *OneTree(Graph &G);
 

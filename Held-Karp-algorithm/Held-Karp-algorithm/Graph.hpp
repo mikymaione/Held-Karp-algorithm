@@ -9,7 +9,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <algorithm>
 #include <memory>
 #include <list>
-#include <map>
+#include <vector>
+//#include <map>
 
 using namespace std;
 
@@ -19,7 +20,7 @@ namespace ADS
 	{
 		unsigned short id, rank = 0;
 		float key = FLT_MAX;
-		Node *π = NULL;
+		shared_ptr<Node> π;
 
 		bool operator < (const Node &n) const
 		{
@@ -29,19 +30,18 @@ namespace ADS
 
 	struct Edge
 	{
-		Node *from, *to;
+		shared_ptr<Node> from, to;
+		shared_ptr<vector<vector<float>>> distance;
 
-		const vector<vector<float>> *distance;
-
-		Edge(const vector<vector<float>> *distance_, Node *from_, Node *to_) :
+		Edge(shared_ptr<vector<vector<float>>> distance_, shared_ptr<Node> from_, shared_ptr<Node> to_) :
 			distance(distance_),
 			from(from_),
 			to(to_) {}
 
 		bool operator < (const Edge &e) const
 		{
-			auto w1 = distance[from->id][to->id];
-			auto w2 = distance[e.from->id][e.to->id];
+			auto w1 = distance->at(from->id).at(to->id);
+			auto w2 = distance->at(e.from->id).at(e.to->id);
 
 			return w1 < w2;
 		}
@@ -49,26 +49,28 @@ namespace ADS
 
 	struct Graph
 	{
-		list<Node> V;
-		vector<Edge> E; // sortable
+		list<shared_ptr<Node>> V;
+		vector<shared_ptr<Edge>> E; // sortable
 		//map<unsigned short, list<Node *>> Adj;
 
-		const vector<vector<float>> *distance;
+		shared_ptr<vector<vector<float>>> distance;
 
-		Graph(const vector<vector<float>> *distance_, unsigned short N, unsigned short from, unsigned to) : distance(distance_)
+		Graph(shared_ptr<vector<vector<float>>> distance_, unsigned short N, unsigned short from, unsigned to) : distance(distance_)
 		{
 			for (unsigned short d = from; d <= to; d++)
 			{
 				Node n;
 				n.id = d;
 
-				V.push_back(n);
+				V.push_back(make_shared<Node>(n));
 			}
 		}
 
-		void AddEdge(Node *from, Node *to)
+		void AddEdge(shared_ptr<Node> from, shared_ptr<Node> to)
 		{
-			E.push_back(Edge(distance, from, to));
+			Edge e(distance, from, to);
+
+			E.push_back(make_shared<Edge>(e));
 			//Adj[from->id].push_back(to);
 		}
 
@@ -81,15 +83,15 @@ namespace ADS
 		{
 			for (auto d : V)
 				for (auto a : V)
-					if (d.id != a.id)
-						AddEdge(&d, &a);
+					if (d->id != a->id)
+						AddEdge(d, a);
 		}
 
-		Node *NodeById(unsigned short id)
+		shared_ptr<Node> NodeById(unsigned short id)
 		{
 			for (auto v : V)
-				if (v.id == id)
-					return &v;
+				if (v->id == id)
+					return v;
 		}
 	};
 }
