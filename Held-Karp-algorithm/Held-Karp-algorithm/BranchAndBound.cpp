@@ -44,6 +44,14 @@ namespace TSP
 		auto result = kruskal.Solve(onetree);
 		auto result1 = kruskal.Solve(guard);
 
+		for (unsigned short h = 0; h < numberOfNodes; h++)
+			if (result.size() < numberOfNodes - 1)
+				result.push_back(result1[h]);
+
+		float min = 0;
+		for (auto e : result)
+			min += e->Cost();
+
 		return NULL;
 	}
 

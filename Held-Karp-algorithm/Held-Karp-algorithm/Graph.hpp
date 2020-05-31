@@ -10,7 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <memory>
 #include <list>
 #include <vector>
-//#include <map>
+#include <map>
 
 using namespace std;
 
@@ -38,6 +38,11 @@ namespace ADS
 			from(from_),
 			to(to_) {}
 
+		float Cost()
+		{
+			return distance->at(from->id).at(to->id);
+		}
+
 		bool operator < (const Edge &e) const
 		{
 			auto w1 = distance->at(from->id).at(to->id);
@@ -51,7 +56,7 @@ namespace ADS
 	{
 		list<shared_ptr<Node>> V;
 		vector<shared_ptr<Edge>> E; // sortable
-		//map<unsigned short, list<Node *>> Adj;
+		map<shared_ptr<Node>, list<shared_ptr<Node>>> Adj;
 
 		shared_ptr<vector<vector<float>>> distance;
 
@@ -71,7 +76,7 @@ namespace ADS
 			Edge e(distance, from, to);
 
 			E.push_back(make_shared<Edge>(e));
-			//Adj[from->id].push_back(to);
+			Adj[from].push_back(to);
 		}
 
 		void SortEdgeByWeight()
