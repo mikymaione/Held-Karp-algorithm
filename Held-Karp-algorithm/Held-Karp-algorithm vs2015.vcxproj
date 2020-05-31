@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Held-Karp-algorithm\ApproxTSP.hpp" />
     <ClInclude Include="Held-Karp-algorithm\BranchAndBound.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\Graph.hpp" />
     <ClInclude Include="Held-Karp-algorithm\Kruskal.hpp" />
     <ClInclude Include="Held-Karp-algorithm\TSP.hpp" />
     <ClInclude Include="Held-Karp-algorithm\HeldKarp.hpp" />

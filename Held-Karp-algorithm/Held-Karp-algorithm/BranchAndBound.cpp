@@ -16,64 +16,30 @@ namespace TSP
 {
 	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	list<BranchAndBound::Node> BranchAndBound::MST_Prim(Graph &G, Node *r) // O(E ㏒ V)
+	Node *BranchAndBound::OneTree(Graph &G)
 	{
-		priority_queue<Node*, vector<Node*>, less<Node*>> Q; // sorted min queue
-		set<size_t> S; // elements available		
+		MST::Kruskal kruskal;
 
-		list<Node> R;
+		Graph guard(&distance, numberOfNodes, 0, numberOfNodes - 1);
+		Graph onetree(&distance, numberOfNodes - 1, 1, numberOfNodes - 1);
 
-		for (auto u : G.V)
-		{
-			u.key = FLT_MAX;
-			u.π = NULL;
+		for (auto v0 : guard.V)
+			if (v0.id == 0)
+			{
+				for (auto a : guard.V)
+					if (a.id != 0)
+						guard.AddEdge(&v0, &a);
 
-			S.insert(u.id);
-		}
-
-		r->key = 0;
-		Q.push(r);
-
-		while (!Q.empty())
-		{
-			auto u = Q.top(); // min
-			Q.pop();
-			S.erase(u->id);
-
-			for (auto v : G.Adj[u])
-				if (u != v)
-					if (S.count(v->id) > 0 && distance[u->id][v->id] < v->key)
-					{
-						v->π = u;
-						v->key = distance[u->id][v->id];
-
-						Q.push(v);
-					}
-		}
-
-		return R;
-	}
-
-	BranchAndBound::Node *BranchAndBound::OneTree(Graph &G)
-	{
-		Graph guard(numberOfNodes, 0, numberOfNodes - 1);
-		Graph onetree(numberOfNodes - 1, 1, numberOfNodes - 1);
-
-		{
-			auto v0 = guard.NodeById(0);
-
-			for (auto a : guard.V)
-				if (a.id != 0)
-					guard.Adj[v0].push_back(&a);
-		}
+				break;
+			}
 
 		for (auto d : onetree.V)
 			for (auto a : onetree.V)
 				if (a.id != d.id)
-					onetree.Adj[&d].push_back(&a);
+					onetree.AddEdge(&d, &a);
 
-		auto result = MST_Prim(onetree, onetree.NodeById(1));
-		auto result1 = MST_Prim(guard, guard.NodeById(0));
+		auto result = kruskal.Solve(&onetree);
+		auto result1 = kruskal.Solve(&guard);
 
 		return NULL;
 	}
@@ -87,12 +53,8 @@ namespace TSP
 
 	void BranchAndBound::Solve(float &opt, string &path)
 	{
-		Graph G(numberOfNodes, 0, numberOfNodes - 1);
-
-		for (auto d : G.V)
-			for (auto a : G.V)
-				if (a.id != d.id)
-					G.Adj[&d].push_back(&a);
+		Graph G(&distance, numberOfNodes, 0, numberOfNodes - 1);
+		G.MakeConnected();
 
 		auto busca = OneTree(G);
 

@@ -100,7 +100,7 @@ void StartElaboration_TSP(string algo, string tipo, const string graphToSolve)
 	}
 	else
 	{
-		const auto nodes = stoul(graphToSolve);
+		unsigned short nodes = stoul(graphToSolve);
 		Run(algo, tipo, nodes);
 	}
 }

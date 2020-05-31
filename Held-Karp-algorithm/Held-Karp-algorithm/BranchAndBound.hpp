@@ -6,60 +6,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <list>
-#include <map>
 #include <vector>
 
+#include "Graph.hpp"
 #include "TSP.hpp"
 
 using namespace std;
+using namespace ADS;
 
 namespace TSP
 {
 	class BranchAndBound : public TSP
 	{
 	private:
-		struct Node
-		{
-			unsigned short id;
-			float key;
-			Node *π;
-
-			bool operator < (const Node &n) const
-			{
-				return (key < n.key);
-			}
-		};
-
-		struct Graph
-		{
-			list<Node> V;
-			map<Node *, list<Node *>> Adj;
-
-			Graph(unsigned short N, unsigned short from, unsigned to)
-			{
-				for (unsigned short d = from; d <= to; d++)
-				{
-					Node n;
-					n.id = d;
-					n.key = FLT_MAX;
-					n.π = NULL;
-
-					V.push_back(n);
-				}
-			}
-
-			Node *NodeById(unsigned short id)
-			{
-				for (auto v : V)
-					if (v.id == id)
-						return &v;
-			}
-		};
-
-	private:
 		Node *OneTree(Graph &G);
-		list<Node> MST_Prim(Graph &G, Node *r);
 
 	protected:
 		string PrintPath();

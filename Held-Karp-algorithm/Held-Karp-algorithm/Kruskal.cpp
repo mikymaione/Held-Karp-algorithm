@@ -6,93 +6,66 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <algorithm>
-
 #include "Kruskal.hpp"
 
 namespace MST
 {
 
-	Kruskal::Graph Kruskal::graphFromDistanceMatrix(const vector<vector<float>> &DistanceMatrix2D)
+	void Kruskal::MakeSet(Node *x)
 	{
-		const unsigned short nodes = DistanceMatrix2D.size();
-
-		Graph G;
-		G.node.resize(nodes);
-		G.edge.resize(nodes * nodes);
-
-		size_t i = 0;
-		for (unsigned short x = 0; x < nodes; x++)
-			for (unsigned short y = 0; y < nodes; y++)
-			{
-				G.edge[i].u = x;
-				G.edge[i].v = y;
-				G.edge[i].w = (x == y ? FLT_MAX : DistanceMatrix2D[x][y]);
-
-				i++;
-			}
-
-		return G;
+		x->π = x;
+		x->rank = 0;
 	}
 
-	void Kruskal::MakeSet(Graph &G, unsigned short x)
+	Node *Kruskal::FindSet(Node *x)
 	{
-		G.node[x].p = x;
-		G.node[x].rank = 0;
+		if (x->π->id != x->id)
+			x->π = FindSet(x->π);
+
+		return x->π;
 	}
 
-	unsigned short Kruskal::FindSet(Graph &G, unsigned short x)
+	void Kruskal::Link(Node *x, Node *y)
 	{
-		if (G.node[x].p != x)
-			G.node[x].p = FindSet(G, G.node[x].p);
-
-		return G.node[x].p;
-	}
-
-	void Kruskal::Link(Graph &G, unsigned short x, unsigned short y)
-	{
-		if (G.node[x].rank > G.node[y].rank)
+		if (x->rank > y->rank)
 		{
-			G.node[y].p = x;
+			y->π = x;
 		}
 		else
 		{
-			G.node[x].p = y;
+			x->π = y;
 
-			if (G.node[x].rank == G.node[y].rank)
-				G.node[y].rank++;
+			if (x->rank == y->rank)
+				y->rank++;
 		}
 	}
 
-	void Kruskal::Union(Graph &G, unsigned short x, unsigned short y)
+	void Kruskal::Union(Node *x, Node *y)
 	{
-		auto u = FindSet(G, x);
-		auto v = FindSet(G, y);
+		auto u = FindSet(x);
+		auto v = FindSet(y);
 
-		Link(G, u, v);
+		Link(u, v);
 	}
 
-	vector<Kruskal::Edge*> Kruskal::Solve(const vector<vector<float>> &DistanceMatrix2D) // O(E ㏒ V)
+	vector<Edge *> Kruskal::Solve(Graph *G) // O(E ㏒ V)
 	{
-		vector<Edge*> A;
-		unsigned short u, v, i;
+		vector<Edge *> A;
 
-		auto G = graphFromDistanceMatrix(DistanceMatrix2D);
+		for (auto v : G->V)
+			MakeSet(&v);
 
-		for (v = 0; v < G.node.size(); v++)
-			MakeSet(G, v);
+		G->SortEdgeByWeight();
 
-		sort(G.edge.begin(), G.edge.end());
-
-		for (i = 0; i < G.edge.size(); i++)
+		for (auto e : G->E)
 		{
-			u = G.edge[i].u;
-			v = G.edge[i].v;
+			auto u = e.from;
+			auto v = e.to;
 
-			if (FindSet(G, u) != FindSet(G, v))
+			if (FindSet(u) != FindSet(v))
 			{
-				A.push_back(&G.edge[i]);
-				Union(G, u, v);
+				A.push_back(&e);
+				Union(u, v);
 			}
 		}
 

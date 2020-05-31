@@ -6,47 +6,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <memory>
 #include <vector>
 
+#include "Graph.hpp"
+
 using namespace std;
+using namespace ADS;
 
 namespace MST
 {
 	class Kruskal
 	{
-	protected:
-		struct Node
-		{
-			unsigned short rank, p;
-		};
-
-		struct Edge
-		{
-			unsigned short u, v;
-			float w;
-
-			bool operator < (const Edge &e) const
-			{
-				return w < e.w;
-			}
-		};
-
-		struct Graph
-		{
-			vector<Node> node;
-			vector<Edge> edge;
-		};
-
 	private:
-		Graph graphFromDistanceMatrix(const vector<vector<float>> &DistanceMatrix2D);
-
-		unsigned short FindSet(Graph &G, unsigned short x);
-		void MakeSet(Graph &G, unsigned short x);
-		void Link(Graph &G, unsigned short x, unsigned short y);
-		void Union(Graph &G, unsigned short x, unsigned short y);
+		Node *FindSet(Node *x);
+		void MakeSet(Node *x);
+		void Link(Node *x, Node *y);
+		void Union(Node *x, Node *y);
 
 	public:
-		vector<Edge*> Solve(const vector<vector<float>> &DistanceMatrix2D);
+		vector<Edge *> Solve(Graph *G);
 
 	};
 }
