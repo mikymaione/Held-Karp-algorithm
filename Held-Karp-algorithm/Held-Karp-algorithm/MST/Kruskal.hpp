@@ -6,6 +6,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <list>
+#include <memory>
 #include <vector>
 
 #include "../ADS/Graph.hpp"
@@ -24,7 +26,7 @@ namespace MST
 		void Union(shared_ptr<Node> x, shared_ptr<Node> y);
 
 	public:
-		Graph Solve(Graph G);
+		list<shared_ptr<Edge>> Solve(Graph &G);
 
 	};
 }

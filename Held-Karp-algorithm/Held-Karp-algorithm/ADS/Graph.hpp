@@ -33,18 +33,13 @@ namespace ADS
 
 	struct Edge
 	{
-		shared_ptr<Node> from, to;
 		float cost;
+		shared_ptr<Node> from, to;
 
 		Edge(float cost_, shared_ptr<Node> from_, shared_ptr<Node> to_) :
 			cost(cost_),
 			from(from_),
 			to(to_) {}
-
-		bool operator < (const Edge &e) const
-		{
-			return cost < e.cost;
-		}
 	};
 
 	struct Graph
@@ -100,7 +95,9 @@ namespace ADS
 
 		void SortEdgeByWeight()
 		{
-			sort(E.begin(), E.end());
+			sort(E.begin(), E.end(), [](shared_ptr<Edge> l, shared_ptr<Edge> r) {
+				return l->cost < r->cost;
+			});
 		}
 
 		void MakeConnected(const vector<vector<float>> &DistanceMatrix2D)

@@ -6,11 +6,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <queue>
-#include <set>
-#include <stack>
-
 #include "BranchAndBound.hpp"
+#include "../ADS/Graph.hpp"
 #include "../MST/Kruskal.hpp"
 
 namespace TSP
@@ -26,7 +23,21 @@ namespace TSP
 
 	void BranchAndBound::Solve(float &opt, string &path)
 	{
+		auto max_num_step = ((numberOfNodes * numberOfNodes) / 50) + numberOfNodes + 16;
+		auto num_step = 0;
 
+		MST::Kruskal kruskal;
+
+		Graph G(numberOfNodes);
+		G.MakeConnected(distance);
+
+		while (num_step < max_num_step)
+		{
+			num_step++;
+
+			/* compute minimum 1-tree */
+			auto curr_1t = kruskal.Solve(G);
+		}
 
 		opt = 0;
 		path = PrintPath();
