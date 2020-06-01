@@ -9,11 +9,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <iostream>
 #include <string>
 
-#include "ApproxTSP.hpp"
-#include "BranchAndBound.hpp"
-#include "Christofides.hpp"
-#include "HeldKarp.hpp"
-#include "Righini.hpp"
+#include "TSP/ApproxTSP.hpp"
+#include "TSP/BranchAndBound.hpp"
+#include "TSP/Christofides.hpp"
+#include "TSP/HeldKarp.hpp"
+#include "TSP/Righini.hpp"
 
 using namespace TSP;
 using namespace std;

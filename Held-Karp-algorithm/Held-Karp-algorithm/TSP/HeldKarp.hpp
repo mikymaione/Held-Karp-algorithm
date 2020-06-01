@@ -6,31 +6,43 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <queue>
-#include <set>
-#include <stack>
 
-#include "BranchAndBound.hpp"
-#include "Kruskal.hpp"
+#include <map>
+#include <queue>
+#include <stack>
+#include <string>
+#include <vector>
+
+#include "Base/TSP.hpp"
+
+using namespace std;
 
 namespace TSP
 {
-	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
-
-	string BranchAndBound::PrintPath()
+	class HeldKarp : public Base::TSP
 	{
-		string s;
+	protected:
+		struct sInfo
+		{
+			float cost;
+			vector<unsigned short> path;
+		};
 
-		return s;
-	}
+		// <Code, <Node, Data>>
+		queue<map<unsigned int, map<unsigned short, sInfo>>> C;
 
-	void BranchAndBound::Solve(float &opt, string &path)
-	{
+	protected:
+		void AddNewToQueue();
 
+		string PrintPath(const unsigned int code, const unsigned short π);
 
-		opt = 0;
-		path = PrintPath();
+		void Combinations(const unsigned short K, const unsigned short N);
+		void Combinations_FreeMem(stack<unsigned short> &Q, vector<unsigned short> &S, const unsigned short K, const unsigned short N, const unsigned short sCur);
 
-		currentCardinality = numberOfNodes;
-	}
+		void Solve(float &opt, string &path);
+
+	public:
+		HeldKarp(const vector<vector<float>> &DistanceMatrix2D);
+
+	};
 }

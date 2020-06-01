@@ -6,26 +6,35 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <memory>
+#include <string>
 #include <vector>
 
-#include "Graph.hpp"
-#include "TSP.hpp"
+#include "Base/TSP.hpp"
 
 using namespace std;
-using namespace ADS;
 
 namespace TSP
 {
-	class BranchAndBound : public TSP
-	{		
+	class Christofides : public Base::TSP
+	{
+	private:
+		vector<vector<unsigned short>> out_star;
+
+	private:
+		float ToHamiltonianPath(vector<unsigned short> &path);
+		float findBestPath(unsigned short start);
+
+		vector<unsigned short> FindEulerCircuit(unsigned short start);
+
+		void GreedyWeightedPerfectMatching();
+
 	protected:
-		string PrintPath();
+		string PrintPath(vector<unsigned short> circuit);
 
 		void Solve(float &opt, string &path);
 
 	public:
-		BranchAndBound(const vector<vector<float>> &DistanceMatrix2D);
+		Christofides(const vector<vector<float>> &DistanceMatrix2D);
 
 	};
 }

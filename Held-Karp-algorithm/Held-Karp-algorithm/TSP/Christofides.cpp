@@ -10,8 +10,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stack>
 
 #include "Christofides.hpp"
-#include "Prim.hpp"
-#include "Graph.hpp"
+#include "../MST/Prim.hpp"
+#include "../ADS/Graph.hpp"
 
 namespace TSP
 {

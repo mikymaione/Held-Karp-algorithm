@@ -6,19 +6,31 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <vector>
+#include <queue>
+#include <set>
+#include <stack>
 
-#include "Graph.hpp"
+#include "BranchAndBound.hpp"
+#include "../MST/Kruskal.hpp"
 
-using namespace std;
-using namespace ADS;
-
-namespace MST
+namespace TSP
 {
-	class Prim
-	{
-	public:
-		void Solve(const vector<vector<float>> &distance, Graph &G, unsigned short r_id);
+	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	};
+	string BranchAndBound::PrintPath()
+	{
+		string s;
+
+		return s;
+	}
+
+	void BranchAndBound::Solve(float &opt, string &path)
+	{
+
+
+		opt = 0;
+		path = PrintPath();
+
+		currentCardinality = numberOfNodes;
+	}
 }

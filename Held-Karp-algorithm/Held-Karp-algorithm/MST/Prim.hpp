@@ -8,23 +8,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <vector>
 
-#include "Graph.hpp"
+#include "../ADS/Graph.hpp"
 
 using namespace std;
 using namespace ADS;
 
 namespace MST
 {
-	class Kruskal
+	class Prim
 	{
-	private:
-		shared_ptr<Node> FindSet(shared_ptr<Node> x);
-		void MakeSet(shared_ptr<Node> x);
-		void Link(shared_ptr<Node> x, shared_ptr<Node> y);
-		void Union(shared_ptr<Node> x, shared_ptr<Node> y);
-
 	public:
-		Graph Solve(Graph G);
+		void Solve(const vector<vector<float>> &distance, Graph &G, unsigned short r_id);
 
 	};
 }

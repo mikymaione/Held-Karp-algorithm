@@ -9,8 +9,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stack>
 
 #include "ApproxTSP.hpp"
-#include "Graph.hpp"
-#include "Prim.hpp"
+#include "../ADS/Graph.hpp"
+#include "../MST/Prim.hpp"
 
 namespace TSP
 {

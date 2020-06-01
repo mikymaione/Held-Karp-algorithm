@@ -6,43 +6,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-
-#include <map>
-#include <queue>
-#include <stack>
-#include <string>
 #include <vector>
 
-#include "TSP.hpp"
+#include "Base/TSP.hpp"
 
 using namespace std;
 
 namespace TSP
 {
-	class HeldKarp : public TSP
+	class ApproxTSP : public Base::TSP
 	{
 	protected:
-		struct sInfo
-		{
-			float cost;
-			vector<unsigned short> path;
-		};
-
-		// <Code, <Node, Data>>
-		queue<map<unsigned int, map<unsigned short, sInfo>>> C;
-
-	protected:
-		void AddNewToQueue();
-
-		string PrintPath(const unsigned int code, const unsigned short π);
-
-		void Combinations(const unsigned short K, const unsigned short N);
-		void Combinations_FreeMem(stack<unsigned short> &Q, vector<unsigned short> &S, const unsigned short K, const unsigned short N, const unsigned short sCur);
-
 		void Solve(float &opt, string &path);
 
 	public:
-		HeldKarp(const vector<vector<float>> &DistanceMatrix2D);
+		ApproxTSP(const vector<vector<float>> &DistanceMatrix2D);
 
 	};
 }

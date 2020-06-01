@@ -19,26 +19,51 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Held-Karp-algorithm\ApproxTSP.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\BranchAndBound.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\Graph.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\Kruskal.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\Prim.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\TSP.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\HeldKarp.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\Righini.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\Christofides.hpp" />
+    <ClCompile Include="Held-Karp-algorithm\main.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\MST\Kruskal.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\MST\Prim.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\TSP\ApproxTSP.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\TSP\Base\TSP.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\TSP\BranchAndBound.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\TSP\Christofides.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\TSP\HeldKarp.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\TSP\Righini.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Held-Karp-algorithm\ApproxTSP.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\BranchAndBound.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\Christofides.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\Kruskal.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\main.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\Prim.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\TSP.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\HeldKarp.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\Righini.cpp" />
+    <ClInclude Include="Held-Karp-algorithm\ADS\Graph.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\MST\Kruskal.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\MST\Prim.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\TSP\ApproxTSP.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\TSP\Base\TSP.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\TSP\BranchAndBound.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\TSP\Christofides.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\TSP\HeldKarp.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\TSP\Righini.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TSP_Instances\asym10.txt" />
+    <Text Include="TSP_Instances\asym15.txt" />
+    <Text Include="TSP_Instances\asym20.txt" />
+    <Text Include="TSP_Instances\asym25.txt" />
+    <Text Include="TSP_Instances\asym4.txt" />
+    <Text Include="TSP_Instances\sym10.P.txt" />
+    <Text Include="TSP_Instances\sym10.txt" />
+    <Text Include="TSP_Instances\sym100.P.txt" />
+    <Text Include="TSP_Instances\sym100.txt" />
+    <Text Include="TSP_Instances\sym1000.P.txt" />
+    <Text Include="TSP_Instances\sym1000.txt" />
+    <Text Include="TSP_Instances\sym15.P.txt" />
+    <Text Include="TSP_Instances\sym15.txt" />
+    <Text Include="TSP_Instances\sym20.P.txt" />
+    <Text Include="TSP_Instances\sym20.txt" />
+    <Text Include="TSP_Instances\sym25.P.txt" />
+    <Text Include="TSP_Instances\sym25.txt" />
+    <Text Include="TSP_Instances\sym4.P.txt" />
+    <Text Include="TSP_Instances\sym4.txt" />
+    <Text Include="TSP_Instances\sym500.P.txt" />
+    <Text Include="TSP_Instances\sym500.txt" />
+    <Text Include="TSP_Instances\sym6.P.txt" />
+    <Text Include="TSP_Instances\sym6.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{68D19670-7460-4074-88CC-E4FD36288FFE}</ProjectGuid>

@@ -6,57 +6,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <memory>
 #include <vector>
 
-#include "TSP.hpp"
+#include "../ADS/Graph.hpp"
+#include "Base/TSP.hpp"
 
 using namespace std;
+using namespace ADS;
 
 namespace TSP
 {
-	class Righini : public TSP
+	class BranchAndBound : public Base::TSP
 	{
 	protected:
-		struct Node
-		{
-			unsigned short rank, p;
-		};
-
-		struct Edge
-		{
-			unsigned short u, v;
-			float w;
-
-			bool operator < (const Edge &e) const
-			{
-				return w < e.w;
-			}
-		};
-
-		struct Graph
-		{
-			vector<Node> node;
-			vector<Edge> edge;
-		};
-
-	protected:
-		string PrintPath(const unsigned int code, const unsigned short π);
+		string PrintPath();
 
 		void Solve(float &opt, string &path);
 
-	private:
-		Graph graphFromDistanceMatrix(const unsigned short nodes);
-
-		// Kruskal
-		unsigned short FindSet(Graph &G, unsigned short x);
-		void MakeSet(Graph &G, unsigned short x);
-		void Link(Graph &G, unsigned short x, unsigned short y);
-		void Union(Graph &G, unsigned short x, unsigned short y);
-		vector<Edge*> Kruskal(Graph &G);
-		// Kruskal
-
 	public:
-		Righini(const vector<vector<float>> &DistanceMatrix2D);
+		BranchAndBound(const vector<vector<float>> &DistanceMatrix2D);
 
 	};
 }

@@ -6,35 +6,25 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <string>
 #include <vector>
 
-#include "TSP.hpp"
+#include "../ADS/Graph.hpp"
 
 using namespace std;
+using namespace ADS;
 
-namespace TSP
+namespace MST
 {
-	class Christofides : public TSP
+	class Kruskal
 	{
 	private:
-		vector<vector<unsigned short>> out_star;
-
-	private:
-		float ToHamiltonianPath(vector<unsigned short> &path);
-		float findBestPath(unsigned short start);
-
-		vector<unsigned short> FindEulerCircuit(unsigned short start);
-
-		void GreedyWeightedPerfectMatching();
-
-	protected:
-		string PrintPath(vector<unsigned short> circuit);
-
-		void Solve(float &opt, string &path);
+		shared_ptr<Node> FindSet(shared_ptr<Node> x);
+		void MakeSet(shared_ptr<Node> x);
+		void Link(shared_ptr<Node> x, shared_ptr<Node> y);
+		void Union(shared_ptr<Node> x, shared_ptr<Node> y);
 
 	public:
-		Christofides(const vector<vector<float>> &DistanceMatrix2D);
+		Graph Solve(Graph G);
 
 	};
 }
