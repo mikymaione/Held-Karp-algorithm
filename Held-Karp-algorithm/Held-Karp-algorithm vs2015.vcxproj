@@ -27,7 +27,6 @@
     <ClCompile Include="Held-Karp-algorithm\TSP\BranchAndBound.cpp" />
     <ClCompile Include="Held-Karp-algorithm\TSP\Christofides.cpp" />
     <ClCompile Include="Held-Karp-algorithm\TSP\HeldKarp.cpp" />
-    <ClCompile Include="Held-Karp-algorithm\TSP\Righini.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Held-Karp-algorithm\ADS\Graph.hpp" />
@@ -38,7 +37,6 @@
     <ClInclude Include="Held-Karp-algorithm\TSP\BranchAndBound.hpp" />
     <ClInclude Include="Held-Karp-algorithm\TSP\Christofides.hpp" />
     <ClInclude Include="Held-Karp-algorithm\TSP\HeldKarp.hpp" />
-    <ClInclude Include="Held-Karp-algorithm\TSP\Righini.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TSP_Instances\asym10.txt" />

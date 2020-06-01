@@ -13,7 +13,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "TSP/BranchAndBound.hpp"
 #include "TSP/Christofides.hpp"
 #include "TSP/HeldKarp.hpp"
-#include "TSP/Righini.hpp"
 
 using namespace TSP;
 using namespace std;
@@ -73,11 +72,6 @@ void Run(string algo, string tipo, const unsigned short NumberOfNodes)
 	else if (algo == "B")
 	{
 		BranchAndBound A(DistanceMatrix2D);
-		A.Run();
-	}
-	else if (algo == "R")
-	{
-		Righini A(DistanceMatrix2D);
 		A.Run();
 	}
 	else
@@ -143,8 +137,6 @@ int main(int argc, char **argv)
 				cout << "Approx-TSP algorithm on ";
 			else if (algo == "B")
 				cout << "Branch & Bound algorithm on ";
-			else if (algo == "R")
-				cout << "Righini algorithm on ";
 			else
 				cout << "Christofides algorithm on ";
 
