@@ -27,6 +27,7 @@ namespace TSP
 	void BranchAndBound::Solve(float &opt, string &path)
 	{
 
+
 		opt = 0;
 		path = PrintPath();
 
