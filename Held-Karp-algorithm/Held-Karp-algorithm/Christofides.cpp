@@ -6,9 +6,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <queue>
+#include <set>
+#include <stack>
 
 #include "Christofides.hpp"
+#include "Prim.hpp"
+#include "Graph.hpp"
 
 namespace TSP
 {
@@ -25,66 +28,6 @@ namespace TSP
 			s = to_string(e) + " " + s;
 
 		return s;
-	}
-
-	void Christofides::MinimumSpanningTree_Prim() // O(E ㏒ V)
-	{
-		struct Node
-		{
-			unsigned short id, π;
-			float key;
-
-			bool operator < (const Node &n) const
-			{
-				return (key < n.key);
-			}
-		};
-
-		priority_queue<Node*, vector<Node*>, less<Node*>> Q; // sorted min queue
-		set<size_t> S; // elements available
-		vector<Node> V(numberOfNodes);
-
-		for (size_t u = 0; u < numberOfNodes; u++)
-		{
-			V[u].id = u;
-			V[u].key = FLT_MAX;
-			V[u].π = UINT16_MAX;
-
-			S.insert(u);
-		}
-
-		auto r = &V[0];
-		r->key = 0;
-		Q.push(r);
-
-		while (!Q.empty())
-		{
-			auto u = Q.top()->id; // min
-			Q.pop();
-			S.erase(u);
-
-			for (size_t v = 0; v < V.size(); v++)
-				if (u != v)
-					if (S.count(v) && distance[u][v] < V[v].key)
-					{
-						V[v].π = u;
-						V[v].key = distance[u][v];
-
-						Q.push(&V[v]);
-					}
-		}
-
-		// crea out-star
-		for (unsigned short u = 0; u < numberOfNodes; u++)
-		{
-			auto v = V[u].π;
-
-			if (v != UINT16_MAX)
-			{
-				out_star[u].push_back(v);
-				out_star[v].push_back(u);
-			}
-		}
 	}
 
 	void Christofides::GreedyWeightedPerfectMatching() // O(V²)
@@ -224,8 +167,20 @@ namespace TSP
 	*/
 	void Christofides::Solve(float &opt, string &path) // O(V⁴)
 	{
+		Graph G(numberOfNodes);
+		G.MakeConnected(distance);
+
 		// 1. Create a minimum spanning tree T of G.
-		MinimumSpanningTree_Prim(); // O(E ㏒ V)
+		MST::Prim prim;
+		prim.Solve(distance, G, 0); // O(E ㏒ V)
+
+		// crea out-star
+		for (auto u : G.V)
+			if (u->π)
+			{
+				out_star[u->id].push_back(u->π->id);
+				out_star[u->π->id].push_back(u->id);
+			}
 
 		// 2. Let O be the set of vertices with odd degree in T.
 		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.

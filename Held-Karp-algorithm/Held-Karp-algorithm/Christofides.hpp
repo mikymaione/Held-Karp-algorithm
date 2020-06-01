@@ -6,9 +6,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-
-#include <set>
-#include <stack>
 #include <string>
 #include <vector>
 
@@ -30,7 +27,6 @@ namespace TSP
 		vector<unsigned short> FindEulerCircuit(unsigned short start);
 
 		void GreedyWeightedPerfectMatching();
-		void MinimumSpanningTree_Prim();
 
 	protected:
 		string PrintPath(vector<unsigned short> circuit);
