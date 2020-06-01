@@ -53,6 +53,7 @@ namespace TSP
 			TSP(const vector<vector<float>> &DistanceMatrix2D);
 
 			void Run();
+			void SilentSolve(float &opt, string &path);
 
 			static vector<vector<float>> New_RND_Distances(const unsigned short Size_of_RandomDistanceCosts);
 

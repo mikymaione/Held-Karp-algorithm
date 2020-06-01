@@ -20,6 +20,9 @@ namespace TSP
 {
 	class BranchAndBound : public Base::TSP
 	{
+	private:
+		float UpperBound();
+
 	protected:
 		string PrintPath();
 
