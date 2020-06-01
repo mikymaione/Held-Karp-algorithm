@@ -17,74 +17,6 @@ namespace TSP
 {
 	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	Graph BranchAndBound::OneTree(Graph &G)
-	{
-		MST::Kruskal kruskal;
-
-		Graph guard(numberOfNodes, 0, numberOfNodes - 1);
-		Graph onetree(numberOfNodes - 1, 1, numberOfNodes - 1);
-
-		for (auto v0 : guard.V)
-			if (v0->id == 0)
-			{
-				for (auto a : guard.V)
-					if (a->id != 0)
-						guard.AddEdge(distance[v0->id][a->id], v0, a);
-
-				break;
-			}
-
-		for (auto d : onetree.V)
-			for (auto a : onetree.V)
-				if (a->id != d->id)
-					onetree.AddEdge(distance[d->id][a->id], d, a);
-
-		auto result = kruskal.Solve(onetree);
-		auto result1 = kruskal.Solve(guard);
-
-		for (unsigned short h = 0; h < numberOfNodes; h++)
-			if (result.E.size() < numberOfNodes - 1)
-				result.AddEdge(*result1.E[h]);
-			else
-				break;
-
-		return result;
-	}
-
-	void BranchAndBound::Branch(Graph &busca)
-	{
-		bool flagTitular = false;
-
-		shared_ptr<Node> titular;
-
-		stack<shared_ptr<Node>> fronteira;
-		fronteira.push(busca.GetANode());
-
-		while (fronteira.size() > 0)
-		{
-			auto aux = fronteira.top();
-			fronteira.pop();
-
-			if (!flagTitular)
-			{
-				if (busca.Adj[aux].size() == 2)
-				{
-					titular = aux;
-					flagTitular = true;
-				}
-				else
-				{
-					auto verticeAux = busca.verificaGrau();
-					list<shared_ptr<Edge>> titular;
-
-					busca.SortEdgeByWeight();
-
-
-				}
-			}
-		}
-	}
-
 	string BranchAndBound::PrintPath()
 	{
 		string s;
@@ -94,11 +26,6 @@ namespace TSP
 
 	void BranchAndBound::Solve(float &opt, string &path)
 	{
-		Graph G(numberOfNodes, 0, numberOfNodes - 1);
-		G.MakeConnected(distance);
-
-		auto busca = OneTree(G);
-		Branch(busca);
 
 		opt = 0;
 		path = PrintPath();

@@ -76,25 +76,6 @@ namespace ADS
 			}
 		}
 
-		shared_ptr<Node> verificaGrau()
-		{
-			auto allGrade2 = true;
-
-			for (auto v : Adj)
-				if (v.second.size() != 2)
-				{
-					allGrade2 = false;
-					break;
-				}
-
-			if (!allGrade2)
-				for (auto v : Adj)
-					if (v.second.size() > 2)
-						return v.first;
-
-			return nullptr;
-		}
-
 		void AddEdge(float cost, shared_ptr<Node> from, shared_ptr<Node> to)
 		{
 			Edge e(cost, from, to);

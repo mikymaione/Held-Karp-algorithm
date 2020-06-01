@@ -18,11 +18,7 @@ using namespace ADS;
 namespace TSP
 {
 	class BranchAndBound : public TSP
-	{
-	private:
-		Graph OneTree(Graph &G);
-		void Branch(Graph &busca);
-
+	{		
 	protected:
 		string PrintPath();
 
