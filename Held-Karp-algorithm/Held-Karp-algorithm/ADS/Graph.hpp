@@ -24,11 +24,6 @@ namespace ADS
 
 		unsigned short rank = 0; // Kruskal
 		float key = FLT_MAX; // Prim			
-
-		bool operator < (const Node &n) const
-		{
-			return (key < n.key);
-		}
 	};
 
 	struct Edge

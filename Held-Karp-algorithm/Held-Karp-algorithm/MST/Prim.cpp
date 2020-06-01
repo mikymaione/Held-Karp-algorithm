@@ -6,6 +6,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
+#include <functional>
 #include <queue>
 #include <set>
 
@@ -16,8 +17,13 @@ namespace MST
 
 	void Prim::Solve(const vector<vector<float>> &distance, Graph &G, unsigned short r_id) // O(E ㏒ V)
 	{
-		priority_queue<shared_ptr<Node>, vector<shared_ptr<Node>>, less<shared_ptr<Node>>> Q; // sorted min queue
 		set<size_t> S; // elements available
+
+		// sorted min queue
+		priority_queue<shared_ptr<Node>, vector<shared_ptr<Node>>, function<bool(const shared_ptr<Node>, const shared_ptr<Node>)>> Q([](const shared_ptr<Node> s1, const shared_ptr<Node> s2)
+		{
+			return s1->key < s2->key;
+		});
 
 		for (auto u : G.V)
 		{
