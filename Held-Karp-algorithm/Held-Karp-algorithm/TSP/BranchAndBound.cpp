@@ -23,13 +23,12 @@ namespace TSP
 
 	void BranchAndBound::Solve(float &opt, string &path)
 	{
-		auto best_lb = 0.0f;
-		auto base_step = 0.0f;
-		auto UB = FLT_MAX;
-		auto step = 0.0f;
+		auto best_one_tree = 0.0f;
+		auto t_1 = 0.0f;
+		auto t_k = 0.0f;
 
 		auto M = ((numberOfNodes * numberOfNodes) / 50) + numberOfNodes + 16;
-		auto K = 0;
+		auto k = 0;
 
 		auto constraint1 = 2.0f * (M - 1.0f) * (M - 2.0f);
 		auto constraint2 = M * (2.0f * M - 3.0f);
@@ -39,63 +38,53 @@ namespace TSP
 		Graph G(numberOfNodes);
 		G.MakeConnected(distance);
 
-		map<shared_ptr<Node>, unsigned short> oldDegree;
+		map<shared_ptr<Node>, unsigned short> d_k_prev;
 		vector<float> π(numberOfNodes, 0);
 
 		shared_ptr<Graph> best_1t;
 
-		while (K < M)
+		while (k < M)
 		{
-			K++;
+			k++;
 
-			/* compute minimum 1-tree */
-			auto curr_1t = kruskal.Solve(G);
+			auto one_tree = kruskal.Solve(G);
 
-			if (curr_1t->E.size() == 0)
+			if (one_tree->E.size() == 0)
 				break;
 
-			auto vrtx_deg = curr_1t->Degree();
+			auto d_k = one_tree->Degree();
 
-			if (K == 1)
-				oldDegree = vrtx_deg;
+			if (k == 1)
+				d_k_prev = d_k;
 
-			auto z = curr_1t->Cost();
+			auto z = one_tree->Cost();
 
 			for (unsigned short i = 0; i < numberOfNodes; i++)
 				z += π[i] * 2;
 
-			/* update solution */
-			if (z > best_lb || K == 1)
+			if (z > best_one_tree || k == 1)
 			{
-				best_lb = z;
-				best_1t = curr_1t;
+				best_one_tree = z;
+				best_1t = one_tree;
 
-				base_step = 0.01 * z;
-
-				if (z > UB)
-					break;
+				t_1 = 0.01f * z;
 			}
 
-			/* stop condition */
-			if (curr_1t->onetree_is_cycle())
+			if (one_tree->HaveCycle())
 				break;
 
-			/* update step */
-			step = base_step * ((K * K - 3.0f * (M - 1.0f) * K + constraint2) / constraint1);
+			t_k = t_1 * ((k * k - 3.0f * (M - 1.0f) * k + constraint2) / constraint1);
 
-			for (auto v : curr_1t->V)
-				if (vrtx_deg[v] != 2)
-					π[v->id] += 0.5 * step * (2 - vrtx_deg[v]) + 0.5 * step * (2 - oldDegree[v]);
+			for (auto i : one_tree->V)
+				π[i->id] += 0.6 * t_k * (2 - d_k[i]) + 0.4 * t_k * (2 - d_k_prev[i]);
 
-			/* store degrees */
-			oldDegree = vrtx_deg;
+			d_k_prev = d_k;
 
-			/* update edge-costs */
 			for (auto e : G.E)
 				e->cost = distance[e->from->id][e->to->id] - π[e->from->id] - π[e->to->id];
 		}
 
-		opt = best_lb;
+		opt = best_one_tree;
 		path = PrintPath();
 
 		currentCardinality = numberOfNodes;

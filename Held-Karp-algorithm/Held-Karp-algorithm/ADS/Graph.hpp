@@ -152,7 +152,7 @@ namespace ADS
 			return R;
 		}
 
-		bool onetree_is_cycle()
+		bool HaveCycle()
 		{
 			auto D = Degree();
 
