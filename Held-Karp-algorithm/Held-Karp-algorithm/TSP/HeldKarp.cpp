@@ -180,6 +180,8 @@ namespace TSP
 		}
 		// ALGO[01:02]
 
+		maxCardinality = numberOfNodes;
+
 		// ALGO[03:06]
 		for (currentCardinality = 2; currentCardinality < numberOfNodes; currentCardinality++) // O(N) cardinalità degli insiemi // ALGO[03]
 		{

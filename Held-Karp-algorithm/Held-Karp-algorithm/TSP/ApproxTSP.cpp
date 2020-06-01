@@ -39,14 +39,19 @@ namespace TSP
 	*/
 	void ApproxTSP::Solve(float &opt, string &path) // Θ(V²)
 	{
+		maxCardinality = 4;
+
 		Graph G(numberOfNodes);
 		G.MakeConnected(distance);
+		currentCardinality++;
 
 		MST::Prim prim;
 		prim.Solve(distance, G, 0); // O(E ㏒ V)
+		currentCardinality++;
 
 		stack<size_t> H;
 		G.PreVisit(H, 0); // O(V)
+		currentCardinality++;
 
 		opt = 0;
 		path = "0 ";
@@ -62,7 +67,6 @@ namespace TSP
 
 			u = v;
 		}
-
-		currentCardinality = numberOfNodes;
+		currentCardinality++;
 	}
 }

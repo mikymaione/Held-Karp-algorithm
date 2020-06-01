@@ -55,8 +55,10 @@ namespace TSP
 		auto t_1 = 0.0f;
 		auto t_k = 0.0f;
 
-		auto M = ((numberOfNodes * numberOfNodes) / 50) + numberOfNodes + 16;
-		auto k = 0;
+		unsigned short k = 0;
+		unsigned short M = ((numberOfNodes * numberOfNodes) / 50) + numberOfNodes + 16;
+
+		maxCardinality = M;
 
 		auto constraint1 = 2.0f * (M - 1.0f) * (M - 2.0f);
 		auto constraint2 = M * (2.0f * M - 3.0f);
@@ -71,13 +73,14 @@ namespace TSP
 		map<shared_ptr<Node>, unsigned short> d_k_prev;
 		vector<float> π(numberOfNodes, 0);
 
-		shared_ptr<Graph> best_1t;
+		shared_ptr<Graph> best_1t, one_tree;
 
 		while (k < M)
 		{
 			k++;
+			currentCardinality++;
 
-			auto one_tree = kruskal.Solve(G);
+			one_tree = kruskal.Solve(G);
 
 			if (one_tree->E.size() == 0)
 				break;
@@ -90,7 +93,7 @@ namespace TSP
 			auto z = one_tree->Cost();
 
 			for (unsigned short i = 0; i < numberOfNodes; i++)
-				z += π[i] * 2;
+				z += π[i] * 2.0f;
 
 			if (z > best_one_tree || k == 1)
 			{
@@ -109,7 +112,7 @@ namespace TSP
 			t_k = t_1 * ((k * k - 3.0f * (M - 1.0f) * k + constraint2) / constraint1);
 
 			for (auto i : one_tree->V)
-				π[i->id] += 0.6 * t_k * (2 - d_k[i]) + 0.4 * t_k * (2 - d_k_prev[i]);
+				π[i->id] += 0.6f * t_k * (2 - d_k[i]) + 0.4f * t_k * (2 - d_k_prev[i]);
 
 			d_k_prev = d_k;
 
@@ -119,7 +122,5 @@ namespace TSP
 
 		opt = best_one_tree;
 		path = PrintPath();
-
-		currentCardinality = numberOfNodes;
 	}
 }

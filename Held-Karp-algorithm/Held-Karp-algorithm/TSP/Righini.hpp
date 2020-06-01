@@ -9,7 +9,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <vector>
 
 #include "Base/TSP.hpp"
+#include "../ADS/Graph.hpp"
 
+using namespace ADS;
 using namespace std;
 
 namespace TSP

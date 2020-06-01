@@ -69,17 +69,18 @@ namespace TSP
 
 			const auto T = duration_cast<seconds>(system_clock::now() - begin).count();
 			const auto s = currentCardinality._My_val;
+			const auto m = maxCardinality._My_val;
 
 			if (s > 0)
 			{
 				stringstream ss;
 				ss
 					<< " "
-					<< 100 * s / numberOfNodes
+					<< 100 * s / m
 					<< "% - ET: "
 					<< T
 					<< "s ETL: "
-					<< (numberOfNodes - s) * T / s
+					<< (m - s) * T / s
 					<< "s\r";
 
 				cout << ss.str();
@@ -91,7 +92,7 @@ namespace TSP
 
 		void TSP::ETL()
 		{
-			while (currentCardinality < numberOfNodes - 1)
+			while (!programEnded)
 			{
 				ETLw();
 				this_thread::sleep_for(seconds(1));
@@ -131,6 +132,8 @@ namespace TSP
 				string path;
 
 				Solve(opt, path);
+
+				programEnded = true;
 
 				cout
 					<< "-Cost: "

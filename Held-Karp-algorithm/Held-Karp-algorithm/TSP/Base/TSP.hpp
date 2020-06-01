@@ -32,6 +32,8 @@ namespace TSP
 
 			time_point<system_clock> begin;
 			atomic<unsigned short> currentCardinality = 0;
+			atomic<unsigned short> maxCardinality = 1;
+			atomic<bool> programEnded = false;
 			atomic<bool> writingBuffer = false;
 
 		protected:

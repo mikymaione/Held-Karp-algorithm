@@ -17,8 +17,6 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 */
 #pragma once
 
-#include <algorithm>
-
 #include "Righini.hpp"
 
 namespace TSP
@@ -37,40 +35,6 @@ namespace TSP
 	*/
 	void Righini::Solve(float &opt, string &path)
 	{
-		const unsigned short r = numberOfNodes - 1;
-
-		//auto G = graphFromDistanceMatrix(numberOfNodes);
-		//auto G_k = graphFromDistanceMatrix(r);
-
-		//auto S_k = Kruskal(G_k);
-
-		//vector<Edge*> D(2); // min cost edge incident to r
-		//{
-		//	vector<Edge*> toSort;
-
-		//	for (size_t i = 0; i < G.edge.size(); i++)
-		//		if (G.edge[i].v == r && G.edge[i].v != G.edge[i].u)
-		//			toSort.push_back(&G.edge[i]);
-
-		//	sort(toSort.begin(), toSort.end(), [](Edge* x, Edge* y)
-		//	{
-		//		return x->w < y->w;
-		//	});
-
-		//	for (size_t x = 0; x < 2; x++)
-		//		D[x] = toSort[x];
-		//}
-
-		//{	// reduce cost G_k to 0
-		//	auto min = FLT_MAX;
-
-		//	for (size_t i = 0; i < G_k.edge.size(); i++)
-		//		if (G_k.edge[i].w < min)
-		//			min = G_k.edge[i].w;
-
-		//	for (size_t i = 0; i < G_k.edge.size(); i++)
-		//		G_k.edge[i].w -= min;
-		//}
 
 		currentCardinality = numberOfNodes;
 	}

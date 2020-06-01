@@ -172,12 +172,16 @@ namespace TSP
 	*/
 	void Christofides::Solve(float &opt, string &path) // O(V⁴)
 	{
+		maxCardinality = 8;
+
 		Graph G(numberOfNodes);
 		G.MakeConnected(distance);
+		currentCardinality++;
 
 		// 1. Create a minimum spanning tree T of G.
 		MST::Prim prim;
 		prim.Solve(distance, G, 0); // O(E ㏒ V)
+		currentCardinality++;
 
 		// crea out-star
 		for (auto u : G.V)
@@ -186,11 +190,13 @@ namespace TSP
 				out_star[u->id].push_back(u->π->id);
 				out_star[u->π->id].push_back(u->id);
 			}
+		currentCardinality++;
 
 		// 2. Let O be the set of vertices with odd degree in T.
 		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.
 		// 4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
 		GreedyWeightedPerfectMatching(); // O(V²)
+		currentCardinality++;
 
 		unsigned short bestIndex;
 		{
@@ -207,14 +213,17 @@ namespace TSP
 				}
 			}
 		}
+		currentCardinality++;
 
 		// 5. Form an Eulerian circuit in H.
 		auto circuit = FindEulerCircuit(bestIndex); // O((V + E)²)
+		currentCardinality++;
 
 		// 6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
 		opt = ToHamiltonianPath(circuit); // O(V)
-		path = PrintPath(circuit); // O(V)
+		currentCardinality++;
 
-		currentCardinality = numberOfNodes;
+		path = PrintPath(circuit); // O(V)		 
+		currentCardinality++;
 	}
 }
