@@ -23,7 +23,7 @@ namespace ADS
 		shared_ptr<Node> π;
 
 		unsigned short rank = 0; // Kruskal
-		float key = FLT_MAX; // Prim			
+		float key = FLT_MAX; // Prim
 	};
 
 	struct Edge

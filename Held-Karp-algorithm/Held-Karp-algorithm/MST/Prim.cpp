@@ -7,7 +7,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #pragma once
 
 #include <functional>
-#include <queue>
 #include <set>
 
 #include "Prim.hpp"
@@ -20,10 +19,12 @@ namespace MST
 		set<size_t> S; // elements available
 
 		// sorted min queue
-		priority_queue<shared_ptr<Node>, vector<shared_ptr<Node>>, function<bool(const shared_ptr<Node>, const shared_ptr<Node>)>> Q([](const shared_ptr<Node> s1, const shared_ptr<Node> s2)
+		auto compare = [](shared_ptr<Node> lhs, shared_ptr<Node> rhs)
 		{
-			return s1->key < s2->key;
-		});
+			return lhs->key < rhs->key;
+		};
+
+		set<shared_ptr<Node>, decltype(compare)> Q(compare);
 
 		for (auto u : G.V)
 		{
@@ -35,22 +36,24 @@ namespace MST
 
 		auto r = G.NodeById(r_id);
 		r->key = 0;
-		Q.push(r);
+		Q.insert(r);
 
 		while (!Q.empty())
 		{
-			auto u = Q.top(); // min
-			Q.pop();
+			auto u = *Q.begin(); // min
+			Q.erase(u);
 			S.erase(u->id);
 
 			for (auto v : G.Adj[u])
 				if (u->id != v->id)
 					if (S.count(v->id) && distance[u->id][v->id] < v->key)
 					{
+						Q.erase(v);
+
 						v->π = u;
 						v->key = distance[u->id][v->id];
 
-						Q.push(v);
+						Q.insert(v);
 					}
 		}
 	}
