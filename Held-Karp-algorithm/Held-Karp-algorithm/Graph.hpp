@@ -52,6 +52,7 @@ namespace ADS
 		list<shared_ptr<Node>> V;
 		vector<shared_ptr<Edge>> E; // sortable
 		map<shared_ptr<Node>, list<shared_ptr<Node>>> Adj;
+		vector<vector<unsigned short>> AdjIDs;
 
 		unsigned short NumberOfNodes;
 
@@ -72,6 +73,8 @@ namespace ADS
 
 		Graph(unsigned short NumberOfNodes_, unsigned short from, unsigned to) : NumberOfNodes(NumberOfNodes_)
 		{
+			AdjIDs.resize(NumberOfNodes_);
+
 			for (unsigned short d = from; d <= to; d++)
 			{
 				Node n;
@@ -92,6 +95,7 @@ namespace ADS
 		{
 			E.push_back(make_shared<Edge>(e));
 			Adj[e.from].push_back(e.to);
+			AdjIDs[e.from->id].push_back(e.to->id);
 		}
 
 		void SortEdgeByWeight()

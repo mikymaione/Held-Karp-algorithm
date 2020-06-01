@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 namespace MST
 {
 
-	Graph Prim::Solve(const vector<vector<float>> &distance, Graph G, unsigned short r_id) // O(E ㏒ V)
+	void Prim::Solve(const vector<vector<float>> &distance, Graph &G, unsigned short r_id) // O(E ㏒ V)
 	{
 		priority_queue<shared_ptr<Node>, vector<shared_ptr<Node>>, less<shared_ptr<Node>>> Q; // sorted min queue
 		set<size_t> S; // elements available
@@ -47,8 +47,6 @@ namespace MST
 						Q.push(v);
 					}
 		}
-
-		return G; // clone
 	}
 
 }
