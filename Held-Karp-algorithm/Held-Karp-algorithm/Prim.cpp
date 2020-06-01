@@ -6,21 +6,47 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <vector>
+#include <queue>
+#include <set>
 
-#include "TSP.hpp"
+#include "Prim.hpp"
 
-using namespace std;
-
-namespace TSP
+namespace MST
 {
-	class ApproxTSP : public TSP
+
+	void Prim::Solve(const vector<vector<float>> &distance, Graph &G, unsigned short r_id) // O(E ㏒ V)
 	{
-	protected:
-		void Solve(float &opt, string &path);
+		priority_queue<shared_ptr<Node>, vector<shared_ptr<Node>>, less<shared_ptr<Node>>> Q; // sorted min queue
+		set<size_t> S; // elements available
 
-	public:
-		ApproxTSP(const vector<vector<float>> &DistanceMatrix2D);
+		for (auto u : G.V)
+		{
+			u->key = FLT_MAX;
+			u->π = nullptr;
 
-	};
+			S.insert(u->id);
+		}
+
+		auto r = G.NodeById(r_id);
+		r->key = 0;
+		Q.push(r);
+
+		while (!Q.empty())
+		{
+			auto u = Q.top(); // min
+			Q.pop();
+			S.erase(u->id);
+
+			for (auto v : G.Adj[u])
+				if (u != v)
+					if (S.count(v->id) && distance[u->id][v->id] < v->key)
+					{
+						v->π = u;
+						v->key = distance[u->id][v->id];
+
+						Q.push(v);
+					}
+		}
+	}
+
 }

@@ -6,64 +6,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <queue>
-#include <set>
+#include <stack>
 
 #include "ApproxTSP.hpp"
+#include "Graph.hpp"
+#include "Prim.hpp"
 
 namespace TSP
 {
-	ApproxTSP::ApproxTSP(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D)
-	{
-		V.resize(numberOfNodes);
-
-		for (unsigned short i = 0; i < numberOfNodes; i++)
-			V[i].id = i;
-	}
-
-	void ApproxTSP::MST_Prim() // O(E ㏒ V)
-	{
-		priority_queue<Node*, vector<Node*>, less<Node*>> Q; // sorted min queue
-		set<size_t> S; // elements available
-
-		for (size_t u = 0; u < V.size(); u++)
-		{
-			V[u].key = FLT_MAX;
-			V[u].π = UINT16_MAX;
-
-			S.insert(u);
-		}
-
-		auto r = &V[0];
-		r->key = 0;
-		Q.push(r);
-
-		while (!Q.empty())
-		{
-			auto u = Q.top()->id; // min
-			Q.pop();
-			S.erase(u);
-
-			for (size_t v = 0; v < V.size(); v++)
-				if (u != v)
-					if (S.count(v) && distance[u][v] < V[v].key)
-					{
-						V[v].π = u;
-						V[v].key = distance[u][v];
-
-						Q.push(&V[v]);
-					}
-		}
-	}
-
-	void ApproxTSP::PreVisit(stack<size_t> &R, size_t r) // O(V)
-	{
-		R.push(r);
-
-		for (size_t v = 0; v < V.size(); v++)
-			if (V[v].π == r)
-				PreVisit(R, v);
-	}
+	ApproxTSP::ApproxTSP(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
 	/*
 	Held–Karp algorithm
@@ -88,10 +39,14 @@ namespace TSP
 	*/
 	void ApproxTSP::Solve(float &opt, string &path) // Θ(V²)
 	{
-		MST_Prim(); // O(E ㏒ V)
+		Graph G(numberOfNodes);
+		G.MakeConnected(distance);
+
+		MST::Prim prim;
+		prim.Solve(distance, G, 0); // O(E ㏒ V)
 
 		stack<size_t> H;
-		PreVisit(H, 0); // O(V)
+		G.PreVisit(H, 0); // O(V)
 
 		opt = 0;
 		path = "0 ";

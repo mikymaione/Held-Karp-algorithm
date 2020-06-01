@@ -8,19 +8,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <vector>
 
-#include "TSP.hpp"
+#include "Graph.hpp"
 
 using namespace std;
+using namespace ADS;
 
-namespace TSP
+namespace MST
 {
-	class ApproxTSP : public TSP
+	class Prim
 	{
-	protected:
-		void Solve(float &opt, string &path);
-
 	public:
-		ApproxTSP(const vector<vector<float>> &DistanceMatrix2D);
+		void Solve(const vector<vector<float>> &distance, Graph &G, unsigned short r_id);
 
 	};
 }

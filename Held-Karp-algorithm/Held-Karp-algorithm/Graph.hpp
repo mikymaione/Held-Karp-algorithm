@@ -9,6 +9,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <algorithm>
 #include <memory>
 #include <list>
+#include <stack>
 #include <vector>
 #include <map>
 
@@ -18,9 +19,11 @@ namespace ADS
 {
 	struct Node
 	{
-		unsigned short id, rank = 0;
-		float key = FLT_MAX;
+		unsigned short id;
 		shared_ptr<Node> π;
+
+		unsigned short rank = 0; // Kruskal
+		float key = FLT_MAX; // Prim			
 
 		bool operator < (const Node &n) const
 		{
@@ -64,6 +67,8 @@ namespace ADS
 				V.push_back(make_shared<Node>(n));
 			}
 		}
+
+		Graph(unsigned short NumberOfNodes_) :Graph(NumberOfNodes_, 0, NumberOfNodes_ - 1) {}
 
 		Graph(unsigned short NumberOfNodes_, unsigned short from, unsigned to) : NumberOfNodes(NumberOfNodes_)
 		{
@@ -114,5 +119,16 @@ namespace ADS
 			for (auto v : V)
 				return v;
 		}
+
+		void PreVisit(stack<size_t> &R, unsigned short r)
+		{
+			R.push(r);
+
+			for (auto v : V)
+				if (v->π)
+					if (v->π->id == r)
+						PreVisit(R, v->id);
+		}
+
 	};
 }
