@@ -48,9 +48,9 @@ namespace MST
 		Link(u, v);
 	}
 
-	list<shared_ptr<Edge>> Kruskal::Solve(Graph &G) // O(E ㏒ V)
+	shared_ptr<Graph> Kruskal::Solve(Graph &G) // O(E ㏒ V)
 	{
-		list<shared_ptr<Edge>> A;
+		Graph T(G.V);
 
 		for (auto v : G.V)
 			MakeSet(v);
@@ -64,12 +64,12 @@ namespace MST
 
 			if (FindSet(u) != FindSet(v))
 			{
-				A.push_back(e);
+				T.E.push_back(e);
 				Union(u, v);
 			}
 		}
 
-		return A;
+		return make_shared<Graph>(T);
 	}
 
 }

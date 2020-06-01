@@ -7,6 +7,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #pragma once
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <list>
 #include <stack>
@@ -23,7 +24,7 @@ namespace ADS
 		shared_ptr<Node> π;
 
 		unsigned short rank = 0; // Kruskal
-		float key = FLT_MAX; // Prim
+		float key = FLT_MAX; // Prim		
 	};
 
 	struct Edge
@@ -41,6 +42,7 @@ namespace ADS
 	{
 		list<shared_ptr<Node>> V;
 		vector<shared_ptr<Edge>> E; // sortable
+
 		map<shared_ptr<Node>, list<shared_ptr<Node>>> Adj;
 		vector<vector<unsigned short>> AdjIDs;
 
@@ -59,7 +61,7 @@ namespace ADS
 			}
 		}
 
-		Graph(unsigned short NumberOfNodes_) :Graph(NumberOfNodes_, 0, NumberOfNodes_ - 1) {}
+		Graph(unsigned short NumberOfNodes_) : Graph(NumberOfNodes_, 0, NumberOfNodes_ - 1) {}
 
 		Graph(unsigned short NumberOfNodes_, unsigned short from, unsigned to) : NumberOfNodes(NumberOfNodes_)
 		{
@@ -86,13 +88,6 @@ namespace ADS
 			E.push_back(make_shared<Edge>(e));
 			Adj[e.from].push_back(e.to);
 			AdjIDs[e.from->id].push_back(e.to->id);
-		}
-
-		void SortEdgeByWeight()
-		{
-			sort(E.begin(), E.end(), [](shared_ptr<Edge> l, shared_ptr<Edge> r) {
-				return l->cost < r->cost;
-			});
 		}
 
 		void MakeConnected(const vector<vector<float>> &DistanceMatrix2D)
@@ -126,5 +121,56 @@ namespace ADS
 						PreVisit(R, v->id);
 		}
 
+		unsigned short degree_out(shared_ptr<Node> n)
+		{
+			return Adj[n].size();
+		}
+
+		void SortEdgeByWeight()
+		{
+			sort(E.begin(), E.end(), [](shared_ptr<Edge> l, shared_ptr<Edge> r) {
+				return l->cost < r->cost;
+			});
+		}
+
+		map<shared_ptr<Node>, unsigned short> Degree()
+		{
+			map<shared_ptr<Node>, unsigned short> R;
+
+			for (auto e : E)
+			{
+				R[e->from] = 0;
+				R[e->to] = 0;
+			}
+
+			for (auto e : E)
+				R[e->from]++;
+
+			for (auto e : E)
+				R[e->to]++;
+
+			return R;
+		}
+
+		bool onetree_is_cycle()
+		{
+			auto D = Degree();
+
+			for (auto v : V)
+				if (D[v] != 2)
+					return false;
+
+			return true;
+		}
+
+		float Cost()
+		{
+			float cost = 0;
+
+			for (auto e : E)
+				cost += e->cost;
+
+			return cost;
+		}
 	};
 }
