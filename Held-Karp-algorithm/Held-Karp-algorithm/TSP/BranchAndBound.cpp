@@ -25,7 +25,7 @@ namespace TSP
 	{
 		auto best_lb = 0.0f;
 		auto base_step = 0.0f;
-		auto UB = 0.0f;
+		auto UB = FLT_MAX;
 		auto step = 0.0f;
 
 		auto M = ((numberOfNodes * numberOfNodes) / 50) + numberOfNodes + 16;
