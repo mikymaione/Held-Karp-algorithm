@@ -43,10 +43,10 @@ namespace TSP
 		G.MakeConnected(distance);
 
 		MST::Prim prim;
-		prim.Solve(distance, G, 0); // O(E ㏒ V)
+		auto mst = prim.Solve(distance, G, 0); // O(E ㏒ V)
 
 		stack<size_t> H;
-		G.PreVisit(H, 0); // O(V)
+		mst.PreVisit(H, 0); // O(V)
 
 		opt = 0;
 		path = "0 ";

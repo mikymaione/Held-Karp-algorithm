@@ -18,7 +18,7 @@ namespace MST
 	class Prim
 	{
 	public:
-		void Solve(const vector<vector<float>> &distance, Graph &G, unsigned short r_id);
+		Graph Solve(const vector<vector<float>> &distance, Graph G, unsigned short r_id);
 
 	};
 }
