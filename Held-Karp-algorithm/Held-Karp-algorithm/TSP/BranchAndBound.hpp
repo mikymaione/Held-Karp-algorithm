@@ -24,13 +24,9 @@ namespace TSP
 		float UB;
 
 	private:
-		void vertexsel(shared_ptr<Graph> T, unsigned short &v);
-		void edgesel(shared_ptr<Graph> T, const unsigned short v, shared_ptr<Edge> &e1, shared_ptr<Edge> &e2);
-
 		float UpperBound();
 
-		shared_ptr<Graph> LagrangeSubGradient(Graph &G, float &best_zero_tree_cost);
-		void DoBranchAndBound(Graph &G);
+		shared_ptr<Graph> LagrangeSubGradient(const unsigned short N, Graph &G, float &best_zero_tree_cost);
 
 	protected:
 		string PrintPath();

@@ -47,13 +47,13 @@ namespace TSP
 		return opt;
 	}
 
-	shared_ptr<Graph> BranchAndBound::LagrangeSubGradient(Graph &G, float &best_zero_tree_cost)
+	shared_ptr<Graph> BranchAndBound::LagrangeSubGradient(const unsigned short N, Graph &G, float &best_zero_tree_cost)
 	{
 		auto t_1 = 0.0f;
 		auto t_k = 0.0f;
 
 		unsigned short k = 0;
-		unsigned short M = ((numberOfNodes * numberOfNodes) / 50) + numberOfNodes + 16;
+		unsigned short M = ((N * N) / 50) + N + 16;
 
 		maxCardinality = M;
 
@@ -63,7 +63,7 @@ namespace TSP
 		MST::Kruskal kruskal;
 
 		map<unsigned short, unsigned short> d_k_prev;
-		vector<float> π(numberOfNodes, 0);
+		vector<float> π(N, 0);
 
 		shared_ptr<Graph> best_zero_tree;
 
@@ -84,7 +84,7 @@ namespace TSP
 
 			auto zero_tree_cost = zero_tree->Cost();
 
-			for (unsigned short i = 0; i < numberOfNodes; i++)
+			for (unsigned short i = 0; i < N; i++)
 				zero_tree_cost += π[i] * 2.0f;
 
 			if (zero_tree_cost > best_zero_tree_cost || k == 1)
@@ -117,106 +117,6 @@ namespace TSP
 		return best_zero_tree;
 	}
 
-	void BranchAndBound::DoBranchAndBound(Graph &G)
-	{
-		unsigned short  v;
-		shared_ptr<Edge> e1, e2;
-
-		/* compute 1-tree */
-		auto LB = 0.0f;
-		auto curr_1t = LagrangeSubGradient(G, LB);
-
-		if (curr_1t->E.size() == 0)
-			return;
-
-		if (ceil(LB) >= UB)
-			return;
-
-		if (curr_1t->HaveCycle())
-		{
-			UB = LB;
-			return;
-		}
-
-		/* vertex selection*/
-		vertexsel(curr_1t, v);
-
-		/* edge selection */
-		if (v < numberOfNodes)
-			edgesel(curr_1t, v, e1, e2);
-
-		if (e1 && e2)
-		{
-			/* FORCE e1, FORCE e2 */
-			G.graph_set_edge_cstr(e1, Forced);
-			G.graph_set_edge_cstr(e2, Forced);
-
-			/* recursive call */
-			DoBranchAndBound(G);
-
-			/* remove constraints */
-			G.graph_set_edge_cstr(e1, Free);
-			G.graph_set_edge_cstr(e2, Free);
-
-			/* FORCE e1, FORBID e2 */
-			G.graph_set_edge_cstr(e1, Forced);
-			G.graph_set_edge_cstr(e2, Forbidden);
-
-			/* recursive call */
-			DoBranchAndBound(G);
-
-			/* remove constraints */
-			G.graph_set_edge_cstr(e1, Free);
-			G.graph_set_edge_cstr(e2, Free);
-		}
-
-		if (e1)
-		{
-			/* FORBID e1 */
-			G.graph_set_edge_cstr(e1, Forbidden);
-
-			/* recursive call */
-			DoBranchAndBound(G);
-
-			/* remove constraints */
-			G.graph_set_edge_cstr(e1, Free);
-		}
-	}
-
-	void BranchAndBound::edgesel(shared_ptr<Graph> T, const unsigned short v, shared_ptr<Edge> &e1, shared_ptr<Edge> &e2)
-	{
-		for (auto my_edge : T->E)
-			if (my_edge->from->id == v || my_edge->to->id == v)
-				if (my_edge->constraint == Free)
-				{
-					e1 = my_edge;
-					break;
-				}
-
-		for (auto my_edge : T->E)
-			if (my_edge->from->id == v || my_edge->to->id == v)
-				if (my_edge != e1)
-					if (my_edge->constraint == Free)
-					{
-						e2 = my_edge;
-						break;
-					}
-	}
-
-	void BranchAndBound::vertexsel(shared_ptr<Graph> T, unsigned short &v)
-	{
-		auto degree = T->Degree();
-
-		v = UINT16_MAX;
-
-		for (auto e : degree)
-			if (e.second > 2)
-			{
-				v = e.first;
-				break;
-			}
-	}
-
 	/*
 	From: Volgenant, T. and Jonker, R., 1982. A branch and bound algorithm for the symmetric traveling salesman problem based on the 1-tree relaxation. European Journal of Operational Research, 9(1):83–89.
 	*/
@@ -225,17 +125,56 @@ namespace TSP
 		const auto FirstUB = UpperBound();
 		UB = FirstUB;
 
-		Graph G(numberOfNodes);
-		G.MakeConnected(distance);
+		Graph G0(numberOfNodes - 1);
+		G0.MakeConnected(distance);
 
 		auto LB = 0.0f;
-		auto zero_tree = LagrangeSubGradient(G, LB);
+		auto zero_tree = LagrangeSubGradient(numberOfNodes - 1, G0, LB);
+
+		{
+			unsigned short minv1, minv2;
+
+			float minv1c = FLT_MAX;
+			float minv2c = FLT_MAX;
+
+			// n - v1
+			for (unsigned short x = 0; x < numberOfNodes - 1; x++)
+				if (distance[x][numberOfNodes - 1] < minv1c)
+				{
+					minv1c = distance[x][numberOfNodes - 1];
+					minv1 = x;
+				}
+
+			// n - v2
+			for (unsigned short x = 0; x < numberOfNodes - 1; x++)
+				if (x != minv1)
+					if (distance[x][numberOfNodes - 1] < minv2c)
+					{
+						minv2c = distance[x][numberOfNodes - 1];
+						minv2 = x;
+					}
+
+			zero_tree->AddNode(numberOfNodes - 1);
+
+			Edge minv1e(
+				minv1c,
+				zero_tree->NodeById(minv1),
+				zero_tree->NodeById(numberOfNodes - 1)
+				);
+
+			Edge minv2e(
+				minv2c,
+				zero_tree->NodeById(minv2),
+				zero_tree->NodeById(numberOfNodes - 1)
+				);
+
+			zero_tree->E.push_back(make_shared<Edge>(minv1e));
+			zero_tree->E.push_back(make_shared<Edge>(minv2e));
+
+			LB = zero_tree->Cost(distance);
+		}
 
 		auto gap = 100.0f * (UB - LB) / LB;
-
-		DoBranchAndBound(G);
-
-		auto gap2 = 100.0f * (UB - LB) / LB;
 
 		opt = LB;
 		path = PrintPath();

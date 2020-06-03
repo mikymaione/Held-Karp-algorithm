@@ -60,34 +60,22 @@ namespace ADS
 		map<shared_ptr<Node>, list<shared_ptr<Node>>> Adj;
 		vector<vector<unsigned short>> AdjIDs;
 
-		unsigned short NumberOfNodes;
+		unsigned short NumberOfNodes = 0;
 
 		Graph(list<shared_ptr<Node>> V_)
 		{
-			NumberOfNodes = V_.size();
-
 			for (auto v : V_)
-			{
-				Node n;
-				n.id = v->id;
-
-				V.push_back(make_shared<Node>(n));
-			}
+				AddNode(v->id);
 		}
 
 		Graph(unsigned short NumberOfNodes_) : Graph(NumberOfNodes_, 0, NumberOfNodes_ - 1) {}
 
-		Graph(unsigned short NumberOfNodes_, unsigned short from, unsigned to) : NumberOfNodes(NumberOfNodes_)
+		Graph(unsigned short NumberOfNodes_, unsigned short from, unsigned to)
 		{
 			AdjIDs.resize(NumberOfNodes_);
 
 			for (unsigned short d = from; d <= to; d++)
-			{
-				Node n;
-				n.id = d;
-
-				V.push_back(make_shared<Node>(n));
-			}
+				AddNode(d);
 		}
 
 		void graph_set_edge_cstr(shared_ptr<Edge> ie, Constraints c)
@@ -118,11 +106,14 @@ namespace ADS
 			}
 		}
 
-		void AddEdge(float cost, shared_ptr<Node> from, shared_ptr<Node> to)
+		void AddNode(unsigned short id_)
 		{
-			Edge e(cost, from, to);
+			Node n;
+			n.id = id_;
 
-			AddEdge(e);
+			V.push_back(make_shared<Node>(n));
+
+			NumberOfNodes++;
 		}
 
 		void AddEdge(Edge &e)
@@ -130,6 +121,17 @@ namespace ADS
 			E.push_back(make_shared<Edge>(e));
 			Adj[e.from].push_back(e.to);
 			AdjIDs[e.from->id].push_back(e.to->id);
+		}
+
+		void AddEdge(float cost, shared_ptr<Node> from, shared_ptr<Node> to)
+		{
+			Edge e(cost, from, to);
+			AddEdge(e);
+		}
+
+		void AddEdge(float cost, unsigned short from_, unsigned short to_)
+		{
+			AddEdge(cost, NodeById(from_), NodeById(to_));
 		}
 
 		void MakeConnected(const vector<vector<float>> &DistanceMatrix2D)
@@ -203,6 +205,16 @@ namespace ADS
 					return false;
 
 			return true;
+		}
+
+		float Cost(const vector<vector<float>> &DistanceMatrix2D)
+		{
+			float cost = 0;
+
+			for (auto e : E)
+				cost += DistanceMatrix2D[e->from->id][e->to->id];
+
+			return cost;
 		}
 
 		float Cost()
