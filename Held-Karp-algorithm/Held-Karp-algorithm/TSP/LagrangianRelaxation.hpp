@@ -18,7 +18,7 @@ using namespace ADS;
 
 namespace TSP
 {
-	class BranchAndBound : public Base::TSP
+	class LagrangianRelaxation : public Base::TSP
 	{
 	private:
 		float UB;
@@ -34,7 +34,7 @@ namespace TSP
 		void Solve(float &opt, string &path);
 
 	public:
-		BranchAndBound(const vector<vector<float>> &DistanceMatrix2D);
+		LagrangianRelaxation(const vector<vector<float>> &DistanceMatrix2D);
 
 	};
 }

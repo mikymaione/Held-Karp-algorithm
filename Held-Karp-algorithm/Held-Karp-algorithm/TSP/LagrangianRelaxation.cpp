@@ -19,7 +19,7 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 
 #include <set>
 
-#include "BranchAndBound.hpp"
+#include "LagrangianRelaxation.hpp"
 #include "ApproxTSP.hpp"
 
 #include "../ADS/Graph.hpp"
@@ -27,16 +27,16 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 
 namespace TSP
 {
-	BranchAndBound::BranchAndBound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
+	LagrangianRelaxation::LagrangianRelaxation(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	string BranchAndBound::PrintPath()
+	string LagrangianRelaxation::PrintPath()
 	{
 		string s;
 
 		return s;
 	}
 
-	float BranchAndBound::UpperBound()
+	float LagrangianRelaxation::UpperBound()
 	{
 		float opt;
 		string path;
@@ -47,7 +47,7 @@ namespace TSP
 		return opt;
 	}
 
-	shared_ptr<Graph> BranchAndBound::LagrangeSubGradient(const unsigned short N, Graph &G, float &best_zero_tree_cost)
+	shared_ptr<Graph> LagrangianRelaxation::LagrangeSubGradient(const unsigned short N, Graph &G, float &best_zero_tree_cost)
 	{
 		auto t_1 = 0.0f;
 		auto t_k = 0.0f;
@@ -120,7 +120,7 @@ namespace TSP
 	/*
 	From: Volgenant, T. and Jonker, R., 1982. A branch and bound algorithm for the symmetric traveling salesman problem based on the 1-tree relaxation. European Journal of Operational Research, 9(1):83–89.
 	*/
-	void BranchAndBound::Solve(float &opt, string &path)
+	void LagrangianRelaxation::Solve(float &opt, string &path)
 	{
 		const auto FirstUB = UpperBound();
 		UB = FirstUB;

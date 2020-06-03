@@ -58,7 +58,7 @@ The Christofides algorithm, 1976, is an algorithm for finding approximate soluti
 ## Run the software
 1. Run the program:
 
-	```Held-Karp-algorithm.exe algorithm = {H, C, A} type = {E, A} [graph to solve = {4, 10, 15, 20, 25, all}]```
+	```Held-Karp-algorithm.exe algorithm = {H, C, A, L} type = {E, A} [graph to solve = {4, 10, 15, 20, 25, all}]```
 
 
 ## License

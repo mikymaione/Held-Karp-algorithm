@@ -10,7 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <string>
 
 #include "TSP/ApproxTSP.hpp"
-#include "TSP/BranchAndBound.hpp"
+#include "TSP/LagrangianRelaxation.hpp"
 #include "TSP/Christofides.hpp"
 #include "TSP/HeldKarp.hpp"
 
@@ -69,9 +69,9 @@ void Run(string algo, string tipo, const unsigned short NumberOfNodes)
 		ApproxTSP A(DistanceMatrix2D);
 		A.Run();
 	}
-	else if (algo == "B")
+	else if (algo == "L")
 	{
-		BranchAndBound A(DistanceMatrix2D);
+		LagrangianRelaxation A(DistanceMatrix2D);
 		A.Run();
 	}
 	else
@@ -103,10 +103,10 @@ void WriteTitle()
 {
 	cout
 		<< "Held-Karp algorithm to solve the Asymmetric Traveling Salesman Problem" << endl
-		<< "Christofides algorithm & 2-approximation algorithm to solve the Euclidean Traveling Salesman Problem" << endl
+		<< "Christofides algorithm, 2-approximation algorithm, Lagrangian relaxation to solve the Euclidean Traveling Salesman Problem" << endl
 		<< endl
 		<< "Program parameters:" << endl
-		<< " algorithm = {H, C, A, B}" << endl
+		<< " algorithm = {H, C, A, L}" << endl
 		<< " type = {E, A}" << endl
 		<< " [graph to solve = {4, 10, 15, 20, 25, all}]" << endl
 		<< endl
@@ -135,8 +135,8 @@ int main(int argc, char **argv)
 				cout << "Held-Karp algorithm on ";
 			else if (algo == "A")
 				cout << "Approx-TSP algorithm on ";
-			else if (algo == "B")
-				cout << "Branch & Bound algorithm on ";
+			else if (algo == "L")
+				cout << "Lagrangian relaxation algorithm on ";
 			else
 				cout << "Christofides algorithm on ";
 
