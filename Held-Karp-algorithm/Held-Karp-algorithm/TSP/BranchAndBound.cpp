@@ -17,8 +17,10 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 */
 #pragma once
 
+#include <set>
+
 #include "BranchAndBound.hpp"
-#include "Christofides.hpp"
+#include "ApproxTSP.hpp"
 
 #include "../ADS/Graph.hpp"
 #include "../MST/Kruskal.hpp"
@@ -39,19 +41,14 @@ namespace TSP
 		float opt;
 		string path;
 
-		Christofides christofides(distance);
-
-		christofides.SilentSolve(opt, path);
+		ApproxTSP approxTSP(distance);
+		approxTSP.SilentSolve(opt, path);
 
 		return opt;
 	}
 
-	/*
-	From: Volgenant, T. and Jonker, R., 1982. A branch and bound algorithm for the symmetric traveling salesman problem based on the 1-tree relaxation. European Journal of Operational Research, 9(1):83–89.
-	*/
-	void BranchAndBound::Solve(float &opt, string &path)
+	shared_ptr<Graph> BranchAndBound::LagrangeSubGradient(Graph &G, float &best_zero_tree_cost)
 	{
-		auto best_one_tree = 0.0f;
 		auto t_1 = 0.0f;
 		auto t_k = 0.0f;
 
@@ -63,64 +60,185 @@ namespace TSP
 		auto constraint1 = 2.0f * (M - 1.0f) * (M - 2.0f);
 		auto constraint2 = M * (2.0f * M - 3.0f);
 
-		auto UB = UpperBound();
-
 		MST::Kruskal kruskal;
 
-		Graph G(numberOfNodes);
-		G.MakeConnected(distance);
-
-		map<shared_ptr<Node>, unsigned short> d_k_prev;
+		map<unsigned short, unsigned short> d_k_prev;
 		vector<float> π(numberOfNodes, 0);
 
-		shared_ptr<Graph> best_1t, one_tree;
+		shared_ptr<Graph> best_zero_tree;
 
 		while (k < M)
 		{
 			k++;
 			currentCardinality++;
 
-			one_tree = kruskal.Solve(G);
+			auto zero_tree = kruskal.Solve(G);
 
-			if (one_tree->E.size() == 0)
+			if (zero_tree->E.size() == 0)
 				break;
 
-			auto d_k = one_tree->Degree();
+			auto d_k = zero_tree->Degree();
 
 			if (k == 1)
 				d_k_prev = d_k;
 
-			auto z = one_tree->Cost();
+			auto zero_tree_cost = zero_tree->Cost();
 
 			for (unsigned short i = 0; i < numberOfNodes; i++)
-				z += π[i] * 2.0f;
+				zero_tree_cost += π[i] * 2.0f;
 
-			if (z > best_one_tree || k == 1)
+			if (zero_tree_cost > best_zero_tree_cost || k == 1)
 			{
-				best_one_tree = z;
-				best_1t = one_tree;
+				best_zero_tree_cost = zero_tree_cost;
+				best_zero_tree = zero_tree;
 
-				t_1 = 0.01f * z;
+				t_1 = 0.01f * zero_tree_cost;
 
-				if (z > UB)
+				if (zero_tree_cost > UB)
 					break;
 			}
 
-			if (one_tree->HaveCycle())
+			if (zero_tree->HaveCycle())
 				break;
 
 			t_k = t_1 * ((k * k - 3.0f * (M - 1.0f) * k + constraint2) / constraint1);
 
-			for (auto i : one_tree->V)
-				π[i->id] += 0.6f * t_k * (2 - d_k[i]) + 0.4f * t_k * (2 - d_k_prev[i]);
+			for (auto i : zero_tree->V)
+				π[i->id] += 0.6f * t_k * (2 - d_k[i->id]) + 0.4f * t_k * (2 - d_k_prev[i->id]);
 
-			d_k_prev = d_k;
+			d_k_prev.clear();
+			for (auto d : d_k)
+				d_k_prev[d.first] = d.second;
 
 			for (auto e : G.E)
 				e->cost = distance[e->from->id][e->to->id] - π[e->from->id] - π[e->to->id];
 		}
 
-		opt = best_one_tree;
+		return best_zero_tree;
+	}
+
+	void BranchAndBound::DoBranchAndBound(Graph &G)
+	{
+		unsigned short  v;
+		shared_ptr<Edge> e1, e2;
+
+		/* compute 1-tree */
+		auto LB = 0.0f;
+		auto curr_1t = LagrangeSubGradient(G, LB);
+
+		if (curr_1t->E.size() == 0)
+			return;
+
+		if (ceil(LB) >= UB)
+			return;
+
+		if (curr_1t->HaveCycle())
+		{
+			UB = LB;
+			return;
+		}
+
+		/* vertex selection*/
+		vertexsel(curr_1t, v);
+
+		/* edge selection */
+		if (v < numberOfNodes)
+			edgesel(curr_1t, v, e1, e2);
+
+		if (e1 && e2)
+		{
+			/* FORCE e1, FORCE e2 */
+			G.graph_set_edge_cstr(e1, Forced);
+			G.graph_set_edge_cstr(e2, Forced);
+
+			/* recursive call */
+			DoBranchAndBound(G);
+
+			/* remove constraints */
+			G.graph_set_edge_cstr(e1, Free);
+			G.graph_set_edge_cstr(e2, Free);
+
+			/* FORCE e1, FORBID e2 */
+			G.graph_set_edge_cstr(e1, Forced);
+			G.graph_set_edge_cstr(e2, Forbidden);
+
+			/* recursive call */
+			DoBranchAndBound(G);
+
+			/* remove constraints */
+			G.graph_set_edge_cstr(e1, Free);
+			G.graph_set_edge_cstr(e2, Free);
+		}
+
+		if (e1)
+		{
+			/* FORBID e1 */
+			G.graph_set_edge_cstr(e1, Forbidden);
+
+			/* recursive call */
+			DoBranchAndBound(G);
+
+			/* remove constraints */
+			G.graph_set_edge_cstr(e1, Free);
+		}
+	}
+
+	void BranchAndBound::edgesel(shared_ptr<Graph> T, const unsigned short v, shared_ptr<Edge> &e1, shared_ptr<Edge> &e2)
+	{
+		for (auto my_edge : T->E)
+			if (my_edge->from->id == v || my_edge->to->id == v)
+				if (my_edge->constraint == Free)
+				{
+					e1 = my_edge;
+					break;
+				}
+
+		for (auto my_edge : T->E)
+			if (my_edge->from->id == v || my_edge->to->id == v)
+				if (my_edge != e1)
+					if (my_edge->constraint == Free)
+					{
+						e2 = my_edge;
+						break;
+					}
+	}
+
+	void BranchAndBound::vertexsel(shared_ptr<Graph> T, unsigned short &v)
+	{
+		auto degree = T->Degree();
+
+		v = UINT16_MAX;
+
+		for (auto e : degree)
+			if (e.second > 2)
+			{
+				v = e.first;
+				break;
+			}
+	}
+
+	/*
+	From: Volgenant, T. and Jonker, R., 1982. A branch and bound algorithm for the symmetric traveling salesman problem based on the 1-tree relaxation. European Journal of Operational Research, 9(1):83–89.
+	*/
+	void BranchAndBound::Solve(float &opt, string &path)
+	{
+		const auto FirstUB = UpperBound();
+		UB = FirstUB;
+
+		Graph G(numberOfNodes);
+		G.MakeConnected(distance);
+
+		auto LB = 0.0f;
+		auto zero_tree = LagrangeSubGradient(G, LB);
+
+		auto gap = 100.0f * (UB - LB) / LB;
+
+		DoBranchAndBound(G);
+
+		auto gap2 = 100.0f * (UB - LB) / LB;
+
+		opt = LB;
 		path = PrintPath();
 	}
+
 }

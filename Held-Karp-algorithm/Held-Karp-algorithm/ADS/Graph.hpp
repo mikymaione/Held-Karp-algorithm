@@ -7,6 +7,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 #include <map>
 #include <memory>
 #include <list>
@@ -18,6 +19,13 @@ using namespace std;
 
 namespace ADS
 {
+	enum Constraints
+	{
+		Free = 0,
+		Forced = 1,
+		Forbidden = 2
+	};
+
 	struct Node
 	{
 		unsigned short id;
@@ -29,19 +37,25 @@ namespace ADS
 
 	struct Edge
 	{
-		float cost;
+		float cost = FLT_MAX;
 		shared_ptr<Node> from, to;
+		Constraints constraint = Free;
 
 		Edge(float cost_, shared_ptr<Node> from_, shared_ptr<Node> to_) :
 			cost(cost_),
 			from(from_),
-			to(to_) {}
+			to(to_)
+		{
+			assert(from_->id != to_->id);
+		}
 	};
 
 	struct Graph
 	{
 		list<shared_ptr<Node>> V;
 		vector<shared_ptr<Edge>> E; // sortable
+
+		map<unsigned short, int> vrtx_frc, vrtx_frb;
 
 		map<shared_ptr<Node>, list<shared_ptr<Node>>> Adj;
 		vector<vector<unsigned short>> AdjIDs;
@@ -73,6 +87,34 @@ namespace ADS
 				n.id = d;
 
 				V.push_back(make_shared<Node>(n));
+			}
+		}
+
+		void graph_set_edge_cstr(shared_ptr<Edge> ie, Constraints c)
+		{
+			auto c_old = ie->constraint;
+			ie->constraint = c;
+
+			if (c_old == Forced)
+			{
+				vrtx_frc[ie->from->id]--;
+				vrtx_frc[ie->to->id]--;
+			}
+			else if (c_old == Forbidden)
+			{
+				vrtx_frb[ie->from->id]--;
+				vrtx_frb[ie->to->id]--;
+			}
+
+			if (c == Forced)
+			{
+				vrtx_frc[ie->from->id]++;
+				vrtx_frc[ie->to->id]++;
+			}
+			else if (c == Forbidden)
+			{
+				vrtx_frb[ie->from->id]++;
+				vrtx_frb[ie->to->id]++;
 			}
 		}
 
@@ -133,21 +175,21 @@ namespace ADS
 			});
 		}
 
-		map<shared_ptr<Node>, unsigned short> Degree()
+		map<unsigned short, unsigned short> Degree()
 		{
-			map<shared_ptr<Node>, unsigned short> R;
+			map<unsigned short, unsigned short> R;
 
 			for (auto e : E)
 			{
-				R[e->from] = 0;
-				R[e->to] = 0;
+				R[e->from->id] = 0;
+				R[e->to->id] = 0;
 			}
 
 			for (auto e : E)
-				R[e->from]++;
+				R[e->from->id]++;
 
 			for (auto e : E)
-				R[e->to]++;
+				R[e->to->id]++;
 
 			return R;
 		}
@@ -157,7 +199,7 @@ namespace ADS
 			auto D = Degree();
 
 			for (auto v : V)
-				if (D[v] != 2)
+				if (D[v->id] != 2)
 					return false;
 
 			return true;
