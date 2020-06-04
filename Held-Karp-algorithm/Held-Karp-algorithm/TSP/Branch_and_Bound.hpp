@@ -45,6 +45,17 @@ namespace TSP
 
 				return false;
 			}
+
+			unsigned short IncidentToRequired(unsigned short v, unsigned short n)
+			{
+				for (unsigned short i = 0; i < R.size(); i++)
+					if (v == R[i].first)
+						return R[i].second;
+					else if (v == R[i].second)
+						return R[i].first;
+
+				return n;
+			}
 		};
 
 	private:
@@ -56,7 +67,6 @@ namespace TSP
 
 		bool MST_Prim(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
 
-		unsigned short is_incident_to_required(Node &current_node, unsigned short v, unsigned short n);
 		bool TreeContains(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j);
 		void insert(vector<Node> &L, Node &new_elem);
 		bool check_tour(vector<pair<unsigned short, unsigned short>> const &Tree);

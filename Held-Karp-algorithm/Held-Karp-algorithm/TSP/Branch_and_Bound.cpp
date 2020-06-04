@@ -56,20 +56,6 @@ namespace TSP
 		return s + "0";
 	}
 
-	unsigned short Branch_and_Bound::is_incident_to_required(Node &current_node, unsigned short v, unsigned short n)
-	{
-		for (unsigned short i = 0; i < current_node.R.size(); i++)
-		{
-			if (v == current_node.R[i].first)
-				return current_node.R[i].second;
-
-			if (v == current_node.R[i].second)
-				return current_node.R[i].first;
-		}
-
-		return n;
-	}
-
 	bool Branch_and_Bound::TreeContains(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j)
 	{
 		for (unsigned short k = 0; k < tree.size(); k++)
@@ -90,7 +76,7 @@ namespace TSP
 
 		for (unsigned short i = 0; i < n; i++)
 			if (degrees[i] > 2)
-				if (is_incident_to_required(current_node, i, n) == n)
+				if (current_node.IncidentToRequired(i, n) == n)
 				{
 					if (degrees[i] < min_degree)
 					{
@@ -104,7 +90,7 @@ namespace TSP
 					{
 						min_degree_req = degrees[i];
 						p_req = i;
-						req_neighbor = is_incident_to_required(current_node, i, n);
+						req_neighbor = current_node.IncidentToRequired(i, n);
 					}
 				}
 
