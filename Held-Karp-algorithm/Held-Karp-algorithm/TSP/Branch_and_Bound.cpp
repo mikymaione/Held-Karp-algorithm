@@ -56,7 +56,6 @@ namespace TSP
 		return s + "0";
 	}
 
-	//Returns the index of a vertex adjacent to v by a required edge, if it exists, and n otherwise
 	unsigned short Branch_and_Bound::is_incident_to_required(Node &current_node, unsigned short v, unsigned short n)
 	{
 		for (unsigned short i = 0; i < current_node.R.size(); i++)
@@ -71,50 +70,24 @@ namespace TSP
 		return n;
 	}
 
-	/*
-	Checks wether the edge {i,j} is contained in the tree given by the edge list tree
-	returns 1 if it is contained and 0 otherwise
-	*/
-	unsigned short Branch_and_Bound::is_in_tree(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j)
+	bool Branch_and_Bound::TreeContains(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j)
 	{
 		for (unsigned short k = 0; k < tree.size(); k++)
 			if ((tree[k].first == i && tree[k].second == j) || (tree[k].first == j && tree[k].second == i))
-				return 1;
+				return true;
 
-		return 0;
+		return false;
 	}
 
-	/*
-	Checks wether the edge {i,j} is in the list of forbidden edges of the Node node
-	returns 1 if it is contained and 0 otherwise
-	*/
-	unsigned short Branch_and_Bound::is_forbidden(Node const &node, unsigned short i, unsigned short j)
-	{
-		for (unsigned short k = 0; k < node.F.size(); k++)
-			if ((node.F[k].first == i && node.F[k].second == j) || (node.F[k].first == j && node.F[k].second == i))
-				return 1;
-
-		return 0;
-	}
-
-	/*
-	Performs the branching step of the branch-and-bound algorithm on the Node current_node,
-	where tree is the one-tree computed for current_node, degrees contains the degree of every vertex within the tree and n is the problem dimension
-	the function expects tree not to be a tour, but to contain some vertex of degree at least 3
-	returns a vector of new Nodes to be added to the queue
-	All choices are being made as recommended in the paper by Volgenant & Jonker
-	*/
-	vector<Branch_and_Bound::Node> Branch_and_Bound::branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n)
+	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n)
 	{
 		vector<Node> result;
-		auto min_degree_req = n;	//minimal degree greater than two of a vertex incident to a required edge
-		auto min_degree = n;		//minimal degree greater than two of a vertex not incident to a required edge
-		auto p_req = n;				//vertex where min_degree_req was attained
-		auto p = n;					//vertex where min_degree was attained
-		auto req_neighbor = n;		//other endpoint of the required edge incident to p_req
+		auto min_degree_req = n;
+		auto min_degree = n;
+		auto p_req = n;
+		auto p = n;
+		auto req_neighbor = n;
 
-		//Try to find a vertex of degree at least 3 (but degree as small as possible) that is incident to a required edge (this would be p_req).
-		//If no such vertex exists, find any vertex of degree at least 3 but as small as possible, this will be p		
 		for (unsigned short i = 0; i < n; i++)
 			if (degrees[i] > 2)
 				if (is_incident_to_required(current_node, i, n) == n)
@@ -135,41 +108,36 @@ namespace TSP
 					}
 				}
 
-		if (min_degree_req < n) //p_req existed; leads to branching with two new vertices
+		if (min_degree_req < n)
 		{
-			//choose e_1 that is not in the tree
 			unsigned short i;
 
 			for (i = 0; i < n; i++)
 				if (i != p_req && i != req_neighbor)
-					if (!is_in_tree(tree, i, p_req) && !is_forbidden(current_node, i, p_req))
-						break; //we may take e_1 = {i, p}
+					if (!TreeContains(tree, i, p_req) && !current_node.Forbidden(i, p_req))
+						break;
 
-			if (i == n) //all non-tree edges incident to p are forbidden, choose a tree edge as e_1			
+			if (i == n)
 				for (i = 0; i < n; i++)
 					if (i != p_req && i != req_neighbor)
-						if (!is_forbidden(current_node, i, p_req))
-							break; //we may take e_1 = {i, p}
+						if (!current_node.Forbidden(i, p_req))
+							break;
 
-			//Create the Node for S2, where e_1 is required as there is one more required edge incident to p_req, forbid all other edges incident to p_req
 			auto F = current_node.F;
 			auto R = current_node.R;
 			R.push_back(make_pair(i, p_req));
 
-			//forbid all edges incident to p except the two required ones
 			for (unsigned short k = 0; k < n; k++)
-				if (k != i && k != p_req && k != req_neighbor && !is_forbidden(current_node, p_req, k))
+				if (k != i && k != p_req && k != req_neighbor && !current_node.Forbidden(p_req, k))
 					F.push_back(make_pair(p_req, k));
 
 			Node S2(R, F, current_node.λ, n);
 			result.push_back(S2);
 
-			//Create the Node for S3, where e_1 is forbidden
 			R = current_node.R;
 			F = current_node.F;
 			F.push_back(make_pair(i, p_req));
 
-			//check if all but two are forbidden, if so, require the two other ones
 			unsigned short num_forbidden = 0;
 			vector<unsigned short> forbidden(n, 0);
 			forbidden[p_req] = 1;
@@ -198,45 +166,41 @@ namespace TSP
 			Node S3(R, F, current_node.λ, n);
 			result.push_back(S3);
 		}
-		else //p_req doesn't exist, use p. leads to branching with three new vertices
+		else
 		{
-			//choose e_1 that is (preferably) not in the tree and some e_2
 			unsigned short i, j;
-			for (i = 0; i < n; i++)
-				if (i != p && !is_in_tree(tree, i, p) && !is_forbidden(current_node, i, p))
-					break; //we may take e_1 = {i, p}
 
-			if (i == n) //all non-tree edges incident to p are forbidden, choose a tree edge as e_1			
+			for (i = 0; i < n; i++)
+				if (i != p && !TreeContains(tree, i, p) && !current_node.Forbidden(i, p))
+					break;
+
+			if (i == n)
 				for (i = 0; i < n; i++)
-					if (i != p && !is_forbidden(current_node, i, p))
-						break; //we may take e_1 = {i, p}
+					if (i != p && !current_node.Forbidden(i, p))
+						break;
 
 			for (j = 0; j < n; j++)
 				if (j != p && j != i)
-					if (!is_forbidden(current_node, j, p))
-						break; //we may take e_2 = {j, p}
+					if (!current_node.Forbidden(j, p))
+						break;
 
-			//Create the Node S1, where e_1 and e_2 are required
 			auto F = current_node.F;
 			auto R = current_node.R;
 			R.push_back(make_pair(i, p));
 			R.push_back(make_pair(j, p));
 
-			//forbid all edges incident to p except the two required ones
 			for (unsigned short k = 0; k < n; k++)
-				if (k != i && k != p && k != j && !is_forbidden(current_node, p, k))
+				if (k != i && k != p && k != j && !current_node.Forbidden(p, k))
 					F.push_back(make_pair(p, k));
 
 			Node S1(R, F, current_node.λ, n);
 			result.push_back(S1);
 
-			//Create the Node S2, where e_1 is required and e_2 is forbidden
 			R = current_node.R;
 			F = current_node.F;
 			R.push_back(make_pair(i, p));
 			F.push_back(make_pair(j, p));
 
-			//check if all but two are forbidden, if so, require the two other ones
 			unsigned short num_forbidden = 0;
 			vector<unsigned short> forbidden(n, 0);
 			forbidden[p] = 1;
@@ -265,15 +229,12 @@ namespace TSP
 			Node S2(R, F, current_node.λ, n);
 			result.push_back(S2);
 
-			//Create the Node S3, where e_1 is forbidden
 			R = current_node.R;
 			F = current_node.F;
 			F.push_back(make_pair(i, p));
 
-			// if all but two edges incident to p are forbidden, we can require the last two ones
 			if (num_forbidden == n - 3)
 			{
-				//we can reuse forbidden, but we have to be careful because it should be a bit different now
 				for (unsigned short k = 0; k < n; k++)
 					if (!forbidden[k])
 						if (k != i)
@@ -289,10 +250,6 @@ namespace TSP
 		return result;
 	}
 
-	/*
-	Checks wether the one-tree given by the edge list tree is actually a tour
-	returns 1 if it is, and 0 otherwise
-	*/
 	bool Branch_and_Bound::check_tour(vector<pair<unsigned short, unsigned short>> const &Tree)
 	{
 		vector<unsigned short> degree(Tree.size(), 0);
@@ -303,7 +260,6 @@ namespace TSP
 			degree[Tree[i].second]++;
 		}
 
-		//check whether the degree of each vertex is two
 		for (unsigned short i = 0; i < Tree.size(); i++)
 			if (degree[i] != 2)
 				return 1;
@@ -311,13 +267,7 @@ namespace TSP
 		return 0;
 	}
 
-	/*
-	Calculates the Held-Karp bound (with forbidden & required edges as given in Node)
-	and completes the information (HK, λ, one-tree) in the given node object
-	before the execution, node contains required edges, forbidden edges, empty tree and initial λ value from the parent branching node
-	returns wether the algorithm terminated successfully (0) or not (1)
-	*/
-	bool Branch_and_Bound::Held_Karp_bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps)
+	bool Branch_and_Bound::Bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps)
 	{
 		vector<vector<float>> Weights(numberOfNodes, vector<float>(numberOfNodes));
 		vector<pair<unsigned short, unsigned short>> Tree(numberOfNodes);
@@ -338,8 +288,6 @@ namespace TSP
 		for (unsigned short i = 0; i < numberOfNodes; i++)
 			degree[i] = 0;
 
-		//mark all required and forbidden edges
-		//if edges incident to 0 are required we store them
 		for (unsigned short i = 0; i < node.R.size(); i++)
 		{
 			omitted[node.R[i].first][node.R[i].second] = 1;
@@ -366,7 +314,6 @@ namespace TSP
 			}
 		}
 
-		//if edges incident to 0 are forbidden we mark them
 		for (unsigned short i = 0; i < node.F.size(); i++)
 		{
 			omitted.at(node.F[i].first).at(node.F[i].second) = 2;
@@ -379,18 +326,15 @@ namespace TSP
 				forbidden.at(node.F[i].first) = 1;
 		}
 
-		//compute new weights
 		for (unsigned short i = 0; i < numberOfNodes; i++)
 			for (unsigned short j = 0; j < numberOfNodes; j++)
 				Weights[i][j] = distance[i][j] + node.λ[i] + node.λ[j];
 
 		for (unsigned short k = 0; k < steps; k++)
 		{
-			//compute MST, if MST does not exist return 1
 			if (MST_Prim(Tree, omitted, Weights, req))
 				return 1;
 
-			//1-tree
 			for (unsigned short i = 1; i < numberOfNodes; i++)
 				if (Weights[0][i] < firstmin && !forbidden[i])
 				{
@@ -422,21 +366,18 @@ namespace TSP
 				Tree[Tree.size() - 1] = make_pair(0, req2);
 			}
 
-			//compute degrees
 			for (unsigned short i = 0; i < Tree.size(); i++)
 			{
 				degree[Tree[i].first]++;
 				degree[Tree[i].second]++;
 			}
 
-			//update HK
 			for (unsigned short i = 0; i < Tree.size(); i++)
 			{
 				Treeweight += Weights[Tree[i].first][Tree[i].second];
 				Treeweight -= 2 * node.λ[i];
 			}
 
-			//store Tree and λ
 			if (node.HK < Treeweight)
 			{
 				node.HK = Treeweight;
@@ -448,7 +389,6 @@ namespace TSP
 				}
 			}
 
-			//update weights
 			for (unsigned short i = 0; i < numberOfNodes; i++)
 				for (unsigned short j = 0; j < numberOfNodes; j++)
 					Weights[i][j] += (degree[i] - 2) * t + (degree[j] - 2) * t;
@@ -529,9 +469,6 @@ namespace TSP
 		return false;
 	}
 
-	/*
-	Computes the inital value for t, t_0 as recommended in the paper
-	*/
 	float Branch_and_Bound::t1()
 	{
 		vector<pair<unsigned short, unsigned short>> Tree(distance.size());
@@ -560,20 +497,15 @@ namespace TSP
 					second = i;
 				}
 
-		//one_tree
 		Tree[Tree.size() - 2] = make_pair(0, first);
 		Tree[Tree.size() - 1] = make_pair(0, second);
 
-		//compute
 		for (unsigned short i = 0; i < Tree.size(); i++)
 			t += distance[Tree[i].first][Tree[i].second];
 
 		return t / (2.0f * distance.size());
 	}
 
-	/*
-	Performs the sorted insertion of the branching node new_elem in the queue L wrt the Held-Karp-Bound of new_elem
-	*/
 	void Branch_and_Bound::insert(vector<Node> &L, Node &new_elem)
 	{
 		Node *tmp;
@@ -667,7 +599,7 @@ namespace TSP
 		// 1. Draw and initialize the root node.
 		{
 			Node root(numberOfNodes);
-			Held_Karp_bound(root, degree, t, N);
+			Bound(root, degree, t, N);
 
 			// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
 			if (!check_tour(root.one_tree))
@@ -686,10 +618,10 @@ namespace TSP
 
 			t /= 2.0f * numberOfNodes;
 
-			auto B = branch(root.one_tree, degree, root, numberOfNodes);
+			auto B = Branch(root.one_tree, degree, root, numberOfNodes);
 
 			for (unsigned short i = 0; i < B.size(); i++)
-				if (!Held_Karp_bound(B[i], degree, t, N))
+				if (!Bound(B[i], degree, t, N))
 					if (B[i].HK < UB)
 						insert(S, B[i]);
 		}
@@ -726,10 +658,10 @@ namespace TSP
 					}
 					else
 					{
-						auto B = branch(node.one_tree, degree1, node, numberOfNodes);
+						auto B = Branch(node.one_tree, degree1, node, numberOfNodes);
 
 						for (unsigned short i = 0; i < B.size(); i++)
-							if (!Held_Karp_bound(B[i], degree1, t, N))
+							if (!Bound(B[i], degree1, t, N))
 								if (B[i].HK < UB)
 								{
 									if (!check_tour(B[i].one_tree))

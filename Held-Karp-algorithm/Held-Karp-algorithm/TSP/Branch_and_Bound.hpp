@@ -20,20 +20,11 @@ namespace TSP
 	public:
 		struct Node
 		{
-			//required edges
-			vector<pair<unsigned short, unsigned short>> R;
-
-			//forbidden edges
-			vector<pair<unsigned short, unsigned short>> F;
-
-			//initial λ vector
-			vector<float> λ;
-
-			//one_tree
-			vector<pair<unsigned short, unsigned short>> one_tree;
-
-			//Held-Karp-Bound
 			float HK = 0;
+
+			vector<float> λ;
+			vector<pair<unsigned short, unsigned short>> R, F;
+			vector<pair<unsigned short, unsigned short>> one_tree;
 
 			Node(unsigned short size)
 			{
@@ -45,20 +36,28 @@ namespace TSP
 			{
 				one_tree.resize(size);
 			}
+
+			bool Forbidden(unsigned short i, unsigned short j)
+			{
+				for (unsigned short k = 0; k < F.size(); k++)
+					if ((F[k].first == i && F[k].second == j) || (F[k].first == j && F[k].second == i))
+						return true;
+
+				return false;
+			}
 		};
 
 	private:
 		pair<vector<pair<unsigned short, unsigned short>>, float> HKAlgo();
-		bool Held_Karp_bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
+		bool Bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
 
-		vector<Node> branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n);
+		vector<Node> Branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n);
 		float t1();
 
 		bool MST_Prim(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
 
 		unsigned short is_incident_to_required(Node &current_node, unsigned short v, unsigned short n);
-		unsigned short is_in_tree(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j);
-		unsigned short is_forbidden(Node const &node, unsigned short i, unsigned short j);
+		bool TreeContains(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j);
 		void insert(vector<Node> &L, Node &new_elem);
 		bool check_tour(vector<pair<unsigned short, unsigned short>> const &Tree);
 
