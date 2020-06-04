@@ -117,6 +117,29 @@ namespace TSP
 		bool MST_Prim(Tree &tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req);
 		void PQ_Add(vector<Node> &L, Node &new_elem);
 
+	private:
+		unsigned short CountElements(vector<Edge> &edges, vector<unsigned short> &from, unsigned short i)
+		{
+			unsigned short x = 0;
+
+			for (auto f : edges)
+			{
+				if (f.from == i)
+				{
+					from[f.to] = 1;
+					x++;
+				}
+
+				if (f.to == i)
+				{
+					from[f.from] = 1;
+					x++;
+				}
+			}
+
+			return x;
+		}
+
 	protected:
 		string PrintPath(vector<Edge> &path);
 

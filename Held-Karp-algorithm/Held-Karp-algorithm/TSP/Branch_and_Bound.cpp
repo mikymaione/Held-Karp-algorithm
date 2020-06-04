@@ -116,24 +116,10 @@ namespace TSP
 			F = current_node.F;
 			F.push_back(Edge(i, p_req));
 
-			unsigned short num_forbidden = 0;
 			vector<unsigned short> forbidden(n, 0);
 			forbidden[p_req] = 1;
 
-			for (unsigned short k = 0; k < F.size(); k++)
-			{
-				if (F[k].from == p_req)
-				{
-					forbidden[F[k].to] = 1;
-					num_forbidden++;
-				}
-
-				if (F[k].to == p_req)
-				{
-					forbidden[F[k].from] = 1;
-					num_forbidden++;
-				}
-			}
+			auto num_forbidden = CountElements(F, forbidden, p_req);
 
 			if (num_forbidden == n - 3)
 				for (unsigned short k = 0; k < n; k++)
@@ -179,24 +165,10 @@ namespace TSP
 			R.push_back(Edge(i, p));
 			F.push_back(Edge(j, p));
 
-			unsigned short num_forbidden = 0;
 			vector<unsigned short> forbidden(n, 0);
 			forbidden[p] = 1;
 
-			for (unsigned short k = 0; k < F.size(); k++)
-			{
-				if (F[k].from == p)
-				{
-					forbidden[F[k].to] = 1;
-					num_forbidden++;
-				}
-
-				if (F[k].to == p)
-				{
-					forbidden[F[k].from] = 1;
-					num_forbidden++;
-				}
-			}
+			auto num_forbidden = CountElements(F, forbidden, p);
 
 			if (num_forbidden == n - 3)
 				for (unsigned short k = 0; k < n; k++)
