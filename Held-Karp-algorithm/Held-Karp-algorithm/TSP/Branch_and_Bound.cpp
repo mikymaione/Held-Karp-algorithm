@@ -26,7 +26,7 @@ namespace TSP
 {
 	Branch_and_Bound::Branch_and_Bound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	string Branch_and_Bound::PrintPath(vector<pair<unsigned short, unsigned short>> &path)
+	string Branch_and_Bound::PrintPath(vector<Edge> &path)
 	{
 		string s;
 		set<unsigned short> S;
@@ -35,8 +35,8 @@ namespace TSP
 
 		for (auto const e : path)
 		{
-			E[e.first][e.second] = true;
-			E[e.second][e.first] = true;
+			E[e.from][e.to] = true;
+			E[e.to][e.from] = true;
 		}
 
 		while (x < numberOfNodes)
@@ -313,29 +313,29 @@ namespace TSP
 
 			if (req1 == 0)
 			{
-				Tree[Tree.size() - 2] = make_pair(0, first);
-				Tree[Tree.size() - 1] = make_pair(0, second);
+				Tree[Tree.size() - 2] = Edge(0, first);
+				Tree[Tree.size() - 1] = Edge(0, second);
 			}
 			else if (req2 == 0)
 			{
-				Tree[Tree.size() - 2] = make_pair(0, first);
-				Tree[Tree.size() - 1] = make_pair(0, req1);
+				Tree[Tree.size() - 2] = Edge(0, first);
+				Tree[Tree.size() - 1] = Edge(0, req1);
 			}
 			else
 			{
-				Tree[Tree.size() - 2] = make_pair(0, req1);
-				Tree[Tree.size() - 1] = make_pair(0, req2);
+				Tree[Tree.size() - 2] = Edge(0, req1);
+				Tree[Tree.size() - 1] = Edge(0, req2);
 			}
 
 			for (unsigned short i = 0; i < Tree.size(); i++)
 			{
-				degree[Tree[i].first]++;
-				degree[Tree[i].second]++;
+				degree[Tree[i].from]++;
+				degree[Tree[i].to]++;
 			}
 
 			for (unsigned short i = 0; i < Tree.size(); i++)
 			{
-				Treeweight += Weights[Tree[i].first][Tree[i].second];
+				Treeweight += Weights[Tree[i].from][Tree[i].to];
 				Treeweight -= 2 * node.λ[i];
 			}
 
@@ -370,8 +370,8 @@ namespace TSP
 		for (unsigned short i = 0; i < numberOfNodes; i++)
 		{
 			node.λ[i] = OptLambda[i];
-			degree[node.one_tree[i].first]++;
-			degree[node.one_tree[i].second]++;
+			degree[node.one_tree[i].from]++;
+			degree[node.one_tree[i].to]++;
 		}
 
 		return 0;
@@ -420,7 +420,7 @@ namespace TSP
 			vertex = new_vertex;
 			visited[vertex] = 1;
 
-			Tree[j] = make_pair(vertex, min[vertex].second);
+			Tree[j] = Edge(vertex, min[vertex].second);
 			minimum = FLT_MAX;
 		}
 
@@ -458,11 +458,11 @@ namespace TSP
 					second = i;
 				}
 
-		Tree[Tree.size() - 2] = make_pair(0, first);
-		Tree[Tree.size() - 1] = make_pair(0, second);
+		Tree[Tree.size() - 2] = Edge(0, first);
+		Tree[Tree.size() - 1] = Edge(0, second);
 
 		for (unsigned short i = 0; i < Tree.size(); i++)
-			t += distance[Tree[i].first][Tree[i].second];
+			t += distance[Tree[i].from][Tree[i].to];
 
 		return t / (2.0f * distance.size());
 	}
@@ -528,13 +528,13 @@ namespace TSP
 			Note that the bound of the left child does not equal the L-value of its incoming matrix!
 			7. You are done processing this node. Go back to the top-level outline.
 	*/
-	pair<vector<pair<unsigned short, unsigned short>>, float> Branch_and_Bound::HKAlgo()
+	pair<vector<Branch_and_Bound::Edge>, float> Branch_and_Bound::HKAlgo()
 	{
 		vector<Node> PQ;
+		vector<Edge> path(numberOfNodes);
 		vector<unsigned short> degree(numberOfNodes, 0);
-		vector<pair<unsigned short, unsigned short>> path(numberOfNodes);
 
-		path[0] = make_pair(numberOfNodes - 1, 0);
+		path[0] = Edge(numberOfNodes - 1, 0);
 
 		auto UB = distance[numberOfNodes - 1][0];
 
@@ -542,7 +542,7 @@ namespace TSP
 		for (unsigned short i = 0; i < distance.size() - 1; i++)
 		{
 			UB += distance[i][i + 1];
-			path[i + 1] = make_pair(i, i + 1);
+			path[i + 1] = Edge(i, i + 1);
 		}
 
 		auto t = t1();
@@ -597,8 +597,8 @@ namespace TSP
 				{
 					for (unsigned short i = 0; i < numberOfNodes; i++)
 					{
-						degree1.at(node.one_tree[i].first)++;
-						degree1.at(node.one_tree[i].second)++;
+						degree1.at(node.one_tree[i].from)++;
+						degree1.at(node.one_tree[i].to)++;
 					}
 
 					if (!node.one_tree.CheckTour())

@@ -17,19 +17,27 @@ namespace TSP
 {
 	class Branch_and_Bound : public Base::TSP
 	{
-	public:
+	private:
+		struct Edge
+		{
+			unsigned short from, to;
+
+			Edge() : Edge(UINT16_MAX, UINT16_MAX) {}
+			Edge(unsigned short from, unsigned short to) : from(from), to(to) {}
+		};
+
 		struct Tree
 		{
-			vector<pair<unsigned short, unsigned short>> T;
+			vector<Edge> T;
 
 			Tree(unsigned short size) : T(size) {}
 
-			pair<unsigned short, unsigned short> &operator[](unsigned short i)
+			Edge &operator[](unsigned short i)
 			{
 				return T[i];
 			}
 
-			pair<unsigned short, unsigned short> operator[](unsigned short i) const
+			Edge operator[](unsigned short i) const
 			{
 				return T[i];
 			}
@@ -42,7 +50,7 @@ namespace TSP
 			bool Contains(unsigned short i, unsigned short j)
 			{
 				for (unsigned short k = 0; k < T.size(); k++)
-					if ((T[k].first == i && T[k].second == j) || (T[k].first == j && T[k].second == i))
+					if ((T[k].from == i && T[k].to == j) || (T[k].from == j && T[k].to == i))
 						return true;
 
 				return false;
@@ -54,8 +62,8 @@ namespace TSP
 
 				for (unsigned short i = 0; i < T.size(); i++)
 				{
-					degree[T[i].first]++;
-					degree[T[i].second]++;
+					degree[T[i].from]++;
+					degree[T[i].to]++;
 				}
 
 				for (unsigned short i = 0; i < T.size(); i++)
@@ -100,7 +108,7 @@ namespace TSP
 		};
 
 	private:
-		pair<vector<pair<unsigned short, unsigned short>>, float> HKAlgo();
+		pair<vector<Edge>, float> HKAlgo();
 		bool Bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
 
 		vector<Node> Branch(Tree &tree, vector<unsigned short> &degrees, Node &current_node, unsigned short n);
@@ -111,7 +119,7 @@ namespace TSP
 		void PQ_Add(vector<Node> &L, Node &new_elem);
 
 	protected:
-		string PrintPath(vector<pair<unsigned short, unsigned short>> &path);
+		string PrintPath(vector<Edge> &path);
 
 		void Solve(float &opt, string &path);
 
