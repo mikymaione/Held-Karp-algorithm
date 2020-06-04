@@ -80,11 +80,11 @@ namespace TSP
 
 			vector<float> λ;
 			vector<pair<unsigned short, unsigned short>> R, F;
-			Tree one_tree;
+			Tree oneTree;
 
-			Node(unsigned short size) : one_tree(size), λ(size) {}
+			Node(unsigned short size) : oneTree(size), λ(size) {}
 
-			Node(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) : R(R), F(F), λ(λ), one_tree(size) {}
+			Node(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) : R(R), F(F), λ(λ), oneTree(size) {}
 
 			bool Forbidden(unsigned short i, unsigned short j)
 			{
@@ -110,12 +110,11 @@ namespace TSP
 	private:
 		pair<vector<Edge>, float> HKAlgo();
 		bool Bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
-
 		vector<Node> Branch(Tree &tree, vector<unsigned short> &degrees, Node &current_node, unsigned short n);
+
 		float t1();
 
 		bool MST_Prim(Tree &tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req);
-
 		void PQ_Add(vector<Node> &L, Node &new_elem);
 
 	protected:

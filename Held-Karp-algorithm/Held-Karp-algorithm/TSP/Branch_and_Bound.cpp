@@ -343,9 +343,9 @@ namespace TSP
 			{
 				node.HK = Treeweight;
 
-				for (unsigned short i = 0; i < (node.one_tree).size(); i++)
+				for (unsigned short i = 0; i < (node.oneTree).size(); i++)
 				{
-					node.one_tree[i] = Tree[i];
+					node.oneTree[i] = Tree[i];
 					OptLambda[i] = node.λ[i];
 				}
 			}
@@ -370,8 +370,8 @@ namespace TSP
 		for (unsigned short i = 0; i < numberOfNodes; i++)
 		{
 			node.λ[i] = OptLambda[i];
-			degree[node.one_tree[i].from]++;
-			degree[node.one_tree[i].to]++;
+			degree[node.oneTree[i].from]++;
+			degree[node.oneTree[i].to]++;
 		}
 
 		return 0;
@@ -532,11 +532,10 @@ namespace TSP
 	{
 		vector<Node> PQ;
 		vector<Edge> path(numberOfNodes);
-		vector<unsigned short> degree(numberOfNodes, 0);
+		vector<unsigned short> δ(numberOfNodes, 0);
+		float UB = distance[numberOfNodes - 1][0];
 
 		path[0] = Edge(numberOfNodes - 1, 0);
-
-		auto UB = distance[numberOfNodes - 1][0];
 
 		// Upper bound
 		for (unsigned short i = 0; i < distance.size() - 1; i++)
@@ -551,13 +550,13 @@ namespace TSP
 		// 1. Draw and initialize the root node.
 		{
 			Node root(numberOfNodes);
-			Bound(root, degree, t, N);
+			Bound(root, δ, t, N);
 
 			// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
-			if (!root.one_tree.CheckTour())
+			if (!root.oneTree.CheckTour())
 			{
 				for (unsigned short i = 0; i < numberOfNodes; i++)
-					path[i] = root.one_tree[i];
+					path[i] = root.oneTree[i];
 
 				return make_pair(path, root.HK);
 			}
@@ -566,14 +565,14 @@ namespace TSP
 			t = 0;
 
 			for (unsigned short i = 0; i < numberOfNodes; i++)
-				t += abs((root.λ)[i]);
+				t += abs(root.λ[i]);
 
 			t /= 2.0f * numberOfNodes;
 
-			auto B = Branch(root.one_tree, degree, root, numberOfNodes);
+			auto B = Branch(root.oneTree, δ, root, numberOfNodes);
 
 			for (unsigned short i = 0; i < B.size(); i++)
-				if (!Bound(B[i], degree, t, N))
+				if (!Bound(B[i], δ, t, N))
 					if (B[i].HK < UB)
 						PQ_Add(PQ, B[i]);
 		}
@@ -581,7 +580,7 @@ namespace TSP
 
 		// 2. Repeat the following step until a solution (i.e., a complete circuit, represented by a terminal node) has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found:
 		{
-			vector<unsigned short> degree1(numberOfNodes, 0);
+			vector<unsigned short> δ1(numberOfNodes, 0);
 			auto current = PQ.size() - 1;
 
 			while (current >= 0)
@@ -597,31 +596,31 @@ namespace TSP
 				{
 					for (unsigned short i = 0; i < numberOfNodes; i++)
 					{
-						degree1.at(node.one_tree[i].from)++;
-						degree1.at(node.one_tree[i].to)++;
+						δ1.at(node.oneTree[i].from)++;
+						δ1.at(node.oneTree[i].to)++;
 					}
 
-					if (!node.one_tree.CheckTour())
+					if (!node.oneTree.CheckTour())
 					{
 						UB = node.HK;
 
 						for (unsigned short i = 0; i < numberOfNodes; i++)
-							path[i] = node.one_tree[i];
+							path[i] = node.oneTree[i];
 					}
 					else
 					{
-						auto B = Branch(node.one_tree, degree1, node, numberOfNodes);
+						auto B = Branch(node.oneTree, δ1, node, numberOfNodes);
 
 						for (unsigned short i = 0; i < B.size(); i++)
-							if (!Bound(B[i], degree1, t, N))
+							if (!Bound(B[i], δ1, t, N))
 								if (B[i].HK < UB)
 								{
-									if (!B[i].one_tree.CheckTour())
+									if (!B[i].oneTree.CheckTour())
 									{
 										UB = B[i].HK;
 
 										for (unsigned short k = 0; k < numberOfNodes; k++)
-											path[k] = B[i].one_tree[k];
+											path[k] = B[i].oneTree[k];
 									}
 
 									PQ_Add(PQ, B[i]);
@@ -631,7 +630,7 @@ namespace TSP
 				}
 
 				for (unsigned short k = 0; k < numberOfNodes; k++)
-					degree1[k] = 0;
+					δ1[k] = 0;
 
 				current--;
 			}
