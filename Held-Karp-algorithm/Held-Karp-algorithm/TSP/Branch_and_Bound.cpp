@@ -57,36 +57,36 @@ namespace TSP
 		return s + "0";
 	}
 
-	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(Tree &tree, vector<unsigned short> &degrees, Node &current_node, unsigned short n)
+	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(Tree &tree, vector<unsigned short> &δ, Node &current_node, unsigned short n)
 	{
 		vector<Node> result;
-		auto min_degree_req = n;
-		auto min_degree = n;
+		auto min_δ_req = n;
+		auto min_δ = n;
 		auto p_req = n;
 		auto p = n;
 		auto req_neighbor = n;
 
 		for (unsigned short i = 0; i < n; i++)
-			if (degrees[i] > 2)
+			if (δ[i] > 2)
 				if (current_node.IncidentToRequired(i, n) == n)
 				{
-					if (degrees[i] < min_degree)
+					if (δ[i] < min_δ)
 					{
-						min_degree = degrees[i];
+						min_δ = δ[i];
 						p = i;
 					}
 				}
 				else
 				{
-					if (degrees[i] < min_degree_req)
+					if (δ[i] < min_δ_req)
 					{
-						min_degree_req = degrees[i];
+						min_δ_req = δ[i];
 						p_req = i;
 						req_neighbor = current_node.IncidentToRequired(i, n);
 					}
 				}
 
-		if (min_degree_req < n)
+		if (min_δ_req < n)
 		{
 			unsigned short i;
 
