@@ -18,24 +18,65 @@ namespace TSP
 	class Branch_and_Bound : public Base::TSP
 	{
 	public:
+		struct TREE
+		{
+			vector<pair<unsigned short, unsigned short>> T;
+
+			TREE(unsigned short size) : T(size) {}
+
+			pair<unsigned short, unsigned short> &operator[](unsigned short i)
+			{
+				return T[i];
+			}
+
+			pair<unsigned short, unsigned short> operator[](unsigned short i) const
+			{
+				return T[i];
+			}
+
+			unsigned short size()
+			{
+				return T.size();
+			}
+
+			bool Contains(unsigned short i, unsigned short j)
+			{
+				for (unsigned short k = 0; k < T.size(); k++)
+					if ((T[k].first == i && T[k].second == j) || (T[k].first == j && T[k].second == i))
+						return true;
+
+				return false;
+			}
+
+			bool CheckTour()
+			{
+				vector<unsigned short> degree(T.size(), 0);
+
+				for (unsigned short i = 0; i < T.size(); i++)
+				{
+					degree[T[i].first]++;
+					degree[T[i].second]++;
+				}
+
+				for (unsigned short i = 0; i < T.size(); i++)
+					if (degree[i] != 2)
+						return 1;
+
+				return 0;
+			}
+		};
+
 		struct Node
 		{
 			float HK = 0;
 
 			vector<float> λ;
 			vector<pair<unsigned short, unsigned short>> R, F;
-			vector<pair<unsigned short, unsigned short>> one_tree;
+			TREE one_tree;
 
-			Node(unsigned short size)
-			{
-				one_tree.resize(size);
-				λ.resize(size);
-			}
+			Node(unsigned short size) : one_tree(size), λ(size) {}
 
-			Node(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) : R(R), F(F), λ(λ)
-			{
-				one_tree.resize(size);
-			}
+			Node(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) : R(R), F(F), λ(λ), one_tree(size) {}
 
 			bool Forbidden(unsigned short i, unsigned short j)
 			{
@@ -62,14 +103,12 @@ namespace TSP
 		pair<vector<pair<unsigned short, unsigned short>>, float> HKAlgo();
 		bool Bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
 
-		vector<Node> Branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n);
+		vector<Node> Branch(TREE &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n);
 		float t1();
 
-		bool MST_Prim(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
+		bool MST_Prim(TREE &tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
 
-		bool TreeContains(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j);
 		void insert(vector<Node> &L, Node &new_elem);
-		bool check_tour(vector<pair<unsigned short, unsigned short>> const &Tree);
 
 	protected:
 		string PrintPath(vector<pair<unsigned short, unsigned short>> &path);

@@ -56,16 +56,7 @@ namespace TSP
 		return s + "0";
 	}
 
-	bool Branch_and_Bound::TreeContains(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j)
-	{
-		for (unsigned short k = 0; k < tree.size(); k++)
-			if ((tree[k].first == i && tree[k].second == j) || (tree[k].first == j && tree[k].second == i))
-				return true;
-
-		return false;
-	}
-
-	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n)
+	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(TREE &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n)
 	{
 		vector<Node> result;
 		auto min_degree_req = n;
@@ -100,7 +91,7 @@ namespace TSP
 
 			for (i = 0; i < n; i++)
 				if (i != p_req && i != req_neighbor)
-					if (!TreeContains(tree, i, p_req) && !current_node.Forbidden(i, p_req))
+					if (!tree.Contains(i, p_req) && !current_node.Forbidden(i, p_req))
 						break;
 
 			if (i == n)
@@ -157,7 +148,7 @@ namespace TSP
 			unsigned short i, j;
 
 			for (i = 0; i < n; i++)
-				if (i != p && !TreeContains(tree, i, p) && !current_node.Forbidden(i, p))
+				if (i != p && !tree.Contains(i, p) && !current_node.Forbidden(i, p))
 					break;
 
 			if (i == n)
@@ -236,29 +227,12 @@ namespace TSP
 		return result;
 	}
 
-	bool Branch_and_Bound::check_tour(vector<pair<unsigned short, unsigned short>> const &Tree)
-	{
-		vector<unsigned short> degree(Tree.size(), 0);
-
-		for (unsigned short i = 0; i < Tree.size(); i++)
-		{
-			degree[Tree[i].first]++;
-			degree[Tree[i].second]++;
-		}
-
-		for (unsigned short i = 0; i < Tree.size(); i++)
-			if (degree[i] != 2)
-				return 1;
-
-		return 0;
-	}
-
 	bool Branch_and_Bound::Bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps)
 	{
 		vector<vector<float>> Weights(numberOfNodes, vector<float>(numberOfNodes));
-		vector<pair<unsigned short, unsigned short>> Tree(numberOfNodes);
 		vector<vector<unsigned short>> omitted(numberOfNodes, vector<unsigned short>(numberOfNodes, 0));
 		vector<float> OptLambda(numberOfNodes);
+		TREE Tree(numberOfNodes);
 
 		unsigned short req = node.R.size();
 		float Treeweight = 0;
@@ -402,7 +376,7 @@ namespace TSP
 		return 0;
 	}
 
-	bool Branch_and_Bound::MST_Prim(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req)
+	bool Branch_and_Bound::MST_Prim(TREE &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req)
 	{
 		vector<bool> visited(numberOfNodes, 0);
 		vector<pair<float, unsigned short>> min(numberOfNodes, make_pair(FLT_MAX, 0));
@@ -457,7 +431,7 @@ namespace TSP
 
 	float Branch_and_Bound::t1()
 	{
-		vector<pair<unsigned short, unsigned short>> Tree(distance.size());
+		TREE Tree(distance.size());
 		vector<vector<unsigned short>> omitted(distance.size(), vector<unsigned short>(distance.size(), 0));
 
 		float t = 0;
@@ -588,7 +562,7 @@ namespace TSP
 			Bound(root, degree, t, N);
 
 			// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
-			if (!check_tour(root.one_tree))
+			if (!root.one_tree.CheckTour())
 			{
 				for (unsigned short i = 0; i < numberOfNodes; i++)
 					path[i] = root.one_tree[i];
@@ -635,7 +609,7 @@ namespace TSP
 						degree1.at(node.one_tree[i].second)++;
 					}
 
-					if (!check_tour(node.one_tree))
+					if (!node.one_tree.CheckTour())
 					{
 						UB = node.HK;
 
@@ -650,7 +624,7 @@ namespace TSP
 							if (!Bound(B[i], degree1, t, N))
 								if (B[i].HK < UB)
 								{
-									if (!check_tour(B[i].one_tree))
+									if (!B[i].one_tree.CheckTour())
 									{
 										UB = B[i].HK;
 
