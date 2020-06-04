@@ -322,7 +322,7 @@ namespace TSP
 
 		vector<vector<float>> Weights(size, vector<float>(size));
 		vector<pair<unsigned short, unsigned short>> Tree(size);
-		vector<vector<int>> omitted(size, vector<int>(size, 0));
+		vector<vector<unsigned short>> omitted(size, vector<unsigned short>(size, 0));
 		vector<float> OptLambda(size);
 
 		unsigned short req = node.R.size();
@@ -488,7 +488,7 @@ namespace TSP
 	Saves an edge list of the resulting tree in Tree
 	returns wether the algorithm terminated successfully (0) or not (1).
 	*/
-	bool Branch_and_Bound::minimum_spanning_tree(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<int>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req)
+	bool Branch_and_Bound::minimum_spanning_tree(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req)
 	{
 		unsigned short size = Weights.size();
 		vector<bool> visited(size, 0);
@@ -565,7 +565,7 @@ namespace TSP
 	float Branch_and_Bound::initial_value(vector<vector<float>> const &W)
 	{
 		vector<pair<unsigned short, unsigned short>> Tree(W.size());
-		vector<vector<int>> omitted(W.size(), vector<int>(W.size(), 0));
+		vector<vector<unsigned short>> omitted(W.size(), vector<unsigned short>(W.size(), 0));
 
 		float t = 0;
 		float firstmin = FLT_MAX;
@@ -668,7 +668,7 @@ namespace TSP
 		t /= 2.0f * size;
 
 		//begin of branching
-		vector<Node> B = branch(root.one_tree, degree, root, size);
+		auto B = branch(root.one_tree, degree, root, size);
 
 		//queue
 		vector<Node> S;
@@ -678,7 +678,7 @@ namespace TSP
 					insert(S, B[i]);
 
 		vector<unsigned short> degree1(size, 0);
-		int current = S.size() - 1;
+		auto current = S.size() - 1;
 
 		//Branch and Bound using best bound
 		while (current >= 0)

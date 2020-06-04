@@ -49,7 +49,7 @@ namespace TSP
 		bool Held_Karp_bound(vector<vector<float>> const &W, Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
 		vector<Node> branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n);
 
-		bool minimum_spanning_tree(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<int>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
+		bool minimum_spanning_tree(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
 
 		unsigned short is_incident_to_required(Node &current_node, unsigned short v, unsigned short n);
 		unsigned short is_in_tree(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j);
