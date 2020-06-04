@@ -370,7 +370,7 @@ namespace TSP
 
 		prim.Solve(T, omitted, distance, 0, numberOfNodes);
 
-		T.GetMin1Nodes(distance, id1, id2);
+		T.GetMin0Nodes(distance, id1, id2);
 
 		T[T.size() - 2] = sEdge(0, id1);
 		T[T.size() - 1] = sEdge(0, id2);

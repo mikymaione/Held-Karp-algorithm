@@ -41,7 +41,7 @@ namespace ADS
 			return T.size();
 		}
 
-		void GetMin1Nodes(const vector<vector<float>> &distance, unsigned short &id1, unsigned short &id2)
+		void GetMin0Nodes(const vector<vector<float>> &distance, unsigned short &id1, unsigned short &id2)
 		{
 			float min1 = FLT_MAX;
 			float min2 = FLT_MAX;
