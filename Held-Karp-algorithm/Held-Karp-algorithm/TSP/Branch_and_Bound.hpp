@@ -103,10 +103,10 @@ namespace TSP
 		pair<vector<pair<unsigned short, unsigned short>>, float> HKAlgo();
 		bool Bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
 
-		vector<Node> Branch(TREE &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n);
+		vector<Node> Branch(TREE &tree, vector<unsigned short> &degrees, Node &current_node, unsigned short n);
 		float t1();
 
-		bool MST_Prim(TREE &tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
+		bool MST_Prim(TREE &tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req);
 
 		void insert(vector<Node> &L, Node &new_elem);
 

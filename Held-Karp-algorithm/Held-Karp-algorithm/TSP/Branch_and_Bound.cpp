@@ -56,7 +56,7 @@ namespace TSP
 		return s + "0";
 	}
 
-	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(TREE &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n)
+	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(TREE &tree, vector<unsigned short> &degrees, Node &current_node, unsigned short n)
 	{
 		vector<Node> result;
 		auto min_degree_req = n;
@@ -376,7 +376,7 @@ namespace TSP
 		return 0;
 	}
 
-	bool Branch_and_Bound::MST_Prim(TREE &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req)
+	bool Branch_and_Bound::MST_Prim(TREE &Tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req)
 	{
 		vector<bool> visited(numberOfNodes, 0);
 		vector<pair<float, unsigned short>> min(numberOfNodes, make_pair(FLT_MAX, 0));
