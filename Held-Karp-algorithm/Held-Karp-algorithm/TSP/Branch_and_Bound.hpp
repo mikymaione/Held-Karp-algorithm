@@ -10,103 +10,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <vector>
 
 #include "Base/TSP.hpp"
+#include "../ADS/sGraph.hpp"
 
 using namespace std;
+using namespace ADS;
 
 namespace TSP
 {
 	class Branch_and_Bound : public Base::TSP
 	{
-	private:
-		struct sEdge
-		{
-			unsigned short from, to;
-
-			sEdge() : sEdge(UINT16_MAX, UINT16_MAX) {}
-			sEdge(unsigned short from, unsigned short to) : from(from), to(to) {}
-		};
-
-		struct sTree
-		{
-			vector<sEdge> T;
-
-			sTree(unsigned short size) : T(size) {}
-
-			sEdge &operator[](unsigned short i)
-			{
-				return T[i];
-			}
-
-			sEdge operator[](unsigned short i) const
-			{
-				return T[i];
-			}
-
-			unsigned short size()
-			{
-				return T.size();
-			}
-
-			bool Contains(unsigned short i, unsigned short j)
-			{
-				for (auto e : T)
-					if ((e.from == i && e.to == j) || (e.from == j && e.to == i))
-						return true;
-
-				return false;
-			}
-
-			bool CheckTour()
-			{
-				vector<unsigned short> δ(T.size(), 0);
-
-				for (auto e : T)
-				{
-					δ[e.from]++;
-					δ[e.to]++;
-				}
-
-				for (auto d : δ)
-					if (d != 2)
-						return true;
-
-				return false;
-			}
-		};
-
-		struct sNode
-		{
-			float bound = 0;
-
-			vector<float> λ;
-			vector<sEdge> R, F;
-			sTree oneTree;
-
-			sNode(unsigned short size) : oneTree(size), λ(size) {}
-
-			sNode(vector<sEdge> R, vector<sEdge> F, vector<float> λ, unsigned short size) : R(R), F(F), λ(λ), oneTree(size) {}
-
-			bool Forbidden(unsigned short i, unsigned short j)
-			{
-				for (auto f : F)
-					if ((f.from == i && f.to == j) || (f.from == j && f.to == i))
-						return true;
-
-				return false;
-			}
-
-			unsigned short IncidentToRequired(unsigned short v, unsigned short n)
-			{
-				for (auto r : R)
-					if (v == r.from)
-						return r.to;
-					else if (v == r.to)
-						return r.from;
-
-				return n;
-			}
-		};
-
 	private:
 		pair<vector<sEdge>, float> HKAlgo();
 		bool Bound(sNode &node, vector<unsigned short> &δ, float t, unsigned short const steps);

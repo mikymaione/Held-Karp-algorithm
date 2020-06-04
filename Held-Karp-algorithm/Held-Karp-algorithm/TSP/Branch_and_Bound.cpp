@@ -57,7 +57,7 @@ namespace TSP
 		return s + "0";
 	}
 
-	vector<Branch_and_Bound::sNode> Branch_and_Bound::Branch(sTree &T, vector<unsigned short> &δ, sNode &current_node, unsigned short n)
+	vector<sNode> Branch_and_Bound::Branch(sTree &T, vector<unsigned short> &δ, sNode &current_node, unsigned short n)
 	{
 		vector<sNode> result;
 		auto min_δ_req = n;
@@ -506,7 +506,7 @@ namespace TSP
 			Note that the bound of the left child does not equal the L-value of its incoming matrix!
 			7. You are done processing this node. Go back to the top-level outline.
 	*/
-	pair<vector<Branch_and_Bound::sEdge>, float> Branch_and_Bound::HKAlgo()
+	pair<vector<sEdge>, float> Branch_and_Bound::HKAlgo()
 	{
 		vector<sNode> PQ;
 		vector<sEdge> path(numberOfNodes);
