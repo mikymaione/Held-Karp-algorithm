@@ -29,8 +29,8 @@ namespace TSP
 	{
 		string s;
 		set<unsigned short> S;
-		unsigned short i = 0, x = 0;
 		vector<vector<bool>> E(numberOfNodes, vector<bool>(numberOfNodes, false));
+		unsigned short i = 0, x = 0;
 
 		for (auto const e : path)
 		{
@@ -107,16 +107,14 @@ namespace TSP
 	vector<Branch_and_Bound::Node> Branch_and_Bound::branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n)
 	{
 		vector<Node> result;
-		unsigned short min_degree_req = n; //minimal degree greater than two of a vertex incident to a required edge
-		unsigned short min_degree = n;	 //minimal degree greater than two of a vertex not incident to a required edge
-		unsigned short p_req = n;			 //vertex where min_degree_req was attained
-		unsigned short p = n;				 //vertex where min_degree was attained
-		unsigned short req_neighbor = n;	 //other endpoint of the required edge incident to p_req
+		auto min_degree_req = n;	//minimal degree greater than two of a vertex incident to a required edge
+		auto min_degree = n;		//minimal degree greater than two of a vertex not incident to a required edge
+		auto p_req = n;				//vertex where min_degree_req was attained
+		auto p = n;					//vertex where min_degree was attained
+		auto req_neighbor = n;		//other endpoint of the required edge incident to p_req
 
-											 /* Try to find a vertex of degree at least 3 (but degree as small as possible)
-											 that is incident to a required edge (this would be p_req)
-											 If no such vertex exists, find any vertex of degree at least 3 but as small as possible, this will be p
-											 */
+		//Try to find a vertex of degree at least 3 (but degree as small as possible) that is incident to a required edge (this would be p_req).
+		//If no such vertex exists, find any vertex of degree at least 3 but as small as possible, this will be p		
 		for (unsigned short i = 0; i < n; i++)
 			if (degrees[i] > 2)
 				if (is_incident_to_required(current_node, i, n) == n)
@@ -154,14 +152,14 @@ namespace TSP
 							break; //we may take e_1 = {i, p}
 
 			//Create the Node for S2, where e_1 is required as there is one more required edge incident to p_req, forbid all other edges incident to p_req
-			vector<pair<unsigned short, unsigned short>> F = current_node.F;
-			vector<pair<unsigned short, unsigned short>> R = current_node.R;
-			R.push_back(pair<unsigned short, unsigned short>(i, p_req));
+			auto F = current_node.F;
+			auto R = current_node.R;
+			R.push_back(make_pair(i, p_req));
 
 			//forbid all edges incident to p except the two required ones
 			for (unsigned short k = 0; k < n; k++)
 				if (k != i && k != p_req && k != req_neighbor && !is_forbidden(current_node, p_req, k))
-					F.push_back(pair<unsigned short, unsigned short>(p_req, k));
+					F.push_back(make_pair(p_req, k));
 
 			Node S2(R, F, current_node.λ, n);
 			result.push_back(S2);
@@ -169,7 +167,7 @@ namespace TSP
 			//Create the Node for S3, where e_1 is forbidden
 			R = current_node.R;
 			F = current_node.F;
-			F.push_back(pair<unsigned short, unsigned short>(i, p_req));
+			F.push_back(make_pair(i, p_req));
 
 			//check if all but two are forbidden, if so, require the two other ones
 			unsigned short num_forbidden = 0;
@@ -195,7 +193,7 @@ namespace TSP
 				for (unsigned short k = 0; k < n; k++)
 					if (!forbidden[k])
 						if (k != req_neighbor)
-							R.push_back(pair<unsigned short, unsigned short>(p_req, k));
+							R.push_back(make_pair(p_req, k));
 
 			Node S3(R, F, current_node.λ, n);
 			result.push_back(S3);
@@ -218,16 +216,16 @@ namespace TSP
 					if (!is_forbidden(current_node, j, p))
 						break; //we may take e_2 = {j, p}
 
-							   //Create the Node S1, where e_1 and e_2 are required
-			vector<pair<unsigned short, unsigned short>> R = current_node.R;
-			R.push_back(pair<unsigned short, unsigned short>(i, p));
-			R.push_back(pair<unsigned short, unsigned short>(j, p));
-			vector<pair<unsigned short, unsigned short>> F = current_node.F;
+			//Create the Node S1, where e_1 and e_2 are required
+			auto F = current_node.F;
+			auto R = current_node.R;
+			R.push_back(make_pair(i, p));
+			R.push_back(make_pair(j, p));
 
 			//forbid all edges incident to p except the two required ones
 			for (unsigned short k = 0; k < n; k++)
 				if (k != i && k != p && k != j && !is_forbidden(current_node, p, k))
-					F.push_back(pair<unsigned short, unsigned short>(p, k));
+					F.push_back(make_pair(p, k));
 
 			Node S1(R, F, current_node.λ, n);
 			result.push_back(S1);
@@ -235,8 +233,8 @@ namespace TSP
 			//Create the Node S2, where e_1 is required and e_2 is forbidden
 			R = current_node.R;
 			F = current_node.F;
-			R.push_back(pair<unsigned short, unsigned short>(i, p));
-			F.push_back(pair<unsigned short, unsigned short>(j, p));
+			R.push_back(make_pair(i, p));
+			F.push_back(make_pair(j, p));
 
 			//check if all but two are forbidden, if so, require the two other ones
 			unsigned short num_forbidden = 0;
@@ -262,7 +260,7 @@ namespace TSP
 				for (unsigned short k = 0; k < n; k++)
 					if (!forbidden[k])
 						if (k != i)
-							R.push_back(pair<unsigned short, unsigned short>(p, k));
+							R.push_back(make_pair(p, k));
 
 			Node S2(R, F, current_node.λ, n);
 			result.push_back(S2);
@@ -270,7 +268,7 @@ namespace TSP
 			//Create the Node S3, where e_1 is forbidden
 			R = current_node.R;
 			F = current_node.F;
-			F.push_back(pair<unsigned short, unsigned short>(i, p));
+			F.push_back(make_pair(i, p));
 
 			// if all but two edges incident to p are forbidden, we can require the last two ones
 			if (num_forbidden == n - 3)
@@ -279,9 +277,9 @@ namespace TSP
 				for (unsigned short k = 0; k < n; k++)
 					if (!forbidden[k])
 						if (k != i)
-							R.push_back(pair<unsigned short, unsigned short>(p, k));
+							R.push_back(make_pair(p, k));
 
-				R.push_back(pair<unsigned short, unsigned short>(p, j));
+				R.push_back(make_pair(p, j));
 			}
 
 			Node S3(R, F, current_node.λ, n);
@@ -319,7 +317,7 @@ namespace TSP
 	before the execution, node contains required edges, forbidden edges, empty tree and initial λ value from the parent branching node
 	returns wether the algorithm terminated successfully (0) or not (1)
 	*/
-	bool Branch_and_Bound::Held_Karp_bound(vector<vector<float>> const &W, Node &node, vector<unsigned short> &degree, float t, unsigned short const steps)
+	bool Branch_and_Bound::Held_Karp_bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps)
 	{
 		vector<vector<float>> Weights(numberOfNodes, vector<float>(numberOfNodes));
 		vector<pair<unsigned short, unsigned short>> Tree(numberOfNodes);
@@ -384,7 +382,7 @@ namespace TSP
 		//compute new weights
 		for (unsigned short i = 0; i < numberOfNodes; i++)
 			for (unsigned short j = 0; j < numberOfNodes; j++)
-				Weights[i][j] = W[i][j] + node.λ[i] + node.λ[j];
+				Weights[i][j] = distance[i][j] + node.λ[i] + node.λ[j];
 
 		for (unsigned short k = 0; k < steps; k++)
 		{
@@ -454,15 +452,13 @@ namespace TSP
 			for (unsigned short i = 0; i < numberOfNodes; i++)
 				for (unsigned short j = 0; j < numberOfNodes; j++)
 					Weights[i][j] += (degree[i] - 2) * t + (degree[j] - 2) * t;
-
-			//update λ
+			
 			for (unsigned short i = 0; i < numberOfNodes; i++)
 			{
 				node.λ[i] += (degree[i] - 2) * t;
 				degree[i] = 0;
 			}
 
-			//update t, delta
 			t -= delta;
 			delta -= ddelta;
 			Treeweight = 0;
@@ -479,39 +475,23 @@ namespace TSP
 
 		return 0;
 	}
-
-	/*
-	Implementation of Prim's algorithm in order to compute an MST
-	of the subgraph induced by the vertices 1, ..., n-1
-	of the graph given by the cost matrix Weights
-	that takes into account that some edges are forbidden (omitted)
-	and some edges are required (req)
-	Saves an edge list of the resulting tree in Tree
-	returns wether the algorithm terminated successfully (0) or not (1).
-	*/
+	
 	bool Branch_and_Bound::MST_Prim(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req)
 	{
 		vector<bool> visited(numberOfNodes, 0);
-
-		//min stores for each vertex an edge of minimum weight incident to the set of visited verticies
 		vector<pair<float, unsigned short>> min(numberOfNodes, make_pair(FLT_MAX, 0));
 
+		unsigned short req_num = 0;
 		unsigned short vertex = 1;
 		unsigned short new_vertex = 1;
-		auto minimum = FLT_MAX;
-
-		//number of required edges in Tree
-		unsigned short req_num = 0;
+		float minimum = FLT_MAX;
 
 		visited[1] = 1;
 
-		//build MST
 		for (unsigned short j = 0; j < numberOfNodes - 2; j++)
 		{
-			//do not consider vertex 0 and 1
 			for (unsigned short i = 2; i < numberOfNodes; i++)
 				if (i != vertex && !visited[i])
-					//update the minimum weight of a cennection to visited verticies
 					if (omitted[i][vertex] == 1)
 					{
 						min[i].first = 0;
@@ -523,7 +503,6 @@ namespace TSP
 						min[i].second = vertex;
 					}
 
-			//find an edge of minimum weight between visited and not visited verticies
 			for (unsigned short i = 2; i < numberOfNodes; i++)
 				if (!visited[i] && min[i].first < minimum)
 				{
@@ -531,24 +510,19 @@ namespace TSP
 					new_vertex = i;
 				}
 
-			//too many forbidden edges
 			if (new_vertex == vertex)
-				return 1;
+				return true;
 
-			//update number of required edges in Tree
 			if (omitted[new_vertex].at(min[new_vertex].second))
 				req_num++;
 
-			//update vertex
 			vertex = new_vertex;
 			visited[vertex] = 1;
 
-			//insert corresponding edge in Tree
 			Tree[j] = make_pair(vertex, min[vertex].second);
 			minimum = FLT_MAX;
 		}
 
-		//too many required edges
 		if (req_num < req)
 			return true;
 
@@ -558,10 +532,10 @@ namespace TSP
 	/*
 	Computes the inital value for t, t_0 as recommended in the paper
 	*/
-	float Branch_and_Bound::initial_value(vector<vector<float>> const &W)
+	float Branch_and_Bound::t1()
 	{
-		vector<pair<unsigned short, unsigned short>> Tree(W.size());
-		vector<vector<unsigned short>> omitted(W.size(), vector<unsigned short>(W.size(), 0));
+		vector<pair<unsigned short, unsigned short>> Tree(distance.size());
+		vector<vector<unsigned short>> omitted(distance.size(), vector<unsigned short>(distance.size(), 0));
 
 		float t = 0;
 		float firstmin = FLT_MAX;
@@ -569,21 +543,20 @@ namespace TSP
 
 		unsigned short first, second;
 
-		//compute MST
-		MST_Prim(Tree, omitted, W, 0);
+		MST_Prim(Tree, omitted, distance, 0);
 
 		for (unsigned short i = 1; i < Tree.size(); i++)
-			if (W[0][i] < firstmin)
+			if (distance[0][i] < firstmin)
 			{
-				firstmin = W[0][i];
+				firstmin = distance[0][i];
 				first = i;
 			}
 
 		for (unsigned short i = 1; i < Tree.size(); i++)
 			if (i != first)
-				if (W[0][i] < secondmin)
+				if (distance[0][i] < secondmin)
 				{
-					secondmin = W[0][i];
+					secondmin = distance[0][i];
 					second = i;
 				}
 
@@ -593,9 +566,9 @@ namespace TSP
 
 		//compute
 		for (unsigned short i = 0; i < Tree.size(); i++)
-			t += W[Tree[i].first][Tree[i].second];
+			t += distance[Tree[i].first][Tree[i].second];
 
-		return t / (2.0f * W.size());
+		return t / (2.0f * distance.size());
 	}
 
 	/*
@@ -619,131 +592,133 @@ namespace TSP
 		}
 	}
 
-	pair<vector<pair<unsigned short, unsigned short>>, float> Branch_and_Bound::DoBranch_and_Bound(vector<vector<float>> const &W)
+	pair<vector<pair<unsigned short, unsigned short>>, float> Branch_and_Bound::DoBranch_and_Bound()
 	{
+		vector<Node> S;
 		vector<unsigned short> degree(numberOfNodes, 0);
-		float U = W[numberOfNodes - 1][0];
-		float t;
-		unsigned short N;
-
 		vector<pair<unsigned short, unsigned short>> Opt(numberOfNodes);
 
 		Opt[0] = make_pair(numberOfNodes - 1, 0);
 
+		auto U = distance[numberOfNodes - 1][0];
+
 		//compute upper bound
-		for (unsigned short i = 0; i < W.size() - 1; i++)
+		for (unsigned short i = 0; i < distance.size() - 1; i++)
 		{
-			U += W[i][i + 1];
+			U += distance[i][i + 1];
 			Opt[i + 1] = make_pair(i, i + 1);
 		}
 
-		//initialization of N and t
-		//for root:
-		t = initial_value(W);
-		N = ceil(numberOfNodes * numberOfNodes / 50.0f) + numberOfNodes + 15;
+		//initialization of N and t for root:
+		auto t = t1();
+		auto N = (numberOfNodes * numberOfNodes / 50.0f) + numberOfNodes + 15;
 
 		//computing lower bound
-		Node root(vector<pair<unsigned short, unsigned short>>(), vector<pair<unsigned short, unsigned short>>(), vector<float>(numberOfNodes), numberOfNodes);
-		Held_Karp_bound(W, root, degree, t, N);
-
-		//if a tour is already found, it is optimum
-		if (!check_tour(root.one_tree))
 		{
-			for (unsigned short i = 0; i < numberOfNodes; i++)
-				Opt[i] = root.one_tree[i];
+			Node root(vector<pair<unsigned short, unsigned short>>(), vector<pair<unsigned short, unsigned short>>(), vector<float>(numberOfNodes), numberOfNodes);
+			Held_Karp_bound(root, degree, t, N);
 
-			return make_pair(Opt, root.HK);
-		}
-
-		//initialization of N and t for other verticies
-		N = ceil(numberOfNodes / 4.0f) + 5;
-		t = 0;
-
-		for (unsigned short i = 0; i < numberOfNodes; i++)
-			t += abs((root.λ)[i]);
-
-		t /= 2.0f * numberOfNodes;
-
-		//begin of branching
-		auto B = branch(root.one_tree, degree, root, numberOfNodes);
-
-		//queue
-		vector<Node> S;
-		for (unsigned short i = 0; i < B.size(); i++)
-			if (!Held_Karp_bound(W, B[i], degree, t, N))
-				if (B[i].HK < U)
-					insert(S, B[i]);
-
-		vector<unsigned short> degree1(numberOfNodes, 0);
-		auto current = S.size() - 1;
-
-		//Branch and Bound using best bound
-		while (current >= 0)
-		{
-			auto node = S[current];
-			S.pop_back();
-
-			//since we use best bound, node.HK is a lower bound for the optimum
-			if (ceil(node.HK) >= U)
-				return make_pair(Opt, U);
-
-			//consider node only if its HK bound is smaller than U
-			if (node.HK < U)
+			//if a tour is already found, it is optimum
+			if (!check_tour(root.one_tree))
 			{
 				for (unsigned short i = 0; i < numberOfNodes; i++)
-				{
-					degree1.at(node.one_tree[i].first)++;
-					degree1.at(node.one_tree[i].second)++;
-				}
+					Opt[i] = root.one_tree[i];
 
-				//check whether the current one_tree is a tour
-				if (!check_tour(node.one_tree))
-				{
-					//update U
-					U = node.HK;
-
-					//update Opt
-					for (unsigned short i = 0; i < numberOfNodes; i++)
-						Opt[i] = node.one_tree[i];
-				}
-				else
-				{
-					//branch with node
-					auto B = branch(node.one_tree, degree1, node, numberOfNodes);
-
-					for (unsigned short i = 0; i < B.size(); i++)
-						if (!Held_Karp_bound(W, B[i], degree1, t, N))
-							//consider B[i] only if its HK bound is smaller than U
-							if (B[i].HK < U)
-							{
-								//check whether we found a tour
-								if (!check_tour(B[i].one_tree))
-								{
-									U = B[i].HK;
-
-									for (unsigned short k = 0; k < numberOfNodes; k++)
-										Opt[k] = B[i].one_tree[k];
-								}
-
-								//insert B[i] wrt Held-Karp-Bound
-								insert(S, B[i]);
-								current++;
-							}
-				}
+				return make_pair(Opt, root.HK);
 			}
 
-			for (unsigned short k = 0; k < numberOfNodes; k++)
-				degree1[k] = 0;
+			//initialization of N and t for other verticies
+			N = ceil(numberOfNodes / 4.0f) + 5;
+			t = 0;
 
-			current--;
+			for (unsigned short i = 0; i < numberOfNodes; i++)
+				t += abs((root.λ)[i]);
+
+			t /= 2.0f * numberOfNodes;
+
+			//begin of branching
+			auto B = branch(root.one_tree, degree, root, numberOfNodes);
+
+			for (unsigned short i = 0; i < B.size(); i++)
+				if (!Held_Karp_bound(B[i], degree, t, N))
+					if (B[i].HK < U)
+						insert(S, B[i]);
 		}
+		//END computing lower bound
+
+		//Branch and Bound using best bound
+		{
+			vector<unsigned short> degree1(numberOfNodes, 0);
+			auto current = S.size() - 1;
+
+			while (current >= 0)
+			{
+				auto node = S[current];
+				S.pop_back();
+
+				//since we use best bound, node.HK is a lower bound for the optimum
+				if (ceil(node.HK) >= U)
+					return make_pair(Opt, U);
+
+				//consider node only if its HK bound is smaller than U
+				if (node.HK < U)
+				{
+					for (unsigned short i = 0; i < numberOfNodes; i++)
+					{
+						degree1.at(node.one_tree[i].first)++;
+						degree1.at(node.one_tree[i].second)++;
+					}
+
+					//check whether the current one_tree is a tour
+					if (!check_tour(node.one_tree))
+					{
+						//update U
+						U = node.HK;
+
+						//update Opt
+						for (unsigned short i = 0; i < numberOfNodes; i++)
+							Opt[i] = node.one_tree[i];
+					}
+					else
+					{
+						//branch with node
+						auto B = branch(node.one_tree, degree1, node, numberOfNodes);
+
+						for (unsigned short i = 0; i < B.size(); i++)
+							if (!Held_Karp_bound(B[i], degree1, t, N))
+								//consider B[i] only if its HK bound is smaller than U
+								if (B[i].HK < U)
+								{
+									//check whether we found a tour
+									if (!check_tour(B[i].one_tree))
+									{
+										U = B[i].HK;
+
+										for (unsigned short k = 0; k < numberOfNodes; k++)
+											Opt[k] = B[i].one_tree[k];
+									}
+
+									//insert B[i] wrt Held-Karp-Bound
+									insert(S, B[i]);
+									current++;
+								}
+					}
+				}
+
+				for (unsigned short k = 0; k < numberOfNodes; k++)
+					degree1[k] = 0;
+
+				current--;
+			}
+		}
+		//END Branch and Bound using best bound
 
 		return make_pair(Opt, U);
 	}
 
 	void Branch_and_Bound::Solve(float &opt, string &path)
 	{
-		auto R = DoBranch_and_Bound(distance);
+		auto R = DoBranch_and_Bound();
 
 		opt = R.second;
 		path = PrintPath(R.first);
