@@ -147,6 +147,8 @@ namespace ADS
 			for (auto v : V)
 				if (v->id == id)
 					return v;
+
+			return nullptr;
 		}
 
 		shared_ptr<Node> GetANode()

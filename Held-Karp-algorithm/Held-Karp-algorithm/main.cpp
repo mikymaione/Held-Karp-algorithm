@@ -10,6 +10,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <string>
 
 #include "TSP/ApproxTSP.hpp"
+#include "TSP/Branch_and_Bound.hpp"
 #include "TSP/LagrangianRelaxation.hpp"
 #include "TSP/Christofides.hpp"
 #include "TSP/HeldKarp.hpp"
@@ -67,6 +68,11 @@ void Run(string algo, string tipo, const unsigned short NumberOfNodes)
 	else if (algo == "A")
 	{
 		ApproxTSP A(DistanceMatrix2D);
+		A.Run();
+	}
+	else if (algo == "B")
+	{
+		Branch_and_Bound A(DistanceMatrix2D);
 		A.Run();
 	}
 	else if (algo == "L")
@@ -135,6 +141,8 @@ int main(int argc, char **argv)
 				cout << "Held-Karp algorithm on ";
 			else if (algo == "A")
 				cout << "Approx-TSP algorithm on ";
+			else if (algo == "B")
+				cout << "Branch-and-Bound algorithm on ";
 			else if (algo == "L")
 				cout << "Lagrangian relaxation algorithm on ";
 			else

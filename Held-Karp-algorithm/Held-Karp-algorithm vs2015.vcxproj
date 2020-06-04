@@ -24,6 +24,7 @@
     <ClCompile Include="Held-Karp-algorithm\MST\Prim.cpp" />
     <ClCompile Include="Held-Karp-algorithm\TSP\ApproxTSP.cpp" />
     <ClCompile Include="Held-Karp-algorithm\TSP\Base\TSP.cpp" />
+    <ClCompile Include="Held-Karp-algorithm\TSP\Branch_and_Bound.cpp" />
     <ClCompile Include="Held-Karp-algorithm\TSP\LagrangianRelaxation.cpp" />
     <ClCompile Include="Held-Karp-algorithm\TSP\Christofides.cpp" />
     <ClCompile Include="Held-Karp-algorithm\TSP\HeldKarp.cpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="Held-Karp-algorithm\MST\Prim.hpp" />
     <ClInclude Include="Held-Karp-algorithm\TSP\ApproxTSP.hpp" />
     <ClInclude Include="Held-Karp-algorithm\TSP\Base\TSP.hpp" />
+    <ClInclude Include="Held-Karp-algorithm\TSP\Branch_and_Bound.hpp" />
     <ClInclude Include="Held-Karp-algorithm\TSP\LagrangianRelaxation.hpp" />
     <ClInclude Include="Held-Karp-algorithm\TSP\Christofides.hpp" />
     <ClInclude Include="Held-Karp-algorithm\TSP\HeldKarp.hpp" />

@@ -26,7 +26,7 @@ namespace TSP
 	private:
 		float UpperBound();
 
-		shared_ptr<Graph> LagrangeSubGradient(const unsigned short N, Graph &G, float &best_zero_tree_cost);
+		shared_ptr<Graph> LagrangeSubGradient(Graph &G, float &best_zero_tree_cost);
 
 	protected:
 		string PrintPath();

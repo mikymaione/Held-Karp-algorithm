@@ -47,13 +47,13 @@ namespace TSP
 		return opt;
 	}
 
-	shared_ptr<Graph> LagrangianRelaxation::LagrangeSubGradient(const unsigned short N, Graph &G, float &best_zero_tree_cost)
+	shared_ptr<Graph> LagrangianRelaxation::LagrangeSubGradient(Graph &G, float &best_zero_tree_cost)
 	{
 		auto t_1 = 0.0f;
 		auto t_k = 0.0f;
 
 		unsigned short k = 0;
-		unsigned short M = ((N * N) / 50) + N + 16;
+		unsigned short M = ((numberOfNodes * numberOfNodes) / 50) + numberOfNodes + 16;
 
 		maxCardinality = M;
 
@@ -63,7 +63,7 @@ namespace TSP
 		MST::Kruskal kruskal;
 
 		map<unsigned short, unsigned short> d_k_prev;
-		vector<float> π(N, 0);
+		vector<float> π(numberOfNodes, 0);
 
 		shared_ptr<Graph> best_zero_tree;
 
@@ -84,7 +84,7 @@ namespace TSP
 
 			auto zero_tree_cost = zero_tree->Cost();
 
-			for (unsigned short i = 0; i < N; i++)
+			for (unsigned short i = 0; i < numberOfNodes; i++)
 				zero_tree_cost += π[i] * 2.0f;
 
 			if (zero_tree_cost > best_zero_tree_cost || k == 1)
@@ -125,54 +125,11 @@ namespace TSP
 		const auto FirstUB = UpperBound();
 		UB = FirstUB;
 
-		Graph G0(numberOfNodes - 1);
-		G0.MakeConnected(distance);
+		Graph G(numberOfNodes);
+		G.MakeConnected(distance);
 
 		auto LB = 0.0f;
-		auto zero_tree = LagrangeSubGradient(numberOfNodes - 1, G0, LB);
-
-		{
-			unsigned short minv1, minv2;
-
-			float minv1c = FLT_MAX;
-			float minv2c = FLT_MAX;
-
-			// n - v1
-			for (unsigned short x = 0; x < numberOfNodes - 1; x++)
-				if (distance[x][numberOfNodes - 1] < minv1c)
-				{
-					minv1c = distance[x][numberOfNodes - 1];
-					minv1 = x;
-				}
-
-			// n - v2
-			for (unsigned short x = 0; x < numberOfNodes - 1; x++)
-				if (x != minv1)
-					if (distance[x][numberOfNodes - 1] < minv2c)
-					{
-						minv2c = distance[x][numberOfNodes - 1];
-						minv2 = x;
-					}
-
-			zero_tree->AddNode(numberOfNodes - 1);
-
-			Edge minv1e(
-				minv1c,
-				zero_tree->NodeById(minv1),
-				zero_tree->NodeById(numberOfNodes - 1)
-				);
-
-			Edge minv2e(
-				minv2c,
-				zero_tree->NodeById(minv2),
-				zero_tree->NodeById(numberOfNodes - 1)
-				);
-
-			zero_tree->E.push_back(make_shared<Edge>(minv1e));
-			zero_tree->E.push_back(make_shared<Edge>(minv2e));
-
-			LB = zero_tree->Cost(distance);
-		}
+		auto zero_tree = LagrangeSubGradient(G, LB);
 
 		auto gap = 100.0f * (UB - LB) / LB;
 
