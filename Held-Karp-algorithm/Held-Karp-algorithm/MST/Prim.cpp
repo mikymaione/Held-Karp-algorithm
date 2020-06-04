@@ -58,4 +58,57 @@ namespace MST
 		}
 	}
 
+	bool Prim::Solve(sTree &sTree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req, const unsigned short numberOfNodes)
+	{
+		vector<bool> visited(numberOfNodes, 0);
+		vector<pair<float, unsigned short>> min(numberOfNodes, make_pair(FLT_MAX, 0));
+
+		unsigned short req_num = 0;
+		unsigned short vertex = 1;
+		unsigned short new_vertex = 1;
+		float minimum = FLT_MAX;
+
+		visited[1] = 1;
+
+		for (unsigned short j = 0; j < numberOfNodes - 2; j++)
+		{
+			for (unsigned short i = 2; i < numberOfNodes; i++)
+				if (i != vertex && !visited[i])
+					if (omitted[i][vertex] == 1)
+					{
+						min[i].first = 0;
+						min[i].second = vertex;
+					}
+					else if (omitted[i][vertex] == 0 && Weights[i][vertex] < min[i].first)
+					{
+						min[i].first = Weights[i][vertex];
+						min[i].second = vertex;
+					}
+
+			for (unsigned short i = 2; i < numberOfNodes; i++)
+				if (!visited[i] && min[i].first < minimum)
+				{
+					minimum = min[i].first;
+					new_vertex = i;
+				}
+
+			if (new_vertex == vertex)
+				return true;
+
+			if (omitted[new_vertex].at(min[new_vertex].second))
+				req_num++;
+
+			vertex = new_vertex;
+			visited[vertex] = 1;
+
+			sTree[j] = sEdge(vertex, min[vertex].second);
+			minimum = FLT_MAX;
+		}
+
+		if (req_num < req)
+			return true;
+
+		return false;
+	}
+
 }

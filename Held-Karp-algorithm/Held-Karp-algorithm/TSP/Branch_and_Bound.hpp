@@ -20,16 +20,6 @@ namespace TSP
 	class Branch_and_Bound : public Base::TSP
 	{
 	private:
-		pair<vector<sEdge>, float> HKAlgo();
-		bool Bound(sNode &node, vector<unsigned short> &δ, float t, unsigned short const steps);
-		vector<sNode> Branch(sTree &T, vector<unsigned short> &δ, sNode &current_node, unsigned short n);
-
-		float t1();
-
-		bool MST_Prim(sTree &tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req);
-		void PQ_Add(vector<sNode> &L, sNode &new_elem);
-
-	private:
 		unsigned short CountElements(vector<sEdge> &edges, vector<unsigned short> &from, unsigned short i)
 		{
 			unsigned short x = 0;
@@ -51,6 +41,16 @@ namespace TSP
 
 			return x;
 		}
+
+	private:
+		pair<vector<sEdge>, float> HKAlgo();
+
+		bool Bound(sNode &node, vector<unsigned short> &δ, float t, unsigned short const steps);
+		vector<sNode> Branch(sTree &T, vector<unsigned short> &δ, sNode &current_node, unsigned short n);
+
+		float t1();
+
+		void PQ_Add(vector<sNode> &L, sNode &new_elem);
 
 	protected:
 		string PrintPath(vector<sEdge> &path);

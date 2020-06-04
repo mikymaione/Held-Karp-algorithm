@@ -9,6 +9,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <vector>
 
 #include "../ADS/Graph.hpp"
+#include "../ADS/SGraph.hpp"
 
 using namespace std;
 using namespace ADS;
@@ -19,6 +20,7 @@ namespace MST
 	{
 	public:
 		void Solve(const vector<vector<float>> &distance, Graph &G, unsigned short r_id);
+		bool Solve(sTree &tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req, const unsigned short numberOfNodes);
 
 	};
 }

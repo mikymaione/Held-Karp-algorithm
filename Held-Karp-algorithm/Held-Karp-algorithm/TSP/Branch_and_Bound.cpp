@@ -21,6 +21,7 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 #include <set>
 
 #include "Branch_and_Bound.hpp"
+#include "../MST/Prim.hpp"
 
 namespace TSP
 {
@@ -202,6 +203,8 @@ namespace TSP
 
 	bool Branch_and_Bound::Bound(sNode &node, vector<unsigned short> &δ, float t, unsigned short const steps)
 	{
+		MST::Prim prim;
+
 		vector<vector<float>> w(numberOfNodes, vector<float>(numberOfNodes));
 		vector<vector<unsigned short>> omitted(numberOfNodes, vector<unsigned short>(numberOfNodes, 0));
 		vector<float> Λ(numberOfNodes);
@@ -269,7 +272,7 @@ namespace TSP
 
 		for (unsigned short k = 0; k < steps; k++)
 		{
-			if (MST_Prim(T, omitted, w, req))
+			if (prim.Solve(T, omitted, w, req, numberOfNodes))
 				return 1;
 
 			for (unsigned short i = 1; i < numberOfNodes; i++)
@@ -355,61 +358,10 @@ namespace TSP
 		return 0;
 	}
 
-	bool Branch_and_Bound::MST_Prim(sTree &sTree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req)
-	{
-		vector<bool> visited(numberOfNodes, 0);
-		vector<pair<float, unsigned short>> min(numberOfNodes, make_pair(FLT_MAX, 0));
-
-		unsigned short req_num = 0;
-		unsigned short vertex = 1;
-		unsigned short new_vertex = 1;
-		float minimum = FLT_MAX;
-
-		visited[1] = 1;
-
-		for (unsigned short j = 0; j < numberOfNodes - 2; j++)
-		{
-			for (unsigned short i = 2; i < numberOfNodes; i++)
-				if (i != vertex && !visited[i])
-					if (omitted[i][vertex] == 1)
-					{
-						min[i].first = 0;
-						min[i].second = vertex;
-					}
-					else if (omitted[i][vertex] == 0 && Weights[i][vertex] < min[i].first)
-					{
-						min[i].first = Weights[i][vertex];
-						min[i].second = vertex;
-					}
-
-			for (unsigned short i = 2; i < numberOfNodes; i++)
-				if (!visited[i] && min[i].first < minimum)
-				{
-					minimum = min[i].first;
-					new_vertex = i;
-				}
-
-			if (new_vertex == vertex)
-				return true;
-
-			if (omitted[new_vertex].at(min[new_vertex].second))
-				req_num++;
-
-			vertex = new_vertex;
-			visited[vertex] = 1;
-
-			sTree[j] = sEdge(vertex, min[vertex].second);
-			minimum = FLT_MAX;
-		}
-
-		if (req_num < req)
-			return true;
-
-		return false;
-	}
-
 	float Branch_and_Bound::t1()
 	{
+		MST::Prim prim;
+
 		sTree sTree(distance.size());
 		vector<vector<unsigned short>> omitted(distance.size(), vector<unsigned short>(distance.size(), 0));
 
@@ -419,7 +371,7 @@ namespace TSP
 
 		unsigned short first, second;
 
-		MST_Prim(sTree, omitted, distance, 0);
+		prim.Solve(sTree, omitted, distance, 0, numberOfNodes);
 
 		for (unsigned short i = 1; i < sTree.size(); i++)
 			if (distance[0][i] < firstmin)
