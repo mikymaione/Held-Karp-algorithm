@@ -57,7 +57,7 @@ namespace TSP
 	}
 
 	//Returns the index of a vertex adjacent to v by a required edge, if it exists, and n otherwise
-	unsigned short Branch_and_Bound::is_incident_to_required(QNode &current_node, unsigned short v, unsigned short n)
+	unsigned short Branch_and_Bound::is_incident_to_required(Node &current_node, unsigned short v, unsigned short n)
 	{
 		for (unsigned short i = 0; i < current_node.R.size(); i++)
 		{
@@ -84,10 +84,10 @@ namespace TSP
 	}
 
 	/*
-	Checks wether the edge {i,j} is in the list of forbidden edges of the QNode node
+	Checks wether the edge {i,j} is in the list of forbidden edges of the Node node
 	returns 1 if it is contained and 0 otherwise
 	*/
-	unsigned short Branch_and_Bound::is_forbidden(QNode const &node, unsigned short i, unsigned short j)
+	unsigned short Branch_and_Bound::is_forbidden(Node const &node, unsigned short i, unsigned short j)
 	{
 		for (unsigned short k = 0; k < node.F.size(); k++)
 			if ((node.F[k].first == i && node.F[k].second == j) || (node.F[k].first == j && node.F[k].second == i))
@@ -97,15 +97,15 @@ namespace TSP
 	}
 
 	/*
-	Performs the branching step of the branch-and-bound algorithm on the QNode current_node,
+	Performs the branching step of the branch-and-bound algorithm on the Node current_node,
 	where tree is the one-tree computed for current_node, degrees contains the degree of every vertex within the tree and n is the problem dimension
 	the function expects tree not to be a tour, but to contain some vertex of degree at least 3
-	returns a vector of new QNodes to be added to the queue
+	returns a vector of new Nodes to be added to the queue
 	All choices are being made as recommended in the paper by Volgenant & Jonker
 	*/
-	vector<Branch_and_Bound::QNode> Branch_and_Bound::branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<int> const &degrees, QNode &current_node, unsigned short n)
+	vector<Branch_and_Bound::Node> Branch_and_Bound::branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<int> const &degrees, Node &current_node, unsigned short n)
 	{
-		vector<QNode> result;
+		vector<Node> result;
 		unsigned short min_degree_req = n; //minimal degree greater than two of a vertex incident to a required edge
 		unsigned short min_degree = n;	 //minimal degree greater than two of a vertex not incident to a required edge
 		unsigned short p_req = n;			 //vertex where min_degree_req was attained
@@ -152,7 +152,7 @@ namespace TSP
 						if (!is_forbidden(current_node, i, p_req))
 							break; //we may take e_1 = {i, p}
 
-								   //Create the QNode for S2, where e_1 is required
+								   //Create the Node for S2, where e_1 is required
 								   //as there is one more required edge incident to p_req, forbid all other edges incident to p_req
 			vector<pair<unsigned short, unsigned short>> R = current_node.R;
 			R.push_back(pair<unsigned short, unsigned short>(i, p_req));
@@ -163,10 +163,10 @@ namespace TSP
 				if (k != i && k != p_req && k != req_neighbor && !is_forbidden(current_node, p_req, k))
 					F.push_back(pair<unsigned short, unsigned short>(p_req, k));
 
-			QNode S2 = QNode(R, F, current_node.λ, n);
+			Node S2 = Node(R, F, current_node.λ, n);
 			result.push_back(S2);
 
-			//Create the QNode for S3, where e_1 is forbidden
+			//Create the Node for S3, where e_1 is forbidden
 			R = current_node.R;
 			F = current_node.F;
 			F.push_back(pair<unsigned short, unsigned short>(i, p_req));
@@ -196,7 +196,7 @@ namespace TSP
 						if (k != req_neighbor)
 							R.push_back(pair<unsigned short, unsigned short>(p_req, k));
 
-			QNode S3 = QNode(R, F, current_node.λ, n);
+			Node S3 = Node(R, F, current_node.λ, n);
 			result.push_back(S3);
 		}
 		else //p_req doesn't exist, use p. leads to branching with three new vertices
@@ -217,7 +217,7 @@ namespace TSP
 					if (!is_forbidden(current_node, j, p))
 						break; //we may take e_2 = {j, p}
 
-							   //Create the QNode S1, where e_1 and e_2 are required
+							   //Create the Node S1, where e_1 and e_2 are required
 			vector<pair<unsigned short, unsigned short>> R = current_node.R;
 			R.push_back(pair<unsigned short, unsigned short>(i, p));
 			R.push_back(pair<unsigned short, unsigned short>(j, p));
@@ -228,10 +228,10 @@ namespace TSP
 				if (k != i && k != p && k != j && !is_forbidden(current_node, p, k))
 					F.push_back(pair<unsigned short, unsigned short>(p, k));
 
-			QNode S1 = QNode(R, F, current_node.λ, n);
+			Node S1 = Node(R, F, current_node.λ, n);
 			result.push_back(S1);
 
-			//Create the QNode S2, where e_1 is required and e_2 is forbidden
+			//Create the Node S2, where e_1 is required and e_2 is forbidden
 			R = current_node.R;
 			F = current_node.F;
 			R.push_back(pair<unsigned short, unsigned short>(i, p));
@@ -262,10 +262,10 @@ namespace TSP
 						if (k != i)
 							R.push_back(pair<unsigned short, unsigned short>(p, k));
 
-			QNode S2 = QNode(R, F, current_node.λ, n);
+			Node S2 = Node(R, F, current_node.λ, n);
 			result.push_back(S2);
 
-			//Create the QNode S3, where e_1 is forbidden
+			//Create the Node S3, where e_1 is forbidden
 			R = current_node.R;
 			F = current_node.F;
 			F.push_back(pair<unsigned short, unsigned short>(i, p));
@@ -282,7 +282,7 @@ namespace TSP
 				R.push_back(pair<unsigned short, unsigned short>(p, j));
 			}
 
-			QNode S3 = QNode(R, F, current_node.λ, n);
+			Node S3 = Node(R, F, current_node.λ, n);
 			result.push_back(S3);
 		}
 
@@ -311,12 +311,12 @@ namespace TSP
 	}
 
 	/*
-	Calculates the Held-Karp bound (with forbidden & required edges as given in QNode)
+	Calculates the Held-Karp bound (with forbidden & required edges as given in Node)
 	and completes the information (HK, λ, one-tree) in the given node object
 	before the execution, node contains required edges, forbidden edges, empty tree and initial λ value from the parent branching node
 	returns wether the algorithm terminated successfully (0) or not (1)
 	*/
-	bool Branch_and_Bound::Held_Karp_bound(vector<vector<float>> const &W, QNode &node, vector<int> &degree, float t, unsigned short const steps)
+	bool Branch_and_Bound::Held_Karp_bound(vector<vector<float>> const &W, Node &node, vector<int> &degree, float t, unsigned short const steps)
 	{
 		unsigned short size = W.size();
 
@@ -605,9 +605,9 @@ namespace TSP
 	/*
 	Performs the sorted insertion of the branching node new_elem in the queue L wrt the Held-Karp-Bound of new_elem
 	*/
-	void Branch_and_Bound::insert(vector<QNode> &L, QNode &new_elem)
+	void Branch_and_Bound::insert(vector<Node> &L, Node &new_elem)
 	{
-		QNode *tmp;
+		Node *tmp;
 		unsigned short position = L.size();
 
 		L.push_back(new_elem);
@@ -646,7 +646,7 @@ namespace TSP
 		N = ceil(size * size / 50.0f) + size + 15;
 
 		//computing lower bound
-		QNode root(vector<pair<unsigned short, unsigned short>>(), vector<pair<unsigned short, unsigned short>>(), vector<float>(size), size);
+		Node root(vector<pair<unsigned short, unsigned short>>(), vector<pair<unsigned short, unsigned short>>(), vector<float>(size), size);
 		Held_Karp_bound(W, root, degree, t, N);
 
 		//if a tour is already found, it is optimum
@@ -668,10 +668,10 @@ namespace TSP
 		t /= 2.0f * size;
 
 		//begin of branching
-		vector<QNode> B = branch(root.one_tree, degree, root, size);
+		vector<Node> B = branch(root.one_tree, degree, root, size);
 
 		//queue
-		vector<QNode> S;
+		vector<Node> S;
 		for (unsigned short i = 0; i < B.size(); i++)
 			if (!Held_Karp_bound(W, B[i], degree, t, N))
 				if (B[i].HK < U)
@@ -683,7 +683,7 @@ namespace TSP
 		//Branch and Bound using best bound
 		while (current >= 0)
 		{
-			QNode node = S.at(current);
+			Node node = S.at(current);
 			S.pop_back();
 
 			//since we use best bound, node.HK is a lower bound for the optimum
@@ -712,7 +712,7 @@ namespace TSP
 				else
 				{
 					//branch with node
-					vector<QNode> B = branch(node.one_tree, degree1, node, size);
+					vector<Node> B = branch(node.one_tree, degree1, node, size);
 					for (unsigned short i = 0; i < B.size(); i++)
 						if (!Held_Karp_bound(W, B[i], degree1, t, N))
 							//consider B[i] only if its HK bound is smaller than U

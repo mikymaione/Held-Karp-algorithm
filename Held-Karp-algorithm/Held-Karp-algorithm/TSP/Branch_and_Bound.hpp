@@ -18,7 +18,7 @@ namespace TSP
 	class Branch_and_Bound : public Base::TSP
 	{
 	public:
-		struct QNode
+		struct Node
 		{
 			//required edges
 			vector<pair<unsigned short, unsigned short>> R;
@@ -35,7 +35,7 @@ namespace TSP
 			//Held-Karp-Bound
 			float HK = 0;
 
-			QNode(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) :
+			Node(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) :
 				R(R),
 				F(F),
 				λ(λ)
@@ -46,15 +46,15 @@ namespace TSP
 
 	private:
 		pair<vector<pair<unsigned short, unsigned short>>, float> DoBranch_and_Bound(vector<vector<float>> const &W);
-		bool Held_Karp_bound(vector<vector<float>> const &W, QNode &QNode, vector<int> &degree, float t, unsigned short const steps);
-		vector<QNode> branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<int> const &degrees, QNode &current_node, unsigned short n);
+		bool Held_Karp_bound(vector<vector<float>> const &W, Node &node, vector<int> &degree, float t, unsigned short const steps);
+		vector<Node> branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<int> const &degrees, Node &current_node, unsigned short n);
 
 		bool minimum_spanning_tree(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<int>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
 
-		unsigned short is_incident_to_required(QNode &current_node, unsigned short v, unsigned short n);
+		unsigned short is_incident_to_required(Node &current_node, unsigned short v, unsigned short n);
 		unsigned short is_in_tree(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j);
-		unsigned short is_forbidden(QNode const &node, unsigned short i, unsigned short j);
-		void insert(vector<QNode> &L, QNode &new_elem);
+		unsigned short is_forbidden(Node const &node, unsigned short i, unsigned short j);
+		void insert(vector<Node> &L, Node &new_elem);
 		float initial_value(vector<vector<float>> const &W);
 		bool check_tour(vector<pair<unsigned short, unsigned short>> const &Tree);
 
