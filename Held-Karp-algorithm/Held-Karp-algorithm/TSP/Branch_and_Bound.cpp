@@ -17,6 +17,7 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 */
 #pragma once
 
+#include <algorithm>
 #include <set>
 
 #include "Branch_and_Bound.hpp"
@@ -466,22 +467,13 @@ namespace TSP
 		return t / (2.0f * distance.size());
 	}
 
-	void Branch_and_Bound::insert(vector<Node> &L, Node &new_elem)
+	void Branch_and_Bound::PQ_Add(vector<Node> &PQ, Node &new_elem)
 	{
-		Node *tmp;
-		unsigned short position = L.size();
+		PQ.push_back(new_elem);
 
-		L.push_back(new_elem);
-
-		while (position > 0 && L[position - 1].HK < L[position].HK)
-		{
-			tmp = &L[position];
-
-			L[position] = L[position - 1];
-			L[position - 1] = *tmp;
-
-			position--;
-		}
+		sort(PQ.begin(), PQ.end(), [](Node &l, Node &r) {
+			return l.HK > r.HK;
+		});
 	}
 
 	/*
@@ -538,7 +530,7 @@ namespace TSP
 	*/
 	pair<vector<pair<unsigned short, unsigned short>>, float> Branch_and_Bound::HKAlgo()
 	{
-		vector<Node> S;
+		vector<Node> PQ;
 		vector<unsigned short> degree(numberOfNodes, 0);
 		vector<pair<unsigned short, unsigned short>> path(numberOfNodes);
 
@@ -583,19 +575,19 @@ namespace TSP
 			for (unsigned short i = 0; i < B.size(); i++)
 				if (!Bound(B[i], degree, t, N))
 					if (B[i].HK < UB)
-						insert(S, B[i]);
+						PQ_Add(PQ, B[i]);
 		}
 		// END. 1. Draw and initialize the root node.
 
 		// 2. Repeat the following step until a solution (i.e., a complete circuit, represented by a terminal node) has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found:
 		{
 			vector<unsigned short> degree1(numberOfNodes, 0);
-			auto current = S.size() - 1;
+			auto current = PQ.size() - 1;
 
 			while (current >= 0)
 			{
-				auto node = S[current];
-				S.pop_back();
+				auto node = PQ[current];
+				PQ.pop_back();
 
 				// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
 				if (ceil(node.HK) >= UB)
@@ -632,7 +624,7 @@ namespace TSP
 											path[k] = B[i].one_tree[k];
 									}
 
-									insert(S, B[i]);
+									PQ_Add(PQ, B[i]);
 									current++;
 								}
 					}

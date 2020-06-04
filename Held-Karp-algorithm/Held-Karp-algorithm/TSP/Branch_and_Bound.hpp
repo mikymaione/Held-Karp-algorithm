@@ -6,8 +6,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "Base/TSP.hpp"
 
@@ -108,7 +108,7 @@ namespace TSP
 
 		bool MST_Prim(TREE &tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req);
 
-		void insert(vector<Node> &L, Node &new_elem);
+		void PQ_Add(vector<Node> &L, Node &new_elem);
 
 	protected:
 		string PrintPath(vector<pair<unsigned short, unsigned short>> &path);
