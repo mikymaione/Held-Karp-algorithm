@@ -452,7 +452,7 @@ namespace TSP
 			for (unsigned short i = 0; i < numberOfNodes; i++)
 				for (unsigned short j = 0; j < numberOfNodes; j++)
 					Weights[i][j] += (degree[i] - 2) * t + (degree[j] - 2) * t;
-			
+
 			for (unsigned short i = 0; i < numberOfNodes; i++)
 			{
 				node.λ[i] += (degree[i] - 2) * t;
@@ -475,7 +475,7 @@ namespace TSP
 
 		return 0;
 	}
-	
+
 	bool Branch_and_Bound::MST_Prim(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req)
 	{
 		vector<bool> visited(numberOfNodes, 0);
@@ -592,7 +592,14 @@ namespace TSP
 		}
 	}
 
-	pair<vector<pair<unsigned short, unsigned short>>, float> Branch_and_Bound::DoBranch_and_Bound()
+	/*
+	Top-level outline of the algorithm:
+		1. Draw and initialize the root node.
+		2. Repeat the following step until a solution (i.e., a complete circuit, represented by a terminal node) has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found:
+			- Choose an unexplored non-terminal node with the smallest bound, and process it (see page 2 for details about this step).
+		3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
+	*/
+	pair<vector<pair<unsigned short, unsigned short>>, float> Branch_and_Bound::HKAlgo()
 	{
 		vector<Node> S;
 		vector<unsigned short> degree(numberOfNodes, 0);
@@ -600,25 +607,24 @@ namespace TSP
 
 		Opt[0] = make_pair(numberOfNodes - 1, 0);
 
-		auto U = distance[numberOfNodes - 1][0];
+		auto UB = distance[numberOfNodes - 1][0];
 
-		//compute upper bound
+		// Upper bound
 		for (unsigned short i = 0; i < distance.size() - 1; i++)
 		{
-			U += distance[i][i + 1];
+			UB += distance[i][i + 1];
 			Opt[i + 1] = make_pair(i, i + 1);
 		}
 
-		//initialization of N and t for root:
 		auto t = t1();
 		auto N = (numberOfNodes * numberOfNodes / 50.0f) + numberOfNodes + 15;
 
-		//computing lower bound
+		// 1. Draw and initialize the root node.
 		{
 			Node root(vector<pair<unsigned short, unsigned short>>(), vector<pair<unsigned short, unsigned short>>(), vector<float>(numberOfNodes), numberOfNodes);
 			Held_Karp_bound(root, degree, t, N);
 
-			//if a tour is already found, it is optimum
+			// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
 			if (!check_tour(root.one_tree))
 			{
 				for (unsigned short i = 0; i < numberOfNodes; i++)
@@ -641,12 +647,12 @@ namespace TSP
 
 			for (unsigned short i = 0; i < B.size(); i++)
 				if (!Held_Karp_bound(B[i], degree, t, N))
-					if (B[i].HK < U)
+					if (B[i].HK < UB)
 						insert(S, B[i]);
 		}
-		//END computing lower bound
+		// END. 1. Draw and initialize the root node.
 
-		//Branch and Bound using best bound
+		// 2. Repeat the following step until a solution (i.e., a complete circuit, represented by a terminal node) has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found:
 		{
 			vector<unsigned short> degree1(numberOfNodes, 0);
 			auto current = S.size() - 1;
@@ -656,12 +662,12 @@ namespace TSP
 				auto node = S[current];
 				S.pop_back();
 
-				//since we use best bound, node.HK is a lower bound for the optimum
-				if (ceil(node.HK) >= U)
-					return make_pair(Opt, U);
+				// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
+				if (ceil(node.HK) >= UB)
+					return make_pair(Opt, UB);
 
-				//consider node only if its HK bound is smaller than U
-				if (node.HK < U)
+				//consider node only if its HK bound is smaller than UB
+				if (node.HK < UB)
 				{
 					for (unsigned short i = 0; i < numberOfNodes; i++)
 					{
@@ -672,8 +678,8 @@ namespace TSP
 					//check whether the current one_tree is a tour
 					if (!check_tour(node.one_tree))
 					{
-						//update U
-						U = node.HK;
+						//update UB
+						UB = node.HK;
 
 						//update Opt
 						for (unsigned short i = 0; i < numberOfNodes; i++)
@@ -686,13 +692,13 @@ namespace TSP
 
 						for (unsigned short i = 0; i < B.size(); i++)
 							if (!Held_Karp_bound(B[i], degree1, t, N))
-								//consider B[i] only if its HK bound is smaller than U
-								if (B[i].HK < U)
+								//consider B[i] only if its HK bound is smaller than UB
+								if (B[i].HK < UB)
 								{
 									//check whether we found a tour
 									if (!check_tour(B[i].one_tree))
 									{
-										U = B[i].HK;
+										UB = B[i].HK;
 
 										for (unsigned short k = 0; k < numberOfNodes; k++)
 											Opt[k] = B[i].one_tree[k];
@@ -711,14 +717,14 @@ namespace TSP
 				current--;
 			}
 		}
-		//END Branch and Bound using best bound
+		// END 2. Repeat the following step until a solution (i.e., a complete circuit, represented by a terminal node) has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found:
 
-		return make_pair(Opt, U);
+		return make_pair(Opt, UB);
 	}
 
 	void Branch_and_Bound::Solve(float &opt, string &path)
 	{
-		auto R = DoBranch_and_Bound();
+		auto R = HKAlgo();
 
 		opt = R.second;
 		path = PrintPath(R.first);

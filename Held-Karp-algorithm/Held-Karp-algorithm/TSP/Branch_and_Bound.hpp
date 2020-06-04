@@ -35,6 +35,11 @@ namespace TSP
 			//Held-Karp-Bound
 			float HK = 0;
 
+			Node(unsigned short size)
+			{
+				one_tree.resize(size);
+			}
+
 			Node(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) :
 				R(R),
 				F(F),
@@ -45,9 +50,10 @@ namespace TSP
 		};
 
 	private:
-		vector<Node> branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n);
-		pair<vector<pair<unsigned short, unsigned short>>, float> DoBranch_and_Bound();
+		pair<vector<pair<unsigned short, unsigned short>>, float> HKAlgo();
 		bool Held_Karp_bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
+
+		vector<Node> branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n);
 		float t1();
 
 		bool MST_Prim(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
