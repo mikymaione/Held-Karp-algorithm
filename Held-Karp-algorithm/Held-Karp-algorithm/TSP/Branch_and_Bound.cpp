@@ -391,7 +391,7 @@ namespace TSP
 		for (unsigned short k = 0; k < steps; k++)
 		{
 			//compute MST, if MST does not exist return 1
-			if (minimum_spanning_tree(Tree, omitted, Weights, req))
+			if (MST_Prim(Tree, omitted, Weights, req))
 				return 1;
 
 			//1-tree
@@ -491,7 +491,7 @@ namespace TSP
 	Saves an edge list of the resulting tree in Tree
 	returns wether the algorithm terminated successfully (0) or not (1).
 	*/
-	bool Branch_and_Bound::minimum_spanning_tree(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req)
+	bool Branch_and_Bound::MST_Prim(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<unsigned short>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req)
 	{
 		unsigned short size = Weights.size();
 		vector<bool> visited(size, 0);
@@ -513,9 +513,7 @@ namespace TSP
 		{
 			//do not consider vertex 0 and 1
 			for (unsigned short i = 2; i < size; i++)
-			{
 				if (i != vertex && !visited[i])
-				{
 					//update the minimum weight of a cennection to visited verticies
 					if (omitted[i][vertex] == 1)
 					{
@@ -527,18 +525,15 @@ namespace TSP
 						min[i].first = Weights[i][vertex];
 						min[i].second = vertex;
 					}
-				}
-			}
 
 			//find an edge of minimum weight between visited and not visited verticies
 			for (unsigned short i = 2; i < size; i++)
-			{
 				if (!visited[i] && min[i].first < minimum)
 				{
 					minimum = min[i].first;
 					new_vertex = i;
 				}
-			}
+
 			//too many forbidden edges
 			if (new_vertex == vertex)
 				return 1;
@@ -558,9 +553,9 @@ namespace TSP
 
 		//too many required edges
 		if (req_num < req)
-			return 1;
+			return true;
 
-		return 0;
+		return false;
 	}
 
 	/*
@@ -578,7 +573,7 @@ namespace TSP
 		unsigned short first, second;
 
 		//compute MST
-		minimum_spanning_tree(Tree, omitted, W, 0);
+		MST_Prim(Tree, omitted, W, 0);
 
 		for (unsigned short i = 1; i < Tree.size(); i++)
 			if (W[0][i] < firstmin)
