@@ -339,9 +339,9 @@ namespace TSP
 				Treeweight -= 2 * node.λ[i];
 			}
 
-			if (node.HK < Treeweight)
+			if (node.bound < Treeweight)
 			{
-				node.HK = Treeweight;
+				node.bound = Treeweight;
 
 				for (unsigned short i = 0; i < (node.oneTree).size(); i++)
 				{
@@ -472,7 +472,7 @@ namespace TSP
 		PQ.push_back(new_elem);
 
 		sort(PQ.begin(), PQ.end(), [](Node &l, Node &r) {
-			return l.HK > r.HK;
+			return l.bound > r.bound;
 		});
 	}
 
@@ -558,7 +558,7 @@ namespace TSP
 				for (unsigned short i = 0; i < numberOfNodes; i++)
 					path[i] = root.oneTree[i];
 
-				return make_pair(path, root.HK);
+				return make_pair(path, root.bound);
 			}
 
 			N = ceil(numberOfNodes / 4.0f) + 5;
@@ -573,7 +573,7 @@ namespace TSP
 
 			for (unsigned short i = 0; i < B.size(); i++)
 				if (!Bound(B[i], δ, t, N))
-					if (B[i].HK < UB)
+					if (B[i].bound < UB)
 						PQ_Add(PQ, B[i]);
 		}
 		// END. 1. Draw and initialize the root node.
@@ -589,10 +589,10 @@ namespace TSP
 				PQ.pop_back();
 
 				// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
-				if (ceil(node.HK) >= UB)
+				if (ceil(node.bound) >= UB)
 					return make_pair(path, UB);
 
-				if (node.HK < UB)
+				if (node.bound < UB)
 				{
 					for (unsigned short i = 0; i < numberOfNodes; i++)
 					{
@@ -602,7 +602,7 @@ namespace TSP
 
 					if (!node.oneTree.CheckTour())
 					{
-						UB = node.HK;
+						UB = node.bound;
 
 						for (unsigned short i = 0; i < numberOfNodes; i++)
 							path[i] = node.oneTree[i];
@@ -613,11 +613,11 @@ namespace TSP
 
 						for (unsigned short i = 0; i < B.size(); i++)
 							if (!Bound(B[i], δ1, t, N))
-								if (B[i].HK < UB)
+								if (B[i].bound < UB)
 								{
 									if (!B[i].oneTree.CheckTour())
 									{
-										UB = B[i].HK;
+										UB = B[i].bound;
 
 										for (unsigned short k = 0; k < numberOfNodes; k++)
 											path[k] = B[i].oneTree[k];

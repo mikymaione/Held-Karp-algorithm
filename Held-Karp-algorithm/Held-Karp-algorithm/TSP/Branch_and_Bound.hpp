@@ -76,7 +76,7 @@ namespace TSP
 
 		struct Node
 		{
-			float HK = 0;
+			float bound = 0;
 
 			vector<float> λ;
 			vector<pair<unsigned short, unsigned short>> R, F;
