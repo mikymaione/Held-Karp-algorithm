@@ -38,12 +38,10 @@ namespace TSP
 			Node(unsigned short size)
 			{
 				one_tree.resize(size);
+				λ.resize(size);
 			}
 
-			Node(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) :
-				R(R),
-				F(F),
-				λ(λ)
+			Node(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) : R(R), F(F), λ(λ)
 			{
 				one_tree.resize(size);
 			}

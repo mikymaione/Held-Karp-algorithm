@@ -594,18 +594,63 @@ namespace TSP
 
 	/*
 	Top-level outline of the algorithm:
-		1. Draw and initialize the root node.
+		1. Draw and initialize the root node:
 		2. Repeat the following step until a solution (i.e., a complete circuit, represented by a terminal node) has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found:
-			- Choose an unexplored non-terminal node with the smallest bound, and process it (see page 2 for details about this step).
+			- Choose an unexplored non-terminal node with the smallest bound, and process it.
 		3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
+
+		Initialization of the root node
+			- The node number of the root node is 0 (or 1 if you like; it doesn't really matter where you start counting).
+			- The root node doesn't need a label.
+			- The bound of the root node is 0.
+			- The incoming matrix of the root node is the original matrix of distances, with M's along the diagonal; the L-value of this matrix is L = 0.
+
+		Steps to process a node:
+			1. Compute the opportunity matrix for the node. Beginning with the node's incoming matrix:
+				(a) Set L = the incoming matrix's L-value.
+				(b) Ensure that every row and every column has exactly one M. [The matrix might contain N's too, from step 6(b)|these don't count as M's.] If necessary, replace one entry of the matrix with an M to meet this condition. [The M's enforce acyclicity until a full circuit has been completed.]
+				(c) Ensure that every column contains at least one zero. If necessary, subtract the smallest number in a column from every number in that column, and add the number that was subtracted to L.
+				(d) Ensure that every row contains at least one zero. If necessary, subtract the smallest number in a row from every number in that row, and add the number that was subtracted to L. The resulting matrix is this node's opportunity matrix, and the L-value of this opportunity matrix is the value that L has after possibly being increased in steps (c) and (d) above.
+			2. [First special case.] Is the opportunity matrix 2 × 2? If so:
+				(a) A 2 × 2 opportunity matrix will always look like either |M 0|	or	|0 M|
+																			|0 M|		|M 0|
+				(b) Create a single child node, and assign it the next available node number.
+					- The label of the child node consists of the two links that correspond to the zeroes in the 2 × 2 opportunity matrix.
+					- The bound of the child node is the L-value of the 2 × 2 opportunity matrix.
+					- The child node has no incoming matrix.
+				(c) The child node is a terminal node that represents a solution (i.e., a complete circuit) given by the links specified by the labels of the nodes along the path from the root node to the child node, and the length of this circuit is equal to the bound of the child node.
+				(d) Check that the length of this circuit equals the bound of the child node by adding up the distances from the original distance matrix. (If not, something is wrong. Check the arithmetic in your work.)
+				(e) You are done processing this node. Do not continue to the following steps. Go back to the top-level outline.
+			3. [Second special case.] Check to see whether the opportunity matrix has one or more zeroes that are the only number in their row or the only number in their column. [This can happen if the opportunity matrix contains N's from step 6(b).] If so:
+				(a) Choose any such zero in the opportunity matrix. Because this zero is the only number in its row (or in its column), it represents a link that must be taken.
+				(b) Create a single child node, and assign it the next available node number.
+					- The label of the child node is the link that corresponds to the zero chosen in step (a).
+					- The bound of the child node is the L-value of the opportunity matrix of the node being processed.
+					- The incoming matrix of the child node is formed from the opportunity matrix of the node being processed by deleting the row and column of the chosen zero, and the L-value of this incoming matrix is the L-value of the opportunity matrix of the node being processed.
+				(c) You are done processing this node. Do not continue to the following steps. Go back to the top-level outline.
+			4. Compute regrets. Every zero in the opportunity matrix has a corresponding regret, which is the sum of the smallest other number in that row (possibly zero) and the smallest other number in that column (possibly zero).
+			5. Choose the largest regret, and call it Rmax.
+				(a) If there is a tie: Choose the one that corresponds to the smaller distance in the original distance matrix.
+				(b) If there is still a tie: Choose arbitrarily.
+			6. Create two child nodes, and assign them the next available node numbers.
+				(a) Right child:
+					- The label of the right child is the link that corresponds to the regret Rmax.
+					- The bound of the right child is the L-value of the opportunity matrix of the node being processed.
+					- The incoming matrix of the right child is formed from the opportunity matrix of the node being processed by deleting the row and column of the regret Rmax, and the L-value of this incoming matrix equals the L-value of the opportunity matrix of the node being processed.
+				(b) Left child:
+					- The label of the left child is the \negation" of the label of the right child.
+					- The bound of the left child is the L-value of the opportunity matrix of the node being processed, plus Rmax.
+					- The incoming matrix of the left child is formed from the opportunity matrix of the node being processed by replacing the zero corresponding to Rmax with an N (not an M!), and the L-value of this incoming matrix equals the L-value of the opportunity matrix of the node being processed. [The N enforces the decision not to take that link.]
+			Note that the bound of the left child does not equal the L-value of its incoming matrix!
+			7. You are done processing this node. Go back to the top-level outline.
 	*/
 	pair<vector<pair<unsigned short, unsigned short>>, float> Branch_and_Bound::HKAlgo()
 	{
 		vector<Node> S;
 		vector<unsigned short> degree(numberOfNodes, 0);
-		vector<pair<unsigned short, unsigned short>> Opt(numberOfNodes);
+		vector<pair<unsigned short, unsigned short>> path(numberOfNodes);
 
-		Opt[0] = make_pair(numberOfNodes - 1, 0);
+		path[0] = make_pair(numberOfNodes - 1, 0);
 
 		auto UB = distance[numberOfNodes - 1][0];
 
@@ -613,7 +658,7 @@ namespace TSP
 		for (unsigned short i = 0; i < distance.size() - 1; i++)
 		{
 			UB += distance[i][i + 1];
-			Opt[i + 1] = make_pair(i, i + 1);
+			path[i + 1] = make_pair(i, i + 1);
 		}
 
 		auto t = t1();
@@ -621,19 +666,18 @@ namespace TSP
 
 		// 1. Draw and initialize the root node.
 		{
-			Node root(vector<pair<unsigned short, unsigned short>>(), vector<pair<unsigned short, unsigned short>>(), vector<float>(numberOfNodes), numberOfNodes);
+			Node root(numberOfNodes);
 			Held_Karp_bound(root, degree, t, N);
 
 			// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
 			if (!check_tour(root.one_tree))
 			{
 				for (unsigned short i = 0; i < numberOfNodes; i++)
-					Opt[i] = root.one_tree[i];
+					path[i] = root.one_tree[i];
 
-				return make_pair(Opt, root.HK);
+				return make_pair(path, root.HK);
 			}
 
-			//initialization of N and t for other verticies
 			N = ceil(numberOfNodes / 4.0f) + 5;
 			t = 0;
 
@@ -642,7 +686,6 @@ namespace TSP
 
 			t /= 2.0f * numberOfNodes;
 
-			//begin of branching
 			auto B = branch(root.one_tree, degree, root, numberOfNodes);
 
 			for (unsigned short i = 0; i < B.size(); i++)
@@ -664,9 +707,8 @@ namespace TSP
 
 				// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
 				if (ceil(node.HK) >= UB)
-					return make_pair(Opt, UB);
+					return make_pair(path, UB);
 
-				//consider node only if its HK bound is smaller than UB
 				if (node.HK < UB)
 				{
 					for (unsigned short i = 0; i < numberOfNodes; i++)
@@ -675,36 +717,29 @@ namespace TSP
 						degree1.at(node.one_tree[i].second)++;
 					}
 
-					//check whether the current one_tree is a tour
 					if (!check_tour(node.one_tree))
 					{
-						//update UB
 						UB = node.HK;
 
-						//update Opt
 						for (unsigned short i = 0; i < numberOfNodes; i++)
-							Opt[i] = node.one_tree[i];
+							path[i] = node.one_tree[i];
 					}
 					else
 					{
-						//branch with node
 						auto B = branch(node.one_tree, degree1, node, numberOfNodes);
 
 						for (unsigned short i = 0; i < B.size(); i++)
 							if (!Held_Karp_bound(B[i], degree1, t, N))
-								//consider B[i] only if its HK bound is smaller than UB
 								if (B[i].HK < UB)
 								{
-									//check whether we found a tour
 									if (!check_tour(B[i].one_tree))
 									{
 										UB = B[i].HK;
 
 										for (unsigned short k = 0; k < numberOfNodes; k++)
-											Opt[k] = B[i].one_tree[k];
+											path[k] = B[i].one_tree[k];
 									}
 
-									//insert B[i] wrt Held-Karp-Bound
 									insert(S, B[i]);
 									current++;
 								}
@@ -719,7 +754,7 @@ namespace TSP
 		}
 		// END 2. Repeat the following step until a solution (i.e., a complete circuit, represented by a terminal node) has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found:
 
-		return make_pair(Opt, UB);
+		return make_pair(path, UB);
 	}
 
 	void Branch_and_Bound::Solve(float &opt, string &path)
