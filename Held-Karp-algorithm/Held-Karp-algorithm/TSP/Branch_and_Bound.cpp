@@ -103,18 +103,18 @@ namespace TSP
 
 			auto F = current_node.F;
 			auto R = current_node.R;
-			R.push_back(make_pair(i, p_req));
+			R.push_back(Edge(i, p_req));
 
 			for (unsigned short k = 0; k < n; k++)
 				if (k != i && k != p_req && k != req_neighbor && !current_node.Forbidden(p_req, k))
-					F.push_back(make_pair(p_req, k));
+					F.push_back(Edge(p_req, k));
 
 			Node S2(R, F, current_node.λ, n);
 			result.push_back(S2);
 
 			R = current_node.R;
 			F = current_node.F;
-			F.push_back(make_pair(i, p_req));
+			F.push_back(Edge(i, p_req));
 
 			unsigned short num_forbidden = 0;
 			vector<unsigned short> forbidden(n, 0);
@@ -122,15 +122,15 @@ namespace TSP
 
 			for (unsigned short k = 0; k < F.size(); k++)
 			{
-				if (F[k].first == p_req)
+				if (F[k].from == p_req)
 				{
-					forbidden[F[k].second] = 1;
+					forbidden[F[k].to] = 1;
 					num_forbidden++;
 				}
 
-				if (F[k].second == p_req)
+				if (F[k].to == p_req)
 				{
-					forbidden[F[k].first] = 1;
+					forbidden[F[k].from] = 1;
 					num_forbidden++;
 				}
 			}
@@ -139,7 +139,7 @@ namespace TSP
 				for (unsigned short k = 0; k < n; k++)
 					if (!forbidden[k])
 						if (k != req_neighbor)
-							R.push_back(make_pair(p_req, k));
+							R.push_back(Edge(p_req, k));
 
 			Node S3(R, F, current_node.λ, n);
 			result.push_back(S3);
@@ -164,20 +164,20 @@ namespace TSP
 
 			auto F = current_node.F;
 			auto R = current_node.R;
-			R.push_back(make_pair(i, p));
-			R.push_back(make_pair(j, p));
+			R.push_back(Edge(i, p));
+			R.push_back(Edge(j, p));
 
 			for (unsigned short k = 0; k < n; k++)
 				if (k != i && k != p && k != j && !current_node.Forbidden(p, k))
-					F.push_back(make_pair(p, k));
+					F.push_back(Edge(p, k));
 
 			Node S1(R, F, current_node.λ, n);
 			result.push_back(S1);
 
 			R = current_node.R;
 			F = current_node.F;
-			R.push_back(make_pair(i, p));
-			F.push_back(make_pair(j, p));
+			R.push_back(Edge(i, p));
+			F.push_back(Edge(j, p));
 
 			unsigned short num_forbidden = 0;
 			vector<unsigned short> forbidden(n, 0);
@@ -185,15 +185,15 @@ namespace TSP
 
 			for (unsigned short k = 0; k < F.size(); k++)
 			{
-				if (F[k].first == p)
+				if (F[k].from == p)
 				{
-					forbidden[F[k].second] = 1;
+					forbidden[F[k].to] = 1;
 					num_forbidden++;
 				}
 
-				if (F[k].second == p)
+				if (F[k].to == p)
 				{
-					forbidden[F[k].first] = 1;
+					forbidden[F[k].from] = 1;
 					num_forbidden++;
 				}
 			}
@@ -202,23 +202,23 @@ namespace TSP
 				for (unsigned short k = 0; k < n; k++)
 					if (!forbidden[k])
 						if (k != i)
-							R.push_back(make_pair(p, k));
+							R.push_back(Edge(p, k));
 
 			Node S2(R, F, current_node.λ, n);
 			result.push_back(S2);
 
 			R = current_node.R;
 			F = current_node.F;
-			F.push_back(make_pair(i, p));
+			F.push_back(Edge(i, p));
 
 			if (num_forbidden == n - 3)
 			{
 				for (unsigned short k = 0; k < n; k++)
 					if (!forbidden[k])
 						if (k != i)
-							R.push_back(make_pair(p, k));
+							R.push_back(Edge(p, k));
 
-				R.push_back(make_pair(p, j));
+				R.push_back(Edge(p, j));
 			}
 
 			Node S3(R, F, current_node.λ, n);
@@ -251,40 +251,40 @@ namespace TSP
 
 		for (unsigned short i = 0; i < node.R.size(); i++)
 		{
-			omitted[node.R[i].first][node.R[i].second] = 1;
-			omitted[node.R[i].second][node.R[i].first] = 1;
+			omitted[node.R[i].from][node.R[i].to] = 1;
+			omitted[node.R[i].to][node.R[i].from] = 1;
 
-			if (node.R[i].first == 0)
+			if (node.R[i].from == 0)
 			{
 				req--;
 
 				if (req < node.R.size() - 1)
-					req2 = node.R[i].second;
+					req2 = node.R[i].to;
 				else
-					req1 = node.R[i].second;
+					req1 = node.R[i].to;
 			}
 
-			if (node.R[i].second == 0)
+			if (node.R[i].to == 0)
 			{
 				req--;
 
 				if (req < node.R.size() - 1)
-					req2 = node.R[i].first;
+					req2 = node.R[i].from;
 				else
-					req1 = node.R[i].first;
+					req1 = node.R[i].from;
 			}
 		}
 
 		for (unsigned short i = 0; i < node.F.size(); i++)
 		{
-			omitted.at(node.F[i].first).at(node.F[i].second) = 2;
-			omitted.at(node.F[i].second).at(node.F[i].first) = 2;
+			omitted.at(node.F[i].from).at(node.F[i].to) = 2;
+			omitted.at(node.F[i].to).at(node.F[i].from) = 2;
 
-			if (node.F[i].first == 0)
-				forbidden.at(node.F[i].second) = 1;
+			if (node.F[i].from == 0)
+				forbidden.at(node.F[i].to) = 1;
 
-			if (node.F[i].second == 0)
-				forbidden.at(node.F[i].first) = 1;
+			if (node.F[i].to == 0)
+				forbidden.at(node.F[i].from) = 1;
 		}
 
 		for (unsigned short i = 0; i < numberOfNodes; i++)

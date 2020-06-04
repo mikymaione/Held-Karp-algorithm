@@ -79,17 +79,17 @@ namespace TSP
 			float bound = 0;
 
 			vector<float> λ;
-			vector<pair<unsigned short, unsigned short>> R, F;
+			vector<Edge> R, F;
 			Tree oneTree;
 
 			Node(unsigned short size) : oneTree(size), λ(size) {}
 
-			Node(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) : R(R), F(F), λ(λ), oneTree(size) {}
+			Node(vector<Edge> R, vector<Edge> F, vector<float> λ, unsigned short size) : R(R), F(F), λ(λ), oneTree(size) {}
 
 			bool Forbidden(unsigned short i, unsigned short j)
 			{
 				for (auto f : F)
-					if ((f.first == i && f.second == j) || (f.first == j && f.second == i))
+					if ((f.from == i && f.to == j) || (f.from == j && f.to == i))
 						return true;
 
 				return false;
@@ -98,10 +98,10 @@ namespace TSP
 			unsigned short IncidentToRequired(unsigned short v, unsigned short n)
 			{
 				for (auto r : R)
-					if (v == r.first)
-						return r.second;
-					else if (v == r.second)
-						return r.first;
+					if (v == r.from)
+						return r.to;
+					else if (v == r.to)
+						return r.from;
 
 				return n;
 			}
