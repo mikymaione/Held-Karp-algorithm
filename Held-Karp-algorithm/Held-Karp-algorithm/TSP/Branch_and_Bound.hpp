@@ -18,11 +18,11 @@ namespace TSP
 	class Branch_and_Bound : public Base::TSP
 	{
 	public:
-		struct TREE
+		struct Tree
 		{
 			vector<pair<unsigned short, unsigned short>> T;
 
-			TREE(unsigned short size) : T(size) {}
+			Tree(unsigned short size) : T(size) {}
 
 			pair<unsigned short, unsigned short> &operator[](unsigned short i)
 			{
@@ -72,7 +72,7 @@ namespace TSP
 
 			vector<float> λ;
 			vector<pair<unsigned short, unsigned short>> R, F;
-			TREE one_tree;
+			Tree one_tree;
 
 			Node(unsigned short size) : one_tree(size), λ(size) {}
 
@@ -103,10 +103,10 @@ namespace TSP
 		pair<vector<pair<unsigned short, unsigned short>>, float> HKAlgo();
 		bool Bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
 
-		vector<Node> Branch(TREE &tree, vector<unsigned short> &degrees, Node &current_node, unsigned short n);
+		vector<Node> Branch(Tree &tree, vector<unsigned short> &degrees, Node &current_node, unsigned short n);
 		float t1();
 
-		bool MST_Prim(TREE &tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req);
+		bool MST_Prim(Tree &tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req);
 
 		void PQ_Add(vector<Node> &L, Node &new_elem);
 

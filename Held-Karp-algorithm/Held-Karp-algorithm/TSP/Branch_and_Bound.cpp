@@ -57,7 +57,7 @@ namespace TSP
 		return s + "0";
 	}
 
-	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(TREE &tree, vector<unsigned short> &degrees, Node &current_node, unsigned short n)
+	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(Tree &tree, vector<unsigned short> &degrees, Node &current_node, unsigned short n)
 	{
 		vector<Node> result;
 		auto min_degree_req = n;
@@ -233,7 +233,7 @@ namespace TSP
 		vector<vector<float>> Weights(numberOfNodes, vector<float>(numberOfNodes));
 		vector<vector<unsigned short>> omitted(numberOfNodes, vector<unsigned short>(numberOfNodes, 0));
 		vector<float> OptLambda(numberOfNodes);
-		TREE Tree(numberOfNodes);
+		Tree Tree(numberOfNodes);
 
 		unsigned short req = node.R.size();
 		float Treeweight = 0;
@@ -377,7 +377,7 @@ namespace TSP
 		return 0;
 	}
 
-	bool Branch_and_Bound::MST_Prim(TREE &Tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req)
+	bool Branch_and_Bound::MST_Prim(Tree &Tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req)
 	{
 		vector<bool> visited(numberOfNodes, 0);
 		vector<pair<float, unsigned short>> min(numberOfNodes, make_pair(FLT_MAX, 0));
@@ -432,7 +432,7 @@ namespace TSP
 
 	float Branch_and_Bound::t1()
 	{
-		TREE Tree(distance.size());
+		Tree Tree(distance.size());
 		vector<vector<unsigned short>> omitted(distance.size(), vector<unsigned short>(distance.size(), 0));
 
 		float t = 0;
