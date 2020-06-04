@@ -332,8 +332,8 @@ namespace TSP
 		float Treeweight = 0;
 		float delta = 3.0f * t / (2.0f * steps);
 		float ddelta = t / (steps * steps - steps);
-		float firstmin = numeric_limits<float>::infinity();
-		float secondmin = numeric_limits<float>::infinity();
+		float firstmin = FLT_MAX;
+		float secondmin = FLT_MAX;
 		unsigned short first, second;
 		unsigned short req1 = 0;
 		unsigned short req2 = 0;
@@ -468,8 +468,8 @@ namespace TSP
 			t -= delta;
 			delta -= ddelta;
 			Treeweight = 0;
-			firstmin = numeric_limits<float>::infinity();
-			secondmin = numeric_limits<float>::infinity();
+			firstmin = FLT_MAX;
+			secondmin = FLT_MAX;
 		}
 
 		for (unsigned short i = 0; i < size; i++)
@@ -497,7 +497,7 @@ namespace TSP
 		vector<bool> visited(size, 0);
 
 		//min stores for each vertex an edge of minimum weight incident to the set of visited verticies
-		vector<pair<float, unsigned short>> min(size, make_pair(numeric_limits<float>::infinity(), 0));
+		vector<pair<float, unsigned short>> min(size, make_pair(FLT_MAX, 0));
 
 		unsigned short vertex = 1;
 		unsigned short new_vertex = 1;
@@ -553,7 +553,7 @@ namespace TSP
 
 			//insert corresponding edge in Tree
 			Tree[j] = make_pair(vertex, min[vertex].second);
-			minimum = numeric_limits<float>::infinity();
+			minimum = FLT_MAX;
 		}
 
 		//too many required edges
