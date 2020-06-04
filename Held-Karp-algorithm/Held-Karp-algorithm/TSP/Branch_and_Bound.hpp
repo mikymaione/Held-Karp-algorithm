@@ -49,8 +49,8 @@ namespace TSP
 
 			bool Contains(unsigned short i, unsigned short j)
 			{
-				for (unsigned short k = 0; k < T.size(); k++)
-					if ((T[k].from == i && T[k].to == j) || (T[k].from == j && T[k].to == i))
+				for (auto e : T)
+					if ((e.from == i && e.to == j) || (e.from == j && e.to == i))
 						return true;
 
 				return false;
@@ -58,19 +58,19 @@ namespace TSP
 
 			bool CheckTour()
 			{
-				vector<unsigned short> degree(T.size(), 0);
+				vector<unsigned short> δ(T.size(), 0);
 
-				for (unsigned short i = 0; i < T.size(); i++)
+				for (auto e : T)
 				{
-					degree[T[i].from]++;
-					degree[T[i].to]++;
+					δ[e.from]++;
+					δ[e.to]++;
 				}
 
-				for (unsigned short i = 0; i < T.size(); i++)
-					if (degree[i] != 2)
-						return 1;
+				for (auto d : δ)
+					if (d != 2)
+						return true;
 
-				return 0;
+				return false;
 			}
 		};
 
@@ -88,8 +88,8 @@ namespace TSP
 
 			bool Forbidden(unsigned short i, unsigned short j)
 			{
-				for (unsigned short k = 0; k < F.size(); k++)
-					if ((F[k].first == i && F[k].second == j) || (F[k].first == j && F[k].second == i))
+				for (auto f : F)
+					if ((f.first == i && f.second == j) || (f.first == j && f.second == i))
 						return true;
 
 				return false;
@@ -97,11 +97,11 @@ namespace TSP
 
 			unsigned short IncidentToRequired(unsigned short v, unsigned short n)
 			{
-				for (unsigned short i = 0; i < R.size(); i++)
-					if (v == R[i].first)
-						return R[i].second;
-					else if (v == R[i].second)
-						return R[i].first;
+				for (auto r : R)
+					if (v == r.first)
+						return r.second;
+					else if (v == r.second)
+						return r.first;
 
 				return n;
 			}
