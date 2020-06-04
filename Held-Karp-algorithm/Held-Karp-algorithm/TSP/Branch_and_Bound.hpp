@@ -21,21 +21,21 @@ namespace TSP
 		struct QNode
 		{
 			//required edges
-			vector<pair<unsigned int, unsigned int>> R;
+			vector<pair<unsigned short, unsigned short>> R;
 
 			//forbidden edges
-			vector<pair<unsigned int, unsigned int>> F;
+			vector<pair<unsigned short, unsigned short>> F;
 
 			//initial λ vector
 			vector<float> λ;
 
 			//one_tree
-			vector<pair<unsigned int, unsigned int>> one_tree;
+			vector<pair<unsigned short, unsigned short>> one_tree;
 
 			//Held-Karp-Bound
 			float HK = 0;
 
-			QNode(vector<pair<unsigned int, unsigned int>> R, vector<pair<unsigned int, unsigned int>> F, vector<float> λ, unsigned int size) :
+			QNode(vector<pair<unsigned short, unsigned short>> R, vector<pair<unsigned short, unsigned short>> F, vector<float> λ, unsigned short size) :
 				R(R),
 				F(F),
 				λ(λ)
@@ -45,21 +45,21 @@ namespace TSP
 		};
 
 	private:
-		pair<vector<pair<unsigned int, unsigned int>>, float> DoBranch_and_Bound(vector<vector<float>> const &W);
-		bool Held_Karp_bound(vector<vector<float>> const &W, QNode &QNode, vector<int> &degree, float t, unsigned int const steps);
-		vector<QNode> branch(vector<pair<unsigned int, unsigned int>> const &tree, vector<int> const &degrees, QNode &current_node, unsigned int n);
+		pair<vector<pair<unsigned short, unsigned short>>, float> DoBranch_and_Bound(vector<vector<float>> const &W);
+		bool Held_Karp_bound(vector<vector<float>> const &W, QNode &QNode, vector<int> &degree, float t, unsigned short const steps);
+		vector<QNode> branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<int> const &degrees, QNode &current_node, unsigned short n);
 
-		bool minimum_spanning_tree(vector<pair<unsigned int, unsigned int>> &Tree, vector<vector<int>> const &omitted, vector<vector<float>> const &Weights, unsigned int const req);
+		bool minimum_spanning_tree(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<int>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
 
-		unsigned int is_incident_to_required(QNode &current_node, unsigned int v, unsigned int n);
-		unsigned int is_in_tree(vector<pair<unsigned int, unsigned int>> const &tree, unsigned int i, unsigned int j);
-		unsigned int is_forbidden(QNode const &node, unsigned int i, unsigned int j);
+		unsigned short is_incident_to_required(QNode &current_node, unsigned short v, unsigned short n);
+		unsigned short is_in_tree(vector<pair<unsigned short, unsigned short>> const &tree, unsigned short i, unsigned short j);
+		unsigned short is_forbidden(QNode const &node, unsigned short i, unsigned short j);
 		void insert(vector<QNode> &L, QNode &new_elem);
 		float initial_value(vector<vector<float>> const &W);
-		bool check_tour(vector<pair<unsigned int, unsigned int>> const &Tree);
+		bool check_tour(vector<pair<unsigned short, unsigned short>> const &Tree);
 
 	protected:
-		string PrintPath(vector<pair<unsigned int, unsigned int>> &path);
+		string PrintPath(vector<pair<unsigned short, unsigned short>> &path);
 
 		void Solve(float &opt, string &path);
 
