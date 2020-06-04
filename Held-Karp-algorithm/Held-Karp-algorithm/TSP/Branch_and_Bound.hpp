@@ -43,8 +43,6 @@ namespace TSP
 		}
 
 	private:
-		pair<vector<sEdge>, float> HKAlgo();
-
 		bool Bound(sNode &node, vector<unsigned short> &δ, float t, unsigned short const steps);
 		vector<sNode> Branch(sTree &T, vector<unsigned short> &δ, sNode &current_node, unsigned short n);
 

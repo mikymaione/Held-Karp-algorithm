@@ -41,6 +41,27 @@ namespace ADS
 			return T.size();
 		}
 
+		void GetMin1Nodes(const vector<vector<float>> &distance, unsigned short &id1, unsigned short &id2)
+		{
+			float min1 = FLT_MAX;
+			float min2 = FLT_MAX;
+
+			for (unsigned short i = 1; i < size(); i++)
+				if (distance[0][i] < min1)
+				{
+					min1 = distance[0][i];
+					id1 = i;
+				}
+
+			for (unsigned short i = 1; i < size(); i++)
+				if (i != id1)
+					if (distance[0][i] < min2)
+					{
+						min2 = distance[0][i];
+						id2 = i;
+					}
+		}
+
 		bool Contains(unsigned short i, unsigned short j)
 		{
 			for (auto e : T)
