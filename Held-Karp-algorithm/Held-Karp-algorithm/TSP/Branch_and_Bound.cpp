@@ -316,7 +316,7 @@ namespace TSP
 	before the execution, node contains required edges, forbidden edges, empty tree and initial λ value from the parent branching node
 	returns wether the algorithm terminated successfully (0) or not (1)
 	*/
-	bool Branch_and_Bound::Held_Karp_bound(vector<vector<float>> const &W, QNode &QNode, vector<int> &degree, float t, unsigned short const steps)
+	bool Branch_and_Bound::Held_Karp_bound(vector<vector<float>> const &W, QNode &node, vector<int> &degree, float t, unsigned short const steps)
 	{
 		unsigned short size = W.size();
 
@@ -325,7 +325,7 @@ namespace TSP
 		vector<vector<int>> omitted(size, vector<int>(size, 0));
 		vector<float> OptLambda(size);
 
-		unsigned short req = QNode.R.size();
+		unsigned short req = node.R.size();
 		float Treeweight = 0;
 		float delta = 3.0f * t / (2.0f * steps);
 		float ddelta = t / (steps * steps - steps);
@@ -341,49 +341,49 @@ namespace TSP
 
 		//mark all required and forbidden edges
 		//if edges incident to 0 are required we store them
-		for (unsigned short i = 0; i < QNode.R.size(); i++)
+		for (unsigned short i = 0; i < node.R.size(); i++)
 		{
-			omitted[QNode.R[i].first][QNode.R[i].second] = 1;
-			omitted[QNode.R[i].second][QNode.R[i].first] = 1;
+			omitted[node.R[i].first][node.R[i].second] = 1;
+			omitted[node.R[i].second][node.R[i].first] = 1;
 
-			if (QNode.R[i].first == 0)
+			if (node.R[i].first == 0)
 			{
 				req--;
 
-				if (req < QNode.R.size() - 1)
-					req2 = QNode.R[i].second;
+				if (req < node.R.size() - 1)
+					req2 = node.R[i].second;
 				else
-					req1 = QNode.R[i].second;
+					req1 = node.R[i].second;
 			}
 
-			if (QNode.R[i].second == 0)
+			if (node.R[i].second == 0)
 			{
 				req--;
 
-				if (req < QNode.R.size() - 1)
-					req2 = QNode.R[i].first;
+				if (req < node.R.size() - 1)
+					req2 = node.R[i].first;
 				else
-					req1 = QNode.R[i].first;
+					req1 = node.R[i].first;
 			}
 		}
 
 		//if edges incident to 0 are forbidden we mark them
-		for (unsigned short i = 0; i < QNode.F.size(); i++)
+		for (unsigned short i = 0; i < node.F.size(); i++)
 		{
-			omitted.at(QNode.F[i].first).at(QNode.F[i].second) = 2;
-			omitted.at(QNode.F[i].second).at(QNode.F[i].first) = 2;
+			omitted.at(node.F[i].first).at(node.F[i].second) = 2;
+			omitted.at(node.F[i].second).at(node.F[i].first) = 2;
 
-			if (QNode.F[i].first == 0)
-				forbidden.at(QNode.F[i].second) = 1;
+			if (node.F[i].first == 0)
+				forbidden.at(node.F[i].second) = 1;
 
-			if (QNode.F[i].second == 0)
-				forbidden.at(QNode.F[i].first) = 1;
+			if (node.F[i].second == 0)
+				forbidden.at(node.F[i].first) = 1;
 		}
 
 		//compute new weights
 		for (unsigned short i = 0; i < size; i++)
 			for (unsigned short j = 0; j < size; j++)
-				Weights[i][j] = W[i][j] + QNode.λ[i] + QNode.λ[j];
+				Weights[i][j] = W[i][j] + node.λ[i] + node.λ[j];
 
 		for (unsigned short k = 0; k < steps; k++)
 		{
@@ -434,18 +434,18 @@ namespace TSP
 			for (unsigned short i = 0; i < Tree.size(); i++)
 			{
 				Treeweight += Weights[Tree[i].first][Tree[i].second];
-				Treeweight -= 2 * QNode.λ[i];
+				Treeweight -= 2 * node.λ[i];
 			}
 
 			//store Tree and λ
-			if (QNode.HK < Treeweight)
+			if (node.HK < Treeweight)
 			{
-				QNode.HK = Treeweight;
+				node.HK = Treeweight;
 
-				for (unsigned short i = 0; i < (QNode.one_tree).size(); i++)
+				for (unsigned short i = 0; i < (node.one_tree).size(); i++)
 				{
-					(QNode.one_tree)[i] = Tree[i];
-					OptLambda[i] = QNode.λ[i];
+					node.one_tree[i] = Tree[i];
+					OptLambda[i] = node.λ[i];
 				}
 			}
 
@@ -457,7 +457,7 @@ namespace TSP
 			//update λ
 			for (unsigned short i = 0; i < size; i++)
 			{
-				QNode.λ[i] += (degree[i] - 2) * t;
+				node.λ[i] += (degree[i] - 2) * t;
 				degree[i] = 0;
 			}
 
@@ -471,9 +471,9 @@ namespace TSP
 
 		for (unsigned short i = 0; i < size; i++)
 		{
-			QNode.λ[i] = OptLambda[i];
-			degree[QNode.one_tree[i].first]++;
-			degree[QNode.one_tree[i].second]++;
+			node.λ[i] = OptLambda[i];
+			degree[node.one_tree[i].first]++;
+			degree[node.one_tree[i].second]++;
 		}
 
 		return 0;
