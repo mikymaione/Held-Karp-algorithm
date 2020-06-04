@@ -103,7 +103,7 @@ namespace TSP
 	returns a vector of new Nodes to be added to the queue
 	All choices are being made as recommended in the paper by Volgenant & Jonker
 	*/
-	vector<Branch_and_Bound::Node> Branch_and_Bound::branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<int> const &degrees, Node &current_node, unsigned short n)
+	vector<Branch_and_Bound::Node> Branch_and_Bound::branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n)
 	{
 		vector<Node> result;
 		unsigned short min_degree_req = n; //minimal degree greater than two of a vertex incident to a required edge
@@ -316,7 +316,7 @@ namespace TSP
 	before the execution, node contains required edges, forbidden edges, empty tree and initial λ value from the parent branching node
 	returns wether the algorithm terminated successfully (0) or not (1)
 	*/
-	bool Branch_and_Bound::Held_Karp_bound(vector<vector<float>> const &W, Node &node, vector<int> &degree, float t, unsigned short const steps)
+	bool Branch_and_Bound::Held_Karp_bound(vector<vector<float>> const &W, Node &node, vector<unsigned short> &degree, float t, unsigned short const steps)
 	{
 		unsigned short size = W.size();
 
@@ -624,7 +624,7 @@ namespace TSP
 	pair<vector<pair<unsigned short, unsigned short>>, float> Branch_and_Bound::DoBranch_and_Bound(vector<vector<float>> const &W)
 	{
 		unsigned short size = W.size();
-		vector<int> degree(size, 0);
+		vector<unsigned short> degree(size, 0);
 		float U = W[size - 1][0];
 		float t;
 		unsigned short N;
@@ -677,7 +677,7 @@ namespace TSP
 				if (B[i].HK < U)
 					insert(S, B[i]);
 
-		vector<int> degree1(size, 0);
+		vector<unsigned short> degree1(size, 0);
 		int current = S.size() - 1;
 
 		//Branch and Bound using best bound

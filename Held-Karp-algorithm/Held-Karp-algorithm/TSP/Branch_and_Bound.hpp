@@ -46,8 +46,8 @@ namespace TSP
 
 	private:
 		pair<vector<pair<unsigned short, unsigned short>>, float> DoBranch_and_Bound(vector<vector<float>> const &W);
-		bool Held_Karp_bound(vector<vector<float>> const &W, Node &node, vector<int> &degree, float t, unsigned short const steps);
-		vector<Node> branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<int> const &degrees, Node &current_node, unsigned short n);
+		bool Held_Karp_bound(vector<vector<float>> const &W, Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
+		vector<Node> branch(vector<pair<unsigned short, unsigned short>> const &tree, vector<unsigned short> const &degrees, Node &current_node, unsigned short n);
 
 		bool minimum_spanning_tree(vector<pair<unsigned short, unsigned short>> &Tree, vector<vector<int>> const &omitted, vector<vector<float>> const &Weights, unsigned short const req);
 
