@@ -18,26 +18,26 @@ namespace TSP
 	class Branch_and_Bound : public Base::TSP
 	{
 	private:
-		struct Edge
+		struct sEdge
 		{
 			unsigned short from, to;
 
-			Edge() : Edge(UINT16_MAX, UINT16_MAX) {}
-			Edge(unsigned short from, unsigned short to) : from(from), to(to) {}
+			sEdge() : sEdge(UINT16_MAX, UINT16_MAX) {}
+			sEdge(unsigned short from, unsigned short to) : from(from), to(to) {}
 		};
 
-		struct Tree
+		struct sTree
 		{
-			vector<Edge> T;
+			vector<sEdge> T;
 
-			Tree(unsigned short size) : T(size) {}
+			sTree(unsigned short size) : T(size) {}
 
-			Edge &operator[](unsigned short i)
+			sEdge &operator[](unsigned short i)
 			{
 				return T[i];
 			}
 
-			Edge operator[](unsigned short i) const
+			sEdge operator[](unsigned short i) const
 			{
 				return T[i];
 			}
@@ -74,17 +74,17 @@ namespace TSP
 			}
 		};
 
-		struct Node
+		struct sNode
 		{
 			float bound = 0;
 
 			vector<float> λ;
-			vector<Edge> R, F;
-			Tree oneTree;
+			vector<sEdge> R, F;
+			sTree oneTree;
 
-			Node(unsigned short size) : oneTree(size), λ(size) {}
+			sNode(unsigned short size) : oneTree(size), λ(size) {}
 
-			Node(vector<Edge> R, vector<Edge> F, vector<float> λ, unsigned short size) : R(R), F(F), λ(λ), oneTree(size) {}
+			sNode(vector<sEdge> R, vector<sEdge> F, vector<float> λ, unsigned short size) : R(R), F(F), λ(λ), oneTree(size) {}
 
 			bool Forbidden(unsigned short i, unsigned short j)
 			{
@@ -108,17 +108,17 @@ namespace TSP
 		};
 
 	private:
-		pair<vector<Edge>, float> HKAlgo();
-		bool Bound(Node &node, vector<unsigned short> &δ, float t, unsigned short const steps);
-		vector<Node> Branch(Tree &T, vector<unsigned short> &δ, Node &current_node, unsigned short n);
+		pair<vector<sEdge>, float> HKAlgo();
+		bool Bound(sNode &node, vector<unsigned short> &δ, float t, unsigned short const steps);
+		vector<sNode> Branch(sTree &T, vector<unsigned short> &δ, sNode &current_node, unsigned short n);
 
 		float t1();
 
-		bool MST_Prim(Tree &tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req);
-		void PQ_Add(vector<Node> &L, Node &new_elem);
+		bool MST_Prim(sTree &tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req);
+		void PQ_Add(vector<sNode> &L, sNode &new_elem);
 
 	private:
-		unsigned short CountElements(vector<Edge> &edges, vector<unsigned short> &from, unsigned short i)
+		unsigned short CountElements(vector<sEdge> &edges, vector<unsigned short> &from, unsigned short i)
 		{
 			unsigned short x = 0;
 
@@ -141,7 +141,7 @@ namespace TSP
 		}
 
 	protected:
-		string PrintPath(vector<Edge> &path);
+		string PrintPath(vector<sEdge> &path);
 
 		void Solve(float &opt, string &path);
 

@@ -26,7 +26,7 @@ namespace TSP
 {
 	Branch_and_Bound::Branch_and_Bound(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	string Branch_and_Bound::PrintPath(vector<Edge> &path)
+	string Branch_and_Bound::PrintPath(vector<sEdge> &path)
 	{
 		string s;
 		set<unsigned short> S;
@@ -57,9 +57,9 @@ namespace TSP
 		return s + "0";
 	}
 
-	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(Tree &T, vector<unsigned short> &δ, Node &current_node, unsigned short n)
+	vector<Branch_and_Bound::sNode> Branch_and_Bound::Branch(sTree &T, vector<unsigned short> &δ, sNode &current_node, unsigned short n)
 	{
-		vector<Node> result;
+		vector<sNode> result;
 		auto min_δ_req = n;
 		auto min_δ = n;
 		auto p_req = n;
@@ -103,18 +103,18 @@ namespace TSP
 
 			auto F = current_node.F;
 			auto R = current_node.R;
-			R.push_back(Edge(i, p_req));
+			R.push_back(sEdge(i, p_req));
 
 			for (unsigned short k = 0; k < n; k++)
 				if (k != i && k != p_req && k != req_neighbor && !current_node.Forbidden(p_req, k))
-					F.push_back(Edge(p_req, k));
+					F.push_back(sEdge(p_req, k));
 
-			Node S2(R, F, current_node.λ, n);
+			sNode S2(R, F, current_node.λ, n);
 			result.push_back(S2);
 
 			R = current_node.R;
 			F = current_node.F;
-			F.push_back(Edge(i, p_req));
+			F.push_back(sEdge(i, p_req));
 
 			vector<unsigned short> forbidden(n, 0);
 			forbidden[p_req] = 1;
@@ -125,9 +125,9 @@ namespace TSP
 				for (unsigned short k = 0; k < n; k++)
 					if (!forbidden[k])
 						if (k != req_neighbor)
-							R.push_back(Edge(p_req, k));
+							R.push_back(sEdge(p_req, k));
 
-			Node S3(R, F, current_node.λ, n);
+			sNode S3(R, F, current_node.λ, n);
 			result.push_back(S3);
 		}
 		else
@@ -150,20 +150,20 @@ namespace TSP
 
 			auto F = current_node.F;
 			auto R = current_node.R;
-			R.push_back(Edge(i, p));
-			R.push_back(Edge(j, p));
+			R.push_back(sEdge(i, p));
+			R.push_back(sEdge(j, p));
 
 			for (unsigned short k = 0; k < n; k++)
 				if (k != i && k != p && k != j && !current_node.Forbidden(p, k))
-					F.push_back(Edge(p, k));
+					F.push_back(sEdge(p, k));
 
-			Node S1(R, F, current_node.λ, n);
+			sNode S1(R, F, current_node.λ, n);
 			result.push_back(S1);
 
 			R = current_node.R;
 			F = current_node.F;
-			R.push_back(Edge(i, p));
-			F.push_back(Edge(j, p));
+			R.push_back(sEdge(i, p));
+			F.push_back(sEdge(j, p));
 
 			vector<unsigned short> forbidden(n, 0);
 			forbidden[p] = 1;
@@ -174,39 +174,39 @@ namespace TSP
 				for (unsigned short k = 0; k < n; k++)
 					if (!forbidden[k])
 						if (k != i)
-							R.push_back(Edge(p, k));
+							R.push_back(sEdge(p, k));
 
-			Node S2(R, F, current_node.λ, n);
+			sNode S2(R, F, current_node.λ, n);
 			result.push_back(S2);
 
 			R = current_node.R;
 			F = current_node.F;
-			F.push_back(Edge(i, p));
+			F.push_back(sEdge(i, p));
 
 			if (num_forbidden == n - 3)
 			{
 				for (unsigned short k = 0; k < n; k++)
 					if (!forbidden[k])
 						if (k != i)
-							R.push_back(Edge(p, k));
+							R.push_back(sEdge(p, k));
 
-				R.push_back(Edge(p, j));
+				R.push_back(sEdge(p, j));
 			}
 
-			Node S3(R, F, current_node.λ, n);
+			sNode S3(R, F, current_node.λ, n);
 			result.push_back(S3);
 		}
 
 		return result;
 	}
 
-	bool Branch_and_Bound::Bound(Node &node, vector<unsigned short> &δ, float t, unsigned short const steps)
+	bool Branch_and_Bound::Bound(sNode &node, vector<unsigned short> &δ, float t, unsigned short const steps)
 	{
 		vector<vector<float>> w(numberOfNodes, vector<float>(numberOfNodes));
 		vector<vector<unsigned short>> omitted(numberOfNodes, vector<unsigned short>(numberOfNodes, 0));
 		vector<float> Λ(numberOfNodes);
 		vector<bool> forbidden(numberOfNodes, 0);
-		Tree T(numberOfNodes);
+		sTree T(numberOfNodes);
 
 		float W = 0;
 
@@ -289,18 +289,18 @@ namespace TSP
 
 			if (req1 == 0)
 			{
-				T[T.size() - 2] = Edge(0, first);
-				T[T.size() - 1] = Edge(0, second);
+				T[T.size() - 2] = sEdge(0, first);
+				T[T.size() - 1] = sEdge(0, second);
 			}
 			else if (req2 == 0)
 			{
-				T[T.size() - 2] = Edge(0, first);
-				T[T.size() - 1] = Edge(0, req1);
+				T[T.size() - 2] = sEdge(0, first);
+				T[T.size() - 1] = sEdge(0, req1);
 			}
 			else
 			{
-				T[T.size() - 2] = Edge(0, req1);
-				T[T.size() - 1] = Edge(0, req2);
+				T[T.size() - 2] = sEdge(0, req1);
+				T[T.size() - 1] = sEdge(0, req2);
 			}
 
 			for (unsigned short i = 0; i < T.size(); i++)
@@ -355,7 +355,7 @@ namespace TSP
 		return 0;
 	}
 
-	bool Branch_and_Bound::MST_Prim(Tree &Tree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req)
+	bool Branch_and_Bound::MST_Prim(sTree &sTree, vector<vector<unsigned short>> &omitted, const vector<vector<float>> &Weights, const unsigned short req)
 	{
 		vector<bool> visited(numberOfNodes, 0);
 		vector<pair<float, unsigned short>> min(numberOfNodes, make_pair(FLT_MAX, 0));
@@ -398,7 +398,7 @@ namespace TSP
 			vertex = new_vertex;
 			visited[vertex] = 1;
 
-			Tree[j] = Edge(vertex, min[vertex].second);
+			sTree[j] = sEdge(vertex, min[vertex].second);
 			minimum = FLT_MAX;
 		}
 
@@ -410,7 +410,7 @@ namespace TSP
 
 	float Branch_and_Bound::t1()
 	{
-		Tree Tree(distance.size());
+		sTree sTree(distance.size());
 		vector<vector<unsigned short>> omitted(distance.size(), vector<unsigned short>(distance.size(), 0));
 
 		float t = 0;
@@ -419,16 +419,16 @@ namespace TSP
 
 		unsigned short first, second;
 
-		MST_Prim(Tree, omitted, distance, 0);
+		MST_Prim(sTree, omitted, distance, 0);
 
-		for (unsigned short i = 1; i < Tree.size(); i++)
+		for (unsigned short i = 1; i < sTree.size(); i++)
 			if (distance[0][i] < firstmin)
 			{
 				firstmin = distance[0][i];
 				first = i;
 			}
 
-		for (unsigned short i = 1; i < Tree.size(); i++)
+		for (unsigned short i = 1; i < sTree.size(); i++)
 			if (i != first)
 				if (distance[0][i] < secondmin)
 				{
@@ -436,20 +436,20 @@ namespace TSP
 					second = i;
 				}
 
-		Tree[Tree.size() - 2] = Edge(0, first);
-		Tree[Tree.size() - 1] = Edge(0, second);
+		sTree[sTree.size() - 2] = sEdge(0, first);
+		sTree[sTree.size() - 1] = sEdge(0, second);
 
-		for (unsigned short i = 0; i < Tree.size(); i++)
-			t += distance[Tree[i].from][Tree[i].to];
+		for (unsigned short i = 0; i < sTree.size(); i++)
+			t += distance[sTree[i].from][sTree[i].to];
 
 		return t / (2.0f * distance.size());
 	}
 
-	void Branch_and_Bound::PQ_Add(vector<Node> &PQ, Node &new_elem)
+	void Branch_and_Bound::PQ_Add(vector<sNode> &PQ, sNode &new_elem)
 	{
 		PQ.push_back(new_elem);
 
-		sort(PQ.begin(), PQ.end(), [](Node &l, Node &r) {
+		sort(PQ.begin(), PQ.end(), [](sNode &l, sNode &r) {
 			return l.bound > r.bound;
 		});
 	}
@@ -506,20 +506,20 @@ namespace TSP
 			Note that the bound of the left child does not equal the L-value of its incoming matrix!
 			7. You are done processing this node. Go back to the top-level outline.
 	*/
-	pair<vector<Branch_and_Bound::Edge>, float> Branch_and_Bound::HKAlgo()
+	pair<vector<Branch_and_Bound::sEdge>, float> Branch_and_Bound::HKAlgo()
 	{
-		vector<Node> PQ;
-		vector<Edge> path(numberOfNodes);
+		vector<sNode> PQ;
+		vector<sEdge> path(numberOfNodes);
 		vector<unsigned short> δ(numberOfNodes, 0);
 		float UB = distance[numberOfNodes - 1][0];
 
-		path[0] = Edge(numberOfNodes - 1, 0);
+		path[0] = sEdge(numberOfNodes - 1, 0);
 
 		// Upper bound
 		for (unsigned short i = 0; i < distance.size() - 1; i++)
 		{
 			UB += distance[i][i + 1];
-			path[i + 1] = Edge(i, i + 1);
+			path[i + 1] = sEdge(i, i + 1);
 		}
 
 		auto t = t1();
@@ -527,7 +527,7 @@ namespace TSP
 
 		// 1. Draw and initialize the root node.
 		{
-			Node root(numberOfNodes);
+			sNode root(numberOfNodes);
 			Bound(root, δ, t, N);
 
 			// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
