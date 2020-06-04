@@ -43,7 +43,7 @@ namespace TSP
 			s += to_string(i) + " ";
 			S.insert(i);
 
-			for (size_t y = 0; y < numberOfNodes; y++)
+			for (unsigned short y = 0; y < numberOfNodes; y++)
 				if (E[i][y] && S.count(y) == 0)
 				{
 					i = y;
@@ -61,12 +61,13 @@ namespace TSP
 	{
 		for (unsigned short i = 0; i < current_node.R.size(); i++)
 		{
-			if (current_node.R[i].first == v)
+			if (v == current_node.R[i].first)
 				return current_node.R[i].second;
 
-			if (current_node.R[i].second == v)
+			if (v == current_node.R[i].second)
 				return current_node.R[i].first;
 		}
+
 		return n;
 	}
 
@@ -120,7 +121,7 @@ namespace TSP
 			if (degrees[i] > 2)
 				if (is_incident_to_required(current_node, i, n) == n)
 				{
-					if ((unsigned short)degrees[i] < min_degree)
+					if (degrees[i] < min_degree)
 					{
 						min_degree = degrees[i];
 						p = i;
@@ -128,7 +129,7 @@ namespace TSP
 				}
 				else
 				{
-					if ((unsigned short)degrees[i] < min_degree_req)
+					if (degrees[i] < min_degree_req)
 					{
 						min_degree_req = degrees[i];
 						p_req = i;
@@ -152,18 +153,17 @@ namespace TSP
 						if (!is_forbidden(current_node, i, p_req))
 							break; //we may take e_1 = {i, p}
 
-								   //Create the Node for S2, where e_1 is required
-								   //as there is one more required edge incident to p_req, forbid all other edges incident to p_req
+			//Create the Node for S2, where e_1 is required as there is one more required edge incident to p_req, forbid all other edges incident to p_req
+			vector<pair<unsigned short, unsigned short>> F = current_node.F;
 			vector<pair<unsigned short, unsigned short>> R = current_node.R;
 			R.push_back(pair<unsigned short, unsigned short>(i, p_req));
-			vector<pair<unsigned short, unsigned short>> F = current_node.F;
 
 			//forbid all edges incident to p except the two required ones
 			for (unsigned short k = 0; k < n; k++)
 				if (k != i && k != p_req && k != req_neighbor && !is_forbidden(current_node, p_req, k))
 					F.push_back(pair<unsigned short, unsigned short>(p_req, k));
 
-			Node S2 = Node(R, F, current_node.λ, n);
+			Node S2(R, F, current_node.λ, n);
 			result.push_back(S2);
 
 			//Create the Node for S3, where e_1 is forbidden
@@ -172,9 +172,10 @@ namespace TSP
 			F.push_back(pair<unsigned short, unsigned short>(i, p_req));
 
 			//check if all but two are forbidden, if so, require the two other ones
+			unsigned short num_forbidden = 0;
 			vector<unsigned short> forbidden(n, 0);
 			forbidden[p_req] = 1;
-			unsigned short num_forbidden = 0;
+
 			for (unsigned short k = 0; k < F.size(); k++)
 			{
 				if (F[k].first == p_req)
@@ -196,7 +197,7 @@ namespace TSP
 						if (k != req_neighbor)
 							R.push_back(pair<unsigned short, unsigned short>(p_req, k));
 
-			Node S3 = Node(R, F, current_node.λ, n);
+			Node S3(R, F, current_node.λ, n);
 			result.push_back(S3);
 		}
 		else //p_req doesn't exist, use p. leads to branching with three new vertices
@@ -228,7 +229,7 @@ namespace TSP
 				if (k != i && k != p && k != j && !is_forbidden(current_node, p, k))
 					F.push_back(pair<unsigned short, unsigned short>(p, k));
 
-			Node S1 = Node(R, F, current_node.λ, n);
+			Node S1(R, F, current_node.λ, n);
 			result.push_back(S1);
 
 			//Create the Node S2, where e_1 is required and e_2 is forbidden
@@ -236,10 +237,11 @@ namespace TSP
 			F = current_node.F;
 			R.push_back(pair<unsigned short, unsigned short>(i, p));
 			F.push_back(pair<unsigned short, unsigned short>(j, p));
+
 			//check if all but two are forbidden, if so, require the two other ones
+			unsigned short num_forbidden = 0;
 			vector<unsigned short> forbidden(n, 0);
 			forbidden[p] = 1;
-			unsigned short num_forbidden = 0;
 
 			for (unsigned short k = 0; k < F.size(); k++)
 			{
@@ -262,7 +264,7 @@ namespace TSP
 						if (k != i)
 							R.push_back(pair<unsigned short, unsigned short>(p, k));
 
-			Node S2 = Node(R, F, current_node.λ, n);
+			Node S2(R, F, current_node.λ, n);
 			result.push_back(S2);
 
 			//Create the Node S3, where e_1 is forbidden
@@ -282,7 +284,7 @@ namespace TSP
 				R.push_back(pair<unsigned short, unsigned short>(p, j));
 			}
 
-			Node S3 = Node(R, F, current_node.λ, n);
+			Node S3(R, F, current_node.λ, n);
 			result.push_back(S3);
 		}
 
@@ -296,6 +298,7 @@ namespace TSP
 	bool Branch_and_Bound::check_tour(vector<pair<unsigned short, unsigned short>> const &Tree)
 	{
 		vector<unsigned short> degree(Tree.size(), 0);
+
 		for (unsigned short i = 0; i < Tree.size(); i++)
 		{
 			degree[Tree[i].first]++;
@@ -498,7 +501,7 @@ namespace TSP
 
 		unsigned short vertex = 1;
 		unsigned short new_vertex = 1;
-		float minimum = numeric_limits<float>::infinity();
+		auto minimum = FLT_MAX;
 
 		//number of required edges in Tree
 		unsigned short req_num = 0;
@@ -552,6 +555,7 @@ namespace TSP
 			Tree[j] = make_pair(vertex, min[vertex].second);
 			minimum = numeric_limits<float>::infinity();
 		}
+
 		//too many required edges
 		if (req_num < req)
 			return 1;
@@ -615,8 +619,10 @@ namespace TSP
 		while (position > 0 && L[position - 1].HK < L[position].HK)
 		{
 			tmp = &L[position];
+
 			L[position] = L[position - 1];
 			L[position - 1] = *tmp;
+
 			position--;
 		}
 	}
@@ -683,7 +689,7 @@ namespace TSP
 		//Branch and Bound using best bound
 		while (current >= 0)
 		{
-			Node node = S.at(current);
+			auto node = S[current];
 			S.pop_back();
 
 			//since we use best bound, node.HK is a lower bound for the optimum
@@ -712,7 +718,8 @@ namespace TSP
 				else
 				{
 					//branch with node
-					vector<Node> B = branch(node.one_tree, degree1, node, size);
+					auto B = branch(node.one_tree, degree1, node, size);
+
 					for (unsigned short i = 0; i < B.size(); i++)
 						if (!Held_Karp_bound(W, B[i], degree1, t, N))
 							//consider B[i] only if its HK bound is smaller than U
