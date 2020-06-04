@@ -57,7 +57,7 @@ namespace TSP
 		return s + "0";
 	}
 
-	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(Tree &tree, vector<unsigned short> &δ, Node &current_node, unsigned short n)
+	vector<Branch_and_Bound::Node> Branch_and_Bound::Branch(Tree &T, vector<unsigned short> &δ, Node &current_node, unsigned short n)
 	{
 		vector<Node> result;
 		auto min_δ_req = n;
@@ -92,7 +92,7 @@ namespace TSP
 
 			for (i = 0; i < n; i++)
 				if (i != p_req && i != req_neighbor)
-					if (!tree.Contains(i, p_req) && !current_node.Forbidden(i, p_req))
+					if (!T.Contains(i, p_req) && !current_node.Forbidden(i, p_req))
 						break;
 
 			if (i == n)
@@ -135,7 +135,7 @@ namespace TSP
 			unsigned short i, j;
 
 			for (i = 0; i < n; i++)
-				if (i != p && !tree.Contains(i, p) && !current_node.Forbidden(i, p))
+				if (i != p && !T.Contains(i, p) && !current_node.Forbidden(i, p))
 					break;
 
 			if (i == n)
@@ -200,26 +200,30 @@ namespace TSP
 		return result;
 	}
 
-	bool Branch_and_Bound::Bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps)
+	bool Branch_and_Bound::Bound(Node &node, vector<unsigned short> &δ, float t, unsigned short const steps)
 	{
 		vector<vector<float>> Weights(numberOfNodes, vector<float>(numberOfNodes));
 		vector<vector<unsigned short>> omitted(numberOfNodes, vector<unsigned short>(numberOfNodes, 0));
 		vector<float> OptLambda(numberOfNodes);
-		Tree Tree(numberOfNodes);
+		vector<bool> forbidden(numberOfNodes, 0);
+		Tree T(numberOfNodes);
 
-		unsigned short req = node.R.size();
 		float Treeweight = 0;
-		float delta = 3.0f * t / (2.0f * steps);
-		float ddelta = t / (steps * steps - steps);
+
+		float Δ = 3.0f * t / (2.0f * steps);
+		float dΔ = t / (steps * steps - steps);
+
 		float firstmin = FLT_MAX;
 		float secondmin = FLT_MAX;
+
 		unsigned short first, second;
+
 		unsigned short req1 = 0;
 		unsigned short req2 = 0;
-		vector<bool> forbidden(numberOfNodes, 0);
+		unsigned short req = node.R.size();
 
 		for (unsigned short i = 0; i < numberOfNodes; i++)
-			degree[i] = 0;
+			δ[i] = 0;
 
 		for (unsigned short i = 0; i < node.R.size(); i++)
 		{
@@ -265,7 +269,7 @@ namespace TSP
 
 		for (unsigned short k = 0; k < steps; k++)
 		{
-			if (MST_Prim(Tree, omitted, Weights, req))
+			if (MST_Prim(T, omitted, Weights, req))
 				return 1;
 
 			for (unsigned short i = 1; i < numberOfNodes; i++)
@@ -285,29 +289,29 @@ namespace TSP
 
 			if (req1 == 0)
 			{
-				Tree[Tree.size() - 2] = Edge(0, first);
-				Tree[Tree.size() - 1] = Edge(0, second);
+				T[T.size() - 2] = Edge(0, first);
+				T[T.size() - 1] = Edge(0, second);
 			}
 			else if (req2 == 0)
 			{
-				Tree[Tree.size() - 2] = Edge(0, first);
-				Tree[Tree.size() - 1] = Edge(0, req1);
+				T[T.size() - 2] = Edge(0, first);
+				T[T.size() - 1] = Edge(0, req1);
 			}
 			else
 			{
-				Tree[Tree.size() - 2] = Edge(0, req1);
-				Tree[Tree.size() - 1] = Edge(0, req2);
+				T[T.size() - 2] = Edge(0, req1);
+				T[T.size() - 1] = Edge(0, req2);
 			}
 
-			for (unsigned short i = 0; i < Tree.size(); i++)
+			for (unsigned short i = 0; i < T.size(); i++)
 			{
-				degree[Tree[i].from]++;
-				degree[Tree[i].to]++;
+				δ[T[i].from]++;
+				δ[T[i].to]++;
 			}
 
-			for (unsigned short i = 0; i < Tree.size(); i++)
+			for (unsigned short i = 0; i < T.size(); i++)
 			{
-				Treeweight += Weights[Tree[i].from][Tree[i].to];
+				Treeweight += Weights[T[i].from][T[i].to];
 				Treeweight -= 2 * node.λ[i];
 			}
 
@@ -317,23 +321,23 @@ namespace TSP
 
 				for (unsigned short i = 0; i < (node.oneTree).size(); i++)
 				{
-					node.oneTree[i] = Tree[i];
+					node.oneTree[i] = T[i];
 					OptLambda[i] = node.λ[i];
 				}
 			}
 
 			for (unsigned short i = 0; i < numberOfNodes; i++)
 				for (unsigned short j = 0; j < numberOfNodes; j++)
-					Weights[i][j] += (degree[i] - 2) * t + (degree[j] - 2) * t;
+					Weights[i][j] += (δ[i] - 2) * t + (δ[j] - 2) * t;
 
 			for (unsigned short i = 0; i < numberOfNodes; i++)
 			{
-				node.λ[i] += (degree[i] - 2) * t;
-				degree[i] = 0;
+				node.λ[i] += (δ[i] - 2) * t;
+				δ[i] = 0;
 			}
 
-			t -= delta;
-			delta -= ddelta;
+			t -= Δ;
+			Δ -= dΔ;
 			Treeweight = 0;
 			firstmin = FLT_MAX;
 			secondmin = FLT_MAX;
@@ -342,8 +346,8 @@ namespace TSP
 		for (unsigned short i = 0; i < numberOfNodes; i++)
 		{
 			node.λ[i] = OptLambda[i];
-			degree[node.oneTree[i].from]++;
-			degree[node.oneTree[i].to]++;
+			δ[node.oneTree[i].from]++;
+			δ[node.oneTree[i].to]++;
 		}
 
 		return 0;

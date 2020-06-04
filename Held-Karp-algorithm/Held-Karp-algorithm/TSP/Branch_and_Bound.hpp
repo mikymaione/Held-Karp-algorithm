@@ -109,8 +109,8 @@ namespace TSP
 
 	private:
 		pair<vector<Edge>, float> HKAlgo();
-		bool Bound(Node &node, vector<unsigned short> &degree, float t, unsigned short const steps);
-		vector<Node> Branch(Tree &tree, vector<unsigned short> &degrees, Node &current_node, unsigned short n);
+		bool Bound(Node &node, vector<unsigned short> &δ, float t, unsigned short const steps);
+		vector<Node> Branch(Tree &T, vector<unsigned short> &δ, Node &current_node, unsigned short n);
 
 		float t1();
 
