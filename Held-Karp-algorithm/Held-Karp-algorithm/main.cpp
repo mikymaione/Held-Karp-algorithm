@@ -112,7 +112,7 @@ void WriteTitle()
 		<< "Christofides algorithm, 2-approximation algorithm, Lagrangian relaxation to solve the Euclidean Traveling Salesman Problem" << endl
 		<< endl
 		<< "Program parameters:" << endl
-		<< " algorithm = {H, C, A, L}" << endl
+		<< " algorithm = {H, C, A, B, L}" << endl
 		<< " type = {E, A}" << endl
 		<< " [graph to solve = {4, 10, 15, 20, 25, all}]" << endl
 		<< endl

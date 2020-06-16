@@ -268,12 +268,12 @@ namespace TSP
 
 		for (unsigned short i = 0; i < numberOfNodes; i++)
 			for (unsigned short j = 0; j < numberOfNodes; j++)
-				w[i][j] = distance[i][j] + node.λ[i] + node.λ[j];
+				w[i][j] = (i == j ? FLT_MAX : distance[i][j] + node.λ[i] + node.λ[j]);
 
 		for (unsigned short k = 0; k < steps; k++)
 		{
 			if (prim.Solve(T, omitted, w, req, numberOfNodes))
-				return 1;
+				return true;
 
 			for (unsigned short i = 1; i < numberOfNodes; i++)
 				if (w[0][i] < min1 && !forbidden[i])
@@ -322,7 +322,7 @@ namespace TSP
 			{
 				node.bound = W;
 
-				for (unsigned short i = 0; i < (node.oneTree).size(); i++)
+				for (unsigned short i = 0; i < node.oneTree.size(); i++)
 				{
 					node.oneTree[i] = T[i];
 					Λ[i] = node.λ[i];
@@ -331,7 +331,8 @@ namespace TSP
 
 			for (unsigned short i = 0; i < numberOfNodes; i++)
 				for (unsigned short j = 0; j < numberOfNodes; j++)
-					w[i][j] += (δ[i] - 2) * t + (δ[j] - 2) * t;
+					if (i != j)
+						w[i][j] += (δ[i] - 2) * t + (δ[j] - 2) * t;
 
 			for (unsigned short i = 0; i < numberOfNodes; i++)
 			{
@@ -355,7 +356,7 @@ namespace TSP
 			δ[node.oneTree[i].to]++;
 		}
 
-		return 0;
+		return false;
 	}
 
 	float Branch_and_Bound::t1()
@@ -414,7 +415,7 @@ namespace TSP
 		}
 
 		auto t = t1();
-		auto N = (numberOfNodes * numberOfNodes / 50.0f) + numberOfNodes + 15;
+		unsigned short N = numberOfNodes * numberOfNodes / 50 + numberOfNodes + 15;
 
 		// 1. Draw and initialize the root node.
 		{
@@ -433,7 +434,7 @@ namespace TSP
 				return;
 			}
 
-			N = ceil(numberOfNodes / 4.0f) + 5;
+			N = ceil(numberOfNodes / 4.0f + 5);
 			t = 0;
 
 			for (unsigned short i = 0; i < numberOfNodes; i++)
