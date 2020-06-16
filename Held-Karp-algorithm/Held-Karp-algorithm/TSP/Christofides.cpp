@@ -41,7 +41,7 @@ namespace TSP
 		return s;
 	}
 
-	void Christofides::GreedyWeightedPerfectMatching() // O(V²)
+	void Christofides::GreedyWeightedPerfectMatching() // O(V³)
 	{
 		float dist;
 		unsigned short i, closest = 0;
@@ -72,7 +72,7 @@ namespace TSP
 			}
 	}
 
-	vector<unsigned short> Christofides::FindEulerCircuit(unsigned short start) // O((V + E)²)
+	vector<unsigned short> Christofides::FindEulerCircuit(unsigned short start) // O(E)
 	{
 		size_t i;
 		unsigned short neighbor, pos;
@@ -112,7 +112,7 @@ namespace TSP
 		return path;
 	}
 
-	float Christofides::ToHamiltonianPath(vector<unsigned short> &path) // O(V)
+	float Christofides::ToHamiltonianPath(vector<unsigned short> &path) // O(E)
 	{
 		vector<bool> visited(numberOfNodes, false);
 		float opt = 0;
@@ -147,10 +147,10 @@ namespace TSP
 		return opt;
 	}
 
-	float Christofides::findBestPath(unsigned short start) // O((V + E)²)
+	float Christofides::findBestPath(unsigned short start) // O(E)
 	{
-		auto circuit = FindEulerCircuit(start); // O((V + E)²)
-		auto opt = ToHamiltonianPath(circuit); // O(V)
+		auto circuit = FindEulerCircuit(start); // O(E)
+		auto opt = ToHamiltonianPath(circuit); // O(E)
 
 		return opt;
 	}
@@ -170,7 +170,7 @@ namespace TSP
 	5. Form an Eulerian circuit in H.
 	6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
 	*/
-	void Christofides::Solve(float &opt, string &path) // O(V⁴)
+	void Christofides::Solve(float &opt, string &path) // O(V³)
 	{
 		maxCardinality = 8;
 
@@ -195,7 +195,7 @@ namespace TSP
 		// 2. Let O be the set of vertices with odd degree in T.
 		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.
 		// 4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
-		GreedyWeightedPerfectMatching(); // O(V²)
+		GreedyWeightedPerfectMatching(); // O(V³)
 		currentCardinality++;
 
 		unsigned short bestIndex;
@@ -204,7 +204,7 @@ namespace TSP
 
 			for (unsigned short t = 0; t < numberOfNodes; t++)
 			{
-				cost = findBestPath(t); // O((V + E)²)
+				cost = findBestPath(t); // O(E)
 
 				if (cost < min)
 				{
@@ -216,14 +216,14 @@ namespace TSP
 		currentCardinality++;
 
 		// 5. Form an Eulerian circuit in H.
-		auto circuit = FindEulerCircuit(bestIndex); // O((V + E)²)
+		auto circuit = FindEulerCircuit(bestIndex); // O(E)
 		currentCardinality++;
 
 		// 6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
-		opt = ToHamiltonianPath(circuit); // O(V)
+		opt = ToHamiltonianPath(circuit); // O(E)
 		currentCardinality++;
 
-		path = PrintPath(circuit); // O(V)		 
+		path = PrintPath(circuit);
 		currentCardinality++;
 	}
 }
