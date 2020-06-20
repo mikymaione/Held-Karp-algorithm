@@ -4,11 +4,6 @@ Copyright (c) 2020: Michele Maione
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Held–Karp algorithm
-The Held–Karp algorithm, is a dynamic programming algorithm proposed in 1962 independently by Bellman and by Held and Karp to solve the Traveling Salesman Problem (TSP).
-
-T(n) = O(n²)
-
 TSP is an extension of the Hamiltonian circuit problem.
 The problem can be described as: find a tour of N cities in a country (assuming all cities to be visited are reachable), the tour should:
 1. visit every city just once
@@ -156,16 +151,16 @@ namespace TSP
 	/*
 	Algo. from: https://en.wikipedia.org/wiki/Held%E2%80%93Karp_algorithm
 	Algo.:
-	00	function algorithm TSP (G, n) is
-	01		for k := 2 to n
-	02			C({k}, k) := d1,k
-	03		for s := 2 to n−1
-	04			for all S ⊆ {2, . . . , n}, |S| = s
-	05				for all k ∈ S
-	06					C(S, k) := minm≠k,m∈S [C(S\{k}, m) + dm,k]
-	07		opt := mink≠1 [C({2, 3, . . . , n}, k) + dk, 1]
-	08		return (opt)
-	09	end function
+		00	function algorithm TSP (G, n) is
+		01		for k := 2 to n
+		02			C({k}, k) := d1,k
+		03		for s := 2 to n−1
+		04			for all S ⊆ {2, . . . , n}, |S| = s
+		05				for all k ∈ S
+		06					C(S, k) := minm≠k,m∈S [C(S\{k}, m) + dm,k]
+		07		opt := mink≠1 [C({2, 3, . . . , n}, k) + dk, 1]
+		08		return (opt)
+		09	end function
 	*/
 	void HeldKarp::Solve(float &opt, string &path)
 	{
