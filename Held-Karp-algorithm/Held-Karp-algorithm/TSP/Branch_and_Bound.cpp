@@ -356,14 +356,13 @@ namespace TSP
 
 	float Branch_and_Bound::t1()
 	{
-		MST::Prim prim;
-
 		float t = 0;
 		unsigned short id1, id2;
 
-		sTree T(distance.size());
-		vector<vector<unsigned short>> omitted(distance.size(), vector<unsigned short>(distance.size(), 0));
+		sTree T(numberOfNodes);
+		vector<vector<unsigned short>> omitted(numberOfNodes, vector<unsigned short>(numberOfNodes, 0));
 
+		MST::Prim prim;
 		prim.Solve(T, omitted, distance, 0, numberOfNodes);
 
 		T.GetMin0Nodes(distance, id1, id2);
@@ -374,7 +373,7 @@ namespace TSP
 		for (unsigned short i = 0; i < T.size(); i++)
 			t += distance[T[i].from][T[i].to];
 
-		return t / (2.0f * distance.size());
+		return t / (2.0f * numberOfNodes);
 	}
 
 	void Branch_and_Bound::PQ_Add(vector<sNode> &PQ, sNode &new_elem)
@@ -386,13 +385,6 @@ namespace TSP
 		});
 	}
 
-	/*
-	Top-level outline of the algorithm:
-		1. Draw and initialize the root node:
-		2. Repeat the following step until a solution (i.e., a complete circuit, represented by a terminal node) has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found:
-			- Choose an unexplored non-terminal node with the smallest bound, and process it.
-		3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
-	*/
 	void Branch_and_Bound::Solve(float &opt, string &path)
 	{
 		vector<sNode> Q;
@@ -410,14 +402,12 @@ namespace TSP
 		}
 
 		auto t = t1();
-		unsigned short N = numberOfNodes * numberOfNodes / 50 + numberOfNodes + 15;
+		unsigned short M = numberOfNodes * numberOfNodes / 50 + numberOfNodes + 15;
 
-		// 1. Draw and initialize the root node.
 		{
 			sNode root(numberOfNodes);
-			Bound(root, δ, t, N);
+			Bound(root, δ, t, M);
 
-			// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
 			if (!root.oneTree.CheckTour())
 			{
 				for (unsigned short i = 0; i < numberOfNodes; i++)
@@ -429,7 +419,7 @@ namespace TSP
 				return;
 			}
 
-			N = ceil(numberOfNodes / 4.0f + 5);
+			M = ceil(numberOfNodes / 4.0f + 5);
 			t = 0;
 
 			for (unsigned short i = 0; i < numberOfNodes; i++)
@@ -440,13 +430,11 @@ namespace TSP
 			auto B = Branch(root.oneTree, δ, root, numberOfNodes);
 
 			for (unsigned short i = 0; i < B.size(); i++)
-				if (!Bound(B[i], δ, t, N))
+				if (!Bound(B[i], δ, t, M))
 					if (B[i].bound < UB)
 						PQ_Add(Q, B[i]);
 		}
-		// END. 1. Draw and initialize the root node.
 
-		// 2. Repeat the following step until a solution (i.e., a complete circuit, represented by a terminal node) has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found:
 		{
 			vector<unsigned short> δ1(numberOfNodes, 0);
 			auto c = Q.size() - 1;
@@ -456,7 +444,6 @@ namespace TSP
 				auto node = Q[c];
 				Q.pop_back();
 
-				// 3. When a solution has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found, then the best solution found is optimal.
 				if (ceil(node.bound) >= UB)
 				{
 					opt = UB;
@@ -485,7 +472,7 @@ namespace TSP
 						auto B = Branch(node.oneTree, δ1, node, numberOfNodes);
 
 						for (unsigned short i = 0; i < B.size(); i++)
-							if (!Bound(B[i], δ1, t, N))
+							if (!Bound(B[i], δ1, t, M))
 								if (B[i].bound < UB)
 								{
 									if (!B[i].oneTree.CheckTour())
@@ -508,7 +495,6 @@ namespace TSP
 				c--;
 			}
 		}
-		// END 2. Repeat the following step until a solution (i.e., a complete circuit, represented by a terminal node) has been found and no unexplored non-terminal node has a smaller bound than the length of the best solution found:
 
 		opt = UB;
 		path = PrintPath(tour);

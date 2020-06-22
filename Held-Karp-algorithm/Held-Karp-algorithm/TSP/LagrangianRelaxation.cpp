@@ -117,16 +117,13 @@ namespace TSP
 	*/
 	void LagrangianRelaxation::Solve(float &opt, string &path)
 	{
-		const auto FirstUB = UpperBound();
-		UB = FirstUB;
-
 		Graph G(numberOfNodes);
 		G.MakeConnected(distance);
 
+		UB = UpperBound();
+
 		auto LB = 0.0f;
 		auto zero_tree = LagrangeSubGradient(G, LB);
-
-		auto gap = 100.0f * (UB - LB) / LB;
 
 		opt = LB;
 		path = PrintPath();
