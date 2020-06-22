@@ -251,14 +251,14 @@ namespace TSP
 
 		for (unsigned short i = 0; i < node.F.size(); i++)
 		{
-			omitted.at(node.F[i].from).at(node.F[i].to) = 2;
-			omitted.at(node.F[i].to).at(node.F[i].from) = 2;
+			omitted[node.F[i].from][node.F[i].to] = 2;
+			omitted[node.F[i].to][node.F[i].from] = 2;
 
 			if (node.F[i].from == 0)
-				forbidden.at(node.F[i].to) = 1;
+				forbidden[node.F[i].to] = 1;
 
 			if (node.F[i].to == 0)
-				forbidden.at(node.F[i].from) = 1;
+				forbidden[node.F[i].from] = 1;
 		}
 
 		for (unsigned short i = 0; i < numberOfNodes; i++)
@@ -354,6 +354,7 @@ namespace TSP
 		return false;
 	}
 
+	// calc T1
 	float Branch_and_Bound::t1()
 	{
 		float t = 0;
@@ -376,6 +377,7 @@ namespace TSP
 		return t / (2.0f * numberOfNodes);
 	}
 
+	// Add to priority queue
 	void Branch_and_Bound::PQ_Add(vector<sNode> &PQ, sNode &new_elem)
 	{
 		PQ.push_back(new_elem);
@@ -387,24 +389,29 @@ namespace TSP
 
 	void Branch_and_Bound::Solve(float &opt, string &path)
 	{
-		vector<sNode> Q;
 		vector<sEdge> tour(numberOfNodes);
-		vector<unsigned short> δ(numberOfNodes, 0);
-		float UB = distance[numberOfNodes - 1][0];
 
+		// Upper bound on tour 0-1-2-.....-n
+		float UB = distance[numberOfNodes - 1][0];
 		tour[0] = sEdge(numberOfNodes - 1, 0);
 
-		// Upper bound
 		for (unsigned short i = 0; i < distance.size() - 1; i++)
 		{
 			UB += distance[i][i + 1];
 			tour[i + 1] = sEdge(i, i + 1);
 		}
 
+
 		auto t = t1();
 		unsigned short M = numberOfNodes * numberOfNodes / 50 + numberOfNodes + 15;
 
+		vector<sNode> Q;
+
+
+		// Calculate first Bound
 		{
+			vector<unsigned short> δ(numberOfNodes, 0);
+
 			sNode root(numberOfNodes);
 			Bound(root, δ, t, M);
 
@@ -437,15 +444,15 @@ namespace TSP
 
 		{
 			vector<unsigned short> δ1(numberOfNodes, 0);
-			auto c = Q.size() - 1;
 
-			while (c >= 0)
+			while (!Q.empty())
 			{
-				auto node = Q[c];
+				auto node = Q.back();
 				Q.pop_back();
 
 				if (ceil(node.bound) >= UB)
 				{
+					// exceeded UB
 					opt = UB;
 					path = PrintPath(tour);
 
@@ -456,8 +463,8 @@ namespace TSP
 				{
 					for (unsigned short i = 0; i < numberOfNodes; i++)
 					{
-						δ1.at(node.oneTree[i].from)++;
-						δ1.at(node.oneTree[i].to)++;
+						δ1[node.oneTree[i].from]++;
+						δ1[node.oneTree[i].to]++;
 					}
 
 					if (!node.oneTree.CheckTour())
@@ -484,15 +491,12 @@ namespace TSP
 									}
 
 									PQ_Add(Q, B[i]);
-									c++;
 								}
 					}
 				}
 
 				for (unsigned short k = 0; k < numberOfNodes; k++)
 					δ1[k] = 0;
-
-				c--;
 			}
 		}
 
