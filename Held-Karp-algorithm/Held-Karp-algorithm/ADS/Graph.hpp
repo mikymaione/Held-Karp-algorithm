@@ -11,6 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <map>
 #include <memory>
 #include <list>
+#include <set>
 #include <stack>
 #include <vector>
 #include <map>
@@ -19,6 +20,13 @@ using namespace std;
 
 namespace ADS
 {
+	enum BlossomLabel
+	{
+		not_setted = 0,
+		even = 1,
+		odd = 2
+	};
+
 	enum Constraints
 	{
 		Free = 0,
@@ -33,6 +41,14 @@ namespace ADS
 
 		unsigned short rank = 0; // Kruskal
 		float key = FLT_MAX; // Prim		
+
+
+		// Blossom
+		set<shared_ptr<Node>> B;
+		shared_ptr<Node> mate;
+		bool active = true, pseudo = false, marked = false, blossom = false;
+		BlossomLabel label = not_setted;
+		// Blossom
 	};
 
 	struct Edge
@@ -62,10 +78,22 @@ namespace ADS
 
 		unsigned short NumberOfNodes = 0;
 
+
+		Graph(set<unsigned short> V_)
+		{
+			for (auto v : V_)
+				AddNode(v);
+		}
+
 		Graph(list<shared_ptr<Node>> V_)
 		{
 			for (auto v : V_)
 				AddNode(v->id);
+		}
+
+		Graph(const vector<vector<float>> &DistanceMatrix2D) : Graph(DistanceMatrix2D.size())
+		{
+			MakeConnected(DistanceMatrix2D);
 		}
 
 		Graph(unsigned short NumberOfNodes_) : Graph(NumberOfNodes_, 0, NumberOfNodes_ - 1) {}
@@ -116,11 +144,37 @@ namespace ADS
 			NumberOfNodes++;
 		}
 
+		void RemoveNode(shared_ptr<Node> n)
+		{
+		repeat:
+			auto x = -1;
+			for (auto e : E)
+			{
+				x++;
+
+				if (n == e->from || n == e->to)
+				{
+					E.erase(E.begin() + x);
+					goto repeat;
+				}
+			}
+
+			V.remove(n);
+			Adj.erase(n);
+
+			if (AdjIDs.size() > 0)
+				AdjIDs[n->id].clear();
+
+			NumberOfNodes--;
+		}
+
 		void AddEdge(Edge &e)
 		{
 			E.push_back(make_shared<Edge>(e));
 			Adj[e.from].push_back(e.to);
-			AdjIDs[e.from->id].push_back(e.to->id);
+
+			if (AdjIDs.size() > 0)
+				AdjIDs[e.from->id].push_back(e.to->id);
 		}
 
 		void AddEdge(float cost, shared_ptr<Node> from, shared_ptr<Node> to)

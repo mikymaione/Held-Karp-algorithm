@@ -12,21 +12,33 @@ The problem can be described as: find a tour of N cities in a country (assuming 
 */
 #pragma once
 
-#include <set>
 #include <stack>
 
 #include "Christofides.hpp"
 #include "../MST/Prim.hpp"
-#include "../ADS/Graph.hpp"
+#include "../Matching/Blossom.hpp"
 
 namespace TSP
 {
-	Christofides::Christofides(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) // O(V)
+	Christofides::Christofides(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
+
+	float Christofides::CalcCost(vector<unsigned short> &circuit) // O(V)
 	{
-		out_star.resize(numberOfNodes);
+		unsigned short da, a;
+		float cost = 0;
+
+		for (unsigned short i = 0; i < numberOfNodes; i++)
+		{
+			da = circuit[i];
+			a = circuit[i + 1];
+
+			cost += distance[da][a];
+		}
+
+		return cost;
 	}
 
-	string Christofides::PrintPath(vector<unsigned short> circuit) // O(V)
+	string Christofides::PrintPath(vector<unsigned short> &circuit) // O(V)
 	{
 		string s;
 
@@ -36,118 +48,79 @@ namespace TSP
 		return s;
 	}
 
-	void Christofides::GreedyWeightedPerfectMatching() // O(V³)
+	// 1. Create a minimum spanning tree T of G.
+	vector<set<unsigned short>> Christofides::MST(Graph &G) // O(E ㏒ V)
 	{
-		float dist;
-		unsigned short i, closest = 0;
-		set<unsigned short> V_odd;
+		vector<set<unsigned short>> T(numberOfNodes);
 
-		for (i = 0; i < numberOfNodes; i++)
-			if (out_star[i].size() % 2 != 0)
-				V_odd.insert(i);
+		MST::Prim prim;
+		prim.Solve(distance, G, 0); // O(E ㏒ V)
 
-		while (!V_odd.empty())
-			for (const auto v : V_odd)
+		for (auto u : G.V)
+			if (u->π)
 			{
-				dist = FLT_MAX;
-				V_odd.erase(v);
-
-				for (const auto u : V_odd)
-					if (distance[u][v] < dist)
-					{
-						dist = distance[u][v];
-						closest = u;
-					}
-
-				out_star[v].push_back(closest);
-				out_star[closest].push_back(v);
-
-				V_odd.erase(closest);
-				break; // next element
+				T[u->id].insert(u->π->id);
+				T[u->π->id].insert(u->id);
 			}
+
+		return T;
 	}
 
-	vector<unsigned short> Christofides::FindEulerCircuit(unsigned short start) // O(E)
+	// 2. Let O be the set of vertices with odd degree in T.
+	set<unsigned short> Christofides::OddVertices(vector<set<unsigned short>> &T) // O(V)
 	{
-		size_t i;
-		unsigned short neighbor, pos;
+		set<unsigned short> O;
 
-		stack<unsigned short> S;
-		vector<unsigned short> path;
+		for (unsigned short i = 0; i < numberOfNodes; i++)
+			if (T[i].size() % 2 != 0)
+				O.insert(i);
 
-		path.push_back(start);
-
-		pos = start;
-		auto neighbours = out_star; // copy
-
-		while (!S.empty() || neighbours[pos].size() > 0)
-			if (neighbours[pos].empty())
-			{
-				path.push_back(pos);
-				pos = S.top();
-				S.pop();
-			}
-			else
-			{
-				S.push(pos);
-
-				neighbor = neighbours[pos].back();
-
-				neighbours[pos].pop_back();
-
-				for (i = 0; i < neighbours[neighbor].size(); i++)
-					if (neighbours[neighbor][i] == pos)
-						neighbours[neighbor].erase(neighbours[neighbor].begin() + i);
-
-				pos = neighbor;
-			}
-
-		path.push_back(pos);
-
-		return path;
+		return O;
 	}
 
-	float Christofides::ToHamiltonianPath(vector<unsigned short> &path) // O(E)
+	// 3.b induced subgraph given by the vertices from O.
+	shared_ptr<Graph> Christofides::SubGraph(Graph &G, set<unsigned short> O) // O(E)
 	{
-		vector<bool> visited(numberOfNodes, false);
-		float opt = 0;
+		Graph I(O);
+		I.MakeConnected(distance);
 
-		auto curr = path.begin();
-		auto next = path.begin() + 1;
-
-		visited[*curr] = true;
-
-		while (next != path.end())
-			if (visited[*next])
-			{
-				next = path.erase(next);
-			}
-			else
-			{
-				opt += distance[*curr][*next];
-				curr = next;
-
-				visited[*curr] = true;
-
-				next = curr + 1;
-			}
-
-		auto head = path.front();
-		auto tail = path.back();
-
-		path.push_back(head);
-
-		opt += distance[tail][head];
-
-		return opt;
+		return make_shared<Graph>(I);
 	}
 
-	float Christofides::findBestPath(unsigned short start) // O(E)
+	// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.		
+	set<shared_ptr<Edge>> Christofides::PerfectMatching(shared_ptr<Graph> G) // O(V²E)
 	{
-		auto circuit = FindEulerCircuit(start); // O(E)
-		auto opt = ToHamiltonianPath(circuit); // O(E)
+		Matching::Blossom blossom;
+		return blossom.Solve(G); // O(V²E)
+	}
 
-		return opt;
+	// 4. Combine the edges of M and T to form a connected multigraph H
+	vector<set<unsigned short>> Christofides::Multigraph(vector<set<unsigned short>> &T, set<shared_ptr<Edge>> &M) // O(E)
+	{
+		auto H = T; // copy
+
+		for (auto m : M)
+		{
+			if (H[m->from->id].count(m->to->id) == 0)
+				H[m->from->id].insert(m->to->id);
+
+			if (H[m->to->id].count(m->from->id) == 0)
+				H[m->to->id].insert(m->from->id);
+		}
+
+		return H;
+	}
+
+	// 5. Form an Eulerian circuit in H.
+	// 6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
+	void Christofides::Hamiltonian(vector<set<unsigned short>> &H, vector<unsigned short> &E, set<unsigned short> &visited, unsigned short c) // O(V)
+	{
+		visited.insert(c);
+		E.push_back(c);
+
+		for (auto e : H[c])
+			if (visited.count(e) == 0)
+				Hamiltonian(H, E, visited, e);
 	}
 
 	/*
@@ -165,60 +138,45 @@ namespace TSP
 		5. Form an Eulerian circuit in H.
 		6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
 	*/
-	void Christofides::Solve(float &opt, string &path) // O(V³)
+	void Christofides::Solve(float &opt, string &path) // O(V²E)
 	{
-		maxCardinality = 8;
+		maxCardinality = 10;
 
-		Graph G(numberOfNodes);
-		G.MakeConnected(distance);
-		currentCardinality++;
+		Graph G(distance);
 
 		// 1. Create a minimum spanning tree T of G.
-		MST::Prim prim;
-		prim.Solve(distance, G, 0); // O(E ㏒ V)
-		currentCardinality++;
-
-		// crea out-star
-		for (auto u : G.V)
-			if (u->π)
-			{
-				out_star[u->id].push_back(u->π->id);
-				out_star[u->π->id].push_back(u->id);
-			}
-		currentCardinality++;
+		auto T = MST(G); // O(E ㏒ V)
+		currentCardinality = 2;
 
 		// 2. Let O be the set of vertices with odd degree in T.
-		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.
-		// 4. Combine the edges of M and T to form a connected multigraph H in which each vertex has even degree.
-		GreedyWeightedPerfectMatching(); // O(V³)
-		currentCardinality++;
+		auto O = OddVertices(T);
+		currentCardinality = 3;
 
-		unsigned short bestIndex;
-		{
-			float cost, min = FLT_MAX;
+		// 3.b induced subgraph given by the vertices from O.
+		auto IG = SubGraph(G, O);
+		currentCardinality = 4;
 
-			for (unsigned short t = 0; t < numberOfNodes; t++)
-			{
-				cost = findBestPath(t); // O(E)
+		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.		
+		auto M = PerfectMatching(IG); // O(V²E)
+		currentCardinality = 7;
 
-				if (cost < min)
-				{
-					bestIndex = t;
-					min = cost;
-				}
-			}
-		}
-		currentCardinality++;
+		// 4. Combine the edges of M and T to form a connected multigraph H
+		auto H = Multigraph(T, M);
+		currentCardinality = 8;
 
 		// 5. Form an Eulerian circuit in H.
-		auto circuit = FindEulerCircuit(bestIndex); // O(E)
-		currentCardinality++;
-
 		// 6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
-		opt = ToHamiltonianPath(circuit); // O(E)
-		currentCardinality++;
+		vector<unsigned short> E;
+		{
+			set<unsigned short> visited;
+			Hamiltonian(H, E, visited, 0);
+			E.push_back(0);
+		}
+		currentCardinality = 9;
 
-		path = PrintPath(circuit);
-		currentCardinality++;
+		opt = CalcCost(E);
+		path = PrintPath(E);
+		currentCardinality = 10;
 	}
+
 }

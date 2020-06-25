@@ -6,38 +6,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 
-#include <memory>
+#include <map>
 
-#include <set>
-#include <string>
-#include <vector>
+#include "Blossom.hpp"
 
-#include "Base/TSP.hpp"
-#include "../ADS/Graph.hpp"
-
-using namespace ADS;
-using namespace std;
-
-namespace TSP
+namespace Matching
 {
-	class Christofides : public Base::TSP
-	{
-	private:
-		vector<set<unsigned short>> MST(Graph &G);
-		set<unsigned short> OddVertices(vector<set<unsigned short>> &T);
-		shared_ptr<Graph> SubGraph(Graph &G, set<unsigned short> O);
-		set<shared_ptr<Edge>> PerfectMatching(shared_ptr<Graph> G);
-		vector<set<unsigned short>> Multigraph(vector<set<unsigned short>> &T, set<shared_ptr<Edge>> &M);
-		void Hamiltonian(vector<set<unsigned short>> &H, vector<unsigned short> &E, set<unsigned short> &visited, unsigned short c);
 
-	protected:
-		float CalcCost(vector<unsigned short> &circuit);
-		string PrintPath(vector<unsigned short> &circuit);
 
-		void Solve(float &opt, string &path);
-
-	public:
-		Christofides(const vector<vector<float>> &DistanceMatrix2D);
-
-	};
 }
