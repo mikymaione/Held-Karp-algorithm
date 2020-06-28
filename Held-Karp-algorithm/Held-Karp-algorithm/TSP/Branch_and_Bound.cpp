@@ -407,7 +407,6 @@ namespace TSP
 
 		vector<sNode> Q;
 
-
 		// Calculate first Bound
 		{
 			vector<unsigned short> δ(numberOfNodes, 0);
