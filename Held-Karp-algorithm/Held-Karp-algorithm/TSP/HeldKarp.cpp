@@ -18,14 +18,26 @@ namespace TSP
 {
 	HeldKarp::HeldKarp(const vector<vector<float>> &DistanceMatrix2D) : TSP(DistanceMatrix2D) {}
 
-	string HeldKarp::PrintPath(const unsigned int code, const unsigned short π)
+	void HeldKarp::CalcPath(const unsigned int code, const unsigned short π, float &opt, string &path)
 	{
-		string s;
+		unsigned short p = 0;
+
+		path = "";
+		opt = 0;
+
+		float f;
 
 		for (const auto e : C.front()[code][π].path)
-			s = to_string(e) + " " + s;
+		{
+			f = distance[p][e];
+			opt += f;
+			path += to_string(e) + " ";
 
-		return "0 " + s + "0";
+			p = e;
+		}
+
+		path = "0 " + path + "0";
+		opt += distance[p][0];
 	}
 
 	void HeldKarp::AddNewToQueue()
@@ -218,7 +230,7 @@ namespace TSP
 			C.front()[code][π].cost = opt;
 			C.front()[code][π].path.push_back(π);
 
-			path = PrintPath(code, π);
+			CalcPath(code, π, opt, path);
 		}
 		// ALGO[07:08]
 		// PATH ===============================================================================================================================	

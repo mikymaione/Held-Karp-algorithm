@@ -34,7 +34,7 @@ namespace TSP
 	protected:
 		void AddNewToQueue();
 
-		string PrintPath(const unsigned int code, const unsigned short π);
+		void CalcPath(const unsigned int code, const unsigned short π, float &opt, string &path);
 
 		void Combinations(const unsigned short K, const unsigned short N);
 		void Combinations_FreeMem(stack<unsigned short> &Q, vector<unsigned short> &S, const unsigned short K, const unsigned short N, const unsigned short sCur);
