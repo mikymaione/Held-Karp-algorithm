@@ -146,18 +146,16 @@ namespace ADS
 
 		void RemoveNode(shared_ptr<Node> n)
 		{
-		repeat:
-			auto x = -1;
-			for (auto e : E)
-			{
-				x++;
+			size_t lastX = 0;
 
-				if (n == e->from || n == e->to)
+		repeat:
+			for (size_t x = lastX; x < E.size(); x++)
+				if (n == E[x]->from || n == E[x]->to)
 				{
+					lastX = x;
 					E.erase(E.begin() + x);
 					goto repeat;
 				}
-			}
 
 			V.remove(n);
 			Adj.erase(n);

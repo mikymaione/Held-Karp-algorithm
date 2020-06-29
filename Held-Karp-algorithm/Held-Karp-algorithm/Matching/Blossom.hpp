@@ -151,17 +151,14 @@ namespace Matching
 		void Search(shared_ptr<Node> p)
 		{
 			{
-				set<unsigned short> vertici;
-				for (auto x : G->V)
-					vertici.insert(x->id);
+				V_.clear();
+				Adj_.clear();
 
-				Graph tempG(vertici);
+				for (auto x : G->V)
+					V_.push_back(x);
 
 				for (auto e : G->E)
-					tempG.AddEdge(e->cost, e->from, e->to);
-
-				V_ = tempG.V;
-				Adj_ = tempG.Adj;
+					Adj_[e->from].push_back(e->to);
 			}
 
 			auto found = false;
