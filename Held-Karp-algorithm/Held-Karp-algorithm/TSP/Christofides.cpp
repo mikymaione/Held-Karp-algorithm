@@ -140,29 +140,30 @@ namespace TSP
 	*/
 	void Christofides::Solve(float &opt, string &path) // O(V²E)
 	{
-		maxCardinality = 10;
+		maxCardinality = 11;
 
-		Graph G(distance);
+		Graph G(distance); // O(V+E)
+		currentCardinality = 1;
 
 		// 1. Create a minimum spanning tree T of G.
 		auto T = MST(G); // O(E ㏒ V)
-		currentCardinality = 2;
+		currentCardinality = 3;
 
 		// 2. Let O be the set of vertices with odd degree in T.
 		auto O = OddVertices(T);
-		currentCardinality = 3;
+		currentCardinality = 4;
 
 		// 3.b induced subgraph given by the vertices from O.
 		auto IG = SubGraph(G, O);
-		currentCardinality = 4;
+		currentCardinality = 5;
 
 		// 3. Find a minimum - weight perfect matching M in the induced subgraph given by the vertices from O.		
 		auto M = PerfectMatching(IG); // O(V²E)
-		currentCardinality = 7;
+		currentCardinality = 6;
 
 		// 4. Combine the edges of M and T to form a connected multigraph H
 		auto H = Multigraph(T, M);
-		currentCardinality = 8;
+		currentCardinality = 7;
 
 		// 5. Form an Eulerian circuit in H.
 		// 6. Make the circuit found in previous step into a Hamiltonian circuit by skipping repeated vertices (shortcutting).
@@ -172,11 +173,11 @@ namespace TSP
 			Hamiltonian(H, E, visited, 0);
 			E.push_back(0);
 		}
-		currentCardinality = 9;
+		currentCardinality = 10;
 
 		opt = CalcCost(E);
 		path = PrintPath(E);
-		currentCardinality = 10;
+		currentCardinality = 11;
 	}
 
 }
