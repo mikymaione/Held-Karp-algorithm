@@ -150,19 +150,11 @@ namespace Matching
 
 		void Search(shared_ptr<Node> p)
 		{
-			{
-				V_.clear();
-				Adj_.clear();
-
-				for (auto x : G->V)
-					V_.push_back(x);
-
-				for (auto e : G->E)
-					Adj_[e->from].push_back(e->to);
-			}
-
 			auto found = false;
 			shared_ptr<Node> q;
+
+			V_ = G->V;
+			Adj_ = G->Adj;
 
 			p->label = BlossomLabel::even;
 			L.push(p);
@@ -272,7 +264,13 @@ namespace Matching
 
 						if (p->mate == nullptr)
 						{
-							G->RemoveNode(p);
+							G->V.remove(p);
+							G->Adj.erase(p);
+
+							for (auto v : G->V)
+								G->Adj[v].remove(p);
+
+							G->NumberOfNodes--;
 							goto reiterate;
 						}
 					}

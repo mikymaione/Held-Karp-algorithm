@@ -144,27 +144,6 @@ namespace ADS
 			NumberOfNodes++;
 		}
 
-		void RemoveNode(shared_ptr<Node> n)
-		{
-			size_t lastX = 0;
-
-		repeat:
-			for (size_t x = lastX; x < E.size(); x++)
-				if (n == E[x]->from || n == E[x]->to)
-				{
-					lastX = x;
-					E.erase(E.begin() + x);
-					goto repeat;
-				}
-
-			V.remove(n);
-			Adj.erase(n);
-
-			if (AdjIDs.size() > 0)
-				AdjIDs[n->id].clear();
-
-			NumberOfNodes--;
-		}
 
 		void AddEdge(Edge &e)
 		{
